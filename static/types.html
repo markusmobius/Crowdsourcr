@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <script src="http://underscorejs.org/underscore-min.js"></script>
+  <script src="/static/js/mixins.js"></script>
+  <script src="/static/js/type.js"></script>
+  <script type="text/javascript">
+    function createOnServer(ser_data) {
+      $.post('/types/new', {ctype : JSON.stringify(ser_data)}, function(data) {
+        // reload stuff?
+      });        
+    }
+    $(function() {
+      var ct = $('#ctype-test').CType({onCreate : createOnServer});
+    });
+  </script>
+  <style>
+    div.slider {
+    width: 400px;
+    }
+  </style>
+</head>
+<body>
+    <div id="ctype-test"></div>
+    
+    <script type="text/template" id="ctype-template">
+      <form>
+	<p> CType </p>
+	<input name="type-name" placeholder="type name"/>
+	<div class="question-container"></div>
+	<button class="create-new-type">Create!</button>
+      </form>
+    </script>
+
+    <script type="text/template" id="ctype-display-template">
+      <h4 data-prop="name">&lt;Type Name&gt;</h4>
+      <div class="question-display-container"></div>
+    </script>
+
+    <script type="text/template" id="questionlist-template">
+	<div class="all-questions"></div>
+	<select name="question-type">
+	  <option value="radio" selected="selected">Radio</option>
+          <option value="checkbox">Checkbox</option>
+          <option value="dropdown">Dropdown</option>
+	  <option value="scale">Scale</option>
+	  <option value="grid">Grid</option>
+	  <option value="text">Text</option>
+	</select>
+	<button class="add-another-question">Add another question</button><br>      
+    </script>
+
+    <script type="text/template" id="questionlist-display-template">
+      <div></div>
+    </script>
+    
+    <script type="text/template" id="question-template">
+      <input placeholder="question text" name="question-text"/><br>
+    </script>
+
+    <script type="text/template" id="question-display-template">
+      <p data-prop="question_text">&lt;Question Text&gt;</p>
+      <div data-prop="question_content"></div>
+    </script>
+
+    <script type="text/template" id="mcquestion-template">
+      <div class="options-holder"></div>
+      <button class="add-option">Add another option</button>
+    </script>
+
+    <script type="text/template" id="mcquestion-display-template">
+      <% if (question_type === 'dropdown') { %>
+      <select>
+      <% _.each(options, function(text) { %> 
+      <option><%= text %></option> 
+      <% }); %>
+      </select>
+      <% } else { %>
+      <% _.each(options, function(text) { %> 
+      <input name="<%= group_name %>" type="<%= question_type %>"><%= text %><br> 
+      <% }); }  %>
+    </script>
+
+    <script type="text/template" id="scalequestion-template">
+      <select name="scalecont">
+	<option value="buttons" selected="selected"> Buttons </option>
+	<option value="slider"> Slider </option>
+      </select>
+      <input type="text" name="scalemin" placeholder="minimum value" /> Min <br>
+      <input type="text" name="scalemax" placeholder="maximum value" /> Max <br>
+      <input type="text" name="scalestep" placeholder="step size" /> Step size <br>
+    </script>
+
+    <script type="text/template" id="scalequestion-display-template">
+      <div>
+      <% var num_steps = (scalemax - scalemin) / scalestep; %>
+      <% if (scalecont === undefined ||  num_steps < 1 || num_steps > 100 || isNaN(num_steps)) { %>
+	<p> Unable to render slider. </p>
+      <% } else if (scalecont === 'slider') { %>
+	<div class="slider"></div>
+	<p class="slider-amt"><%= scalemin %></p>
+      <% } else { %>
+      <table>
+	<tr><% for (var i = scalemin; i <= scalemax; i+= scalestep) { %><th><%= i %></th><% } %></tr>
+        <tr><% for (var i = scalemin; i <= scalemax; i+= scalestep) { %><td><input type="radio" name="<%= group_name %>" value="<%= i %>" /></td><% } %></tr>
+      </table>
+      <% } %>
+      </div>
+    </script>
+
+    <script type="text/template" id="gridquestion-template">
+      <div class="rowoptions-holder"></div>
+      <button class="add-rowoption">Add another row</button>
+      <div class="columnoptions-holder"></div>
+      <button class="add-columnoption">Add another column</button>
+    </script>
+
+    <script type="text/template" id="gridquestion-display-template">
+      <table>
+      <tr><th></th><% _.each(coloptions, function(val) { %><th><%= val %></th><% }); %></tr>
+      <% _.each(rowoptions, function(row) { %>
+      <tr>
+	<td><%= row %></td>
+	<% _.each(coloptions, function(col) { %><td><input type="radio" name="<%= group_name + row %>" value="<%= col %>"/></td><% }); %>
+      </tr>
+      <% }); %>
+      </table>
+    </script>
+
+    <script type="text/template" id="textquestion-template">
+      <select name="textlength">
+	<option value="short" selected="selected"> Short </option>
+	<option value="long"> Long </option>
+      </select>
+    </script>
+
+    <script type="text/template" id="textquestion-display-template">
+      <% if (textlength === 'short') { %>
+      <input />
+      <% } else { %>
+      <textarea></textarea>
+      <% } %>
+    </script>
+
+</body>
+</html>

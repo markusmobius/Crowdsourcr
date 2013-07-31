@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            getTypes();
+            $('#create-new-type').click(function(evt) {
+                evt.preventDefault();
+                var type = serializeType();
+                var post_serialized_type = {name : type.name, questions: JSON.stringify(type.questions)};
+                $.post('/createtype/', post_serialized_type, function(){
+                    getTypes();
+                });
+            });
+            
+            $('#add-another-question').click(function(evt) {
+                evt.preventDefault();
+                var question_type = $("#select-question-type option:selected").val();
+                switch(question_type) {
+                    case 'radio':
+                        appendRadioQuestion();
+                        break;
+                }
+            });
+        });
+        
+        function removeParent(elem) {
+            $(elem).parent().remove();
+        }
+        
+        function appendRadioQuestion() {
+            var radio_question_div = 
+                $('<div class="question-div" questiontype="radio">' +
+                    '<h4> Radio question </h4>' +
+                    '<p>Question</p>' +
+                    '<input questionpart="question" placeholder="question" /><br>' +
+                    '<p> Options </p>' +
+                    '<div><input questionpart="option" placeholder="option"/><a onclick="removeParent(this);">&times;</a></div>' +
+                  '</div>');
+            $('#all-questions').append(radio_question_div);
+            $('<button>Add option</button>').click(function(evt) {
+                evt.preventDefault();
+                $(this).before('<div><input questionpart="option" placeholder="option"/><a onclick="removeParent(this);">&times;</a></div>');
+            }).appendTo(radio_question_div);
+            $('<button>Delete question</button>').click(function(evt) {
+                evt.preventDefault();
+                $(this).parent().remove();
+            }).appendTo(radio_question_div);
+        }
+        
+        function getTypes() {
+            $.get('/gettypes/', function(data) {
+                var all_types_holder = $('#all-types');
+                all_types_holder.empty();
+                for (var i = 0; i < data.length; i++) {
+                    all_types_holder.append('<li><a href="/types/'+data[i]+'">' + data[i] + '</a></li>');
+                }
+            });
+        }
+        
+        function serializeType() {
+            var type = { name : $('#type-name').val(), questions : []};
+            if (type.name.length == 0) throw "Error";
+            $('.question-div').each(function() {
+                switch ($(this).attr('questiontype')) {
+                    case 'radio':
+                        type.questions.push(serializeRadioQuestion($(this)));
+                        break;
+                }
+            });
+            return type;
+        }
+        
+        function serializeRadioQuestion(question_div) {
+            var question_info = {label : $('input[questionpart="question"]:first').val(), options : []};
+            if (question_info.label.length == 0) throw "Error";
+            $('input[questionpart="option"]').each(function() {
+                if ($(this).val() == '') throw "Error";
+                question_info.options.push($(this).val());
+            });
+            if (question_info.options.length == 0) throw "Error";
+            return question_info;
+        }
+    </script>
+    <style>
+        .question-div {
+            width: 400px;
+            margin: 5px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h3> Here are all the types: </h3>
+    <ul id="all-types">
+    
+    </ul>
+    <br>
+    
+    
+    <h3> Create a new type: </h3>
+    <form>
+        <p>Type Name</p>
+        <input id="type-name" placeholder="type name"/>
+        <br>
+        <div id="all-questions">
+        
+        </div>
+        <select id="select-question-type">
+            <option value="radio" selected="selected">Radio Question</option>
+        </select>
+        <button id="add-another-question">Add another question</button>
+        <br>
+        <button id="create-new-type">Create new type!</button>
+    </form>
+</body>
+</html>
