@@ -71,6 +71,11 @@ class ScaleQType(QType) :
                    scalemin=d['scalemin'],
                    scalemax=d['scalemax'],
                    scalestep=d['scalestep'])
+    def to_dict(self) :
+        return { 'scalecont' : self.scalecont,
+                 'scalemin' : self.scalemin,
+                 'scalemax' : self.scalemax,
+                 'scalestep' : self.scalestep }
 
 class TextQType(QType) :
     typeName = "text"
@@ -81,6 +86,8 @@ class TextQType(QType) :
     def from_dict(cls, text, d) :
         return cls(text,
                    textlength=d['textlength'])
+    def to_dict(self) :
+        return { 'textlength' : self.textlength }
 
 class GridQType(QType) :
     typeName = "grid"
@@ -93,6 +100,9 @@ class GridQType(QType) :
         return cls(text,
                    rowoptions=d['rowoptions'],
                    coloptions=d['coloptions'])
+    def to_dict(self) :
+        return { 'rowoptions' : self.rowoptions,
+                 'coloptions' : self.coloptions }
 
 
 class CType(object) :

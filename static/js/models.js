@@ -37,10 +37,10 @@ var CType = Model.extend({
     },
     renderDisplay : function(el) {
 	var self = this;
-	this.el_display = $(el);
 	if (this.el_display !== undefined) {
 	    throw "Error: CType renderDisplay called multiple times!!";
-	}
+	} 
+	this.el_display = $(el);
 	var sub_disp = $(document.createElement('div'));
 	sub_disp.html(self.display_template);
 	this.el_display_props = sub_disp.find('[data-prop]');
@@ -68,6 +68,7 @@ var CType = Model.extend({
 	if (typeof data.name !== 'string') throw "Error: CType.deserialize must be passed a string name.";
 	if (!data.questions instanceof Array) throw "Error: CType.deserialize must be passed an array questions.";
 	this.type_name = data.name;
+	this.updateDisplay();
 	this.questionlist.deserialize(data.questions);
     }
 });
@@ -133,7 +134,7 @@ var Question = Model.extend({
 	switch (question_type) {
 	case 'radio':
 	case 'checkbox':
-	case 'dropdown':
+	case 'select':
             self = new MCQuestion();
 	    break;
 	case 'scale':
@@ -171,6 +172,7 @@ var Question = Model.extend({
 	return this.el_edit;
     },
     renderDisplay : function() {
+	if (this.el_display !== undefined) return this.el_display;
 	this.el_display = $(document.createElement('div')).html(this.display_template);
 	this.el_display_props = this.el_display.find('[data-prop]');
 	var question_content_area = this.el_display_props.filter('[data-prop="question_content"]').first();
@@ -190,6 +192,8 @@ var Question = Model.extend({
     },
     deserialize : function(data) {
 	this.question_text = data.text;
+	this.renderDisplay();
+	this.updateDisplay();
 	this.subdeserialize(data.content);
     }
 });
@@ -224,9 +228,9 @@ var MCQuestion = Question.extend({
 		self.options.push($(this).val());
 	    });
 	}
-	this.updateDisplay();
+	this.subupdateDisplay();
     },
-    updateDisplay : function() {
+    subupdateDisplay : function() {
 	if (this.sub_el_display !== undefined)
 	    this.sub_el_display.html(_.template(this.display_subtemplate, this.objectifyOptions()));	
     },
@@ -269,12 +273,12 @@ var MCQuestion = Question.extend({
     },
     subdeserialize : function(data) {
 	this.options = data.options;
-	if (typeof this.options_holder !== undefined) {
+	if (this.options_holder !== undefined) {
 	    for (var i = 0; i < this.options.length; i++) {
 		this.addOption(this.options[i]);
 	    }
 	} else {
-	    
+	    this.subupdateDisplay();
 	}
     }
 });
@@ -284,6 +288,10 @@ var ScaleQuestion = Question.extend({
 	this.display_subtemplate = $('#scalequestion-display-template').html();
 	this.edit_subtemplate = $('#scalequestion-template').html();
 	this.group_name = _.uniqueId("slidervals_");
+	this.scalecont = '';
+	this.scalemin = 0;
+	this.scalemax = 0;
+	this.scalestep = 0;
     },
     subrenderEdit : function() {
 	var self = this;
@@ -304,12 +312,19 @@ var ScaleQuestion = Question.extend({
     },
     subrenderDisplay : function(el) {
 	this.sub_el_display = $(el);
-	this.onChange();
+	this.subupdateDisplay();
     },
     onChange : function() {
+	this.scalecont = this.scalecont_option.val();
+	this.scalemin = parseFloat(this.scalemin_option.val());
+	this.scalemax = parseFloat(this.scalemax_option.val());
+	this.scalestep = parseFloat(this.scalestep_option.val());
+	this.subupdateDisplay();
+    },
+    subupdateDisplay : function() {
 	var slider_options = this.objectifyOptions();
 	this.sub_el_display.html(_.template(this.display_subtemplate, slider_options));
-	if (slider_options.scalecont === 'slider') this.drawSlider(slider_options);
+	if (slider_options.scalecont === 'slider') this.drawSlider(slider_options);	
     },
     drawSlider : function(options) {
 	var slider_amt_display_el = this.sub_el_display.find('.slider-amt:first');
@@ -325,20 +340,27 @@ var ScaleQuestion = Question.extend({
     },
     objectifyOptions : function() {
 	return {
-	    scalecont : this.scalecont_option.val(),
-	    scalemin : parseFloat(this.scalemin_option.val()),
-	    scalemax : parseFloat(this.scalemax_option.val()),
-	    scalestep : parseFloat(this.scalestep_option.val()),
+	    scalecont : this.scalecont,
+	    scalemin : this.scalemin,
+	    scalemax : this.scalemax,
+	    scalestep : this.scalestep,
 	    group_name : this.group_name
 	};
     },
     subserialize : function() {
 	return {
-	    scalecont : this.scalecont_option.val(),
-	    scalemin : parseFloat(this.scalemin_option.val()),
-	    scalemax : parseFloat(this.scalemax_option.val()),
-	    scalestep : parseFloat(this.scalestep_option.val())
+	    scalecont : this.scalecont,
+	    scalemin : this.scalemin,
+	    scalemax : this.scalemax,
+	    scalestep : this.scalestep
 	};
+    },
+    subdeserialize : function(data) {
+	this.scalecont = data.scalecont;
+	this.scalemin = data.scalemin;
+	this.scalemax = data.scalemax;
+	this.scalestep = data.scalestep;
+	this.subupdateDisplay();
     }
 });
 
@@ -348,6 +370,8 @@ var GridQuestion = Question.extend({
 	this.edit_subtempate = $('#gridquestion-template').html();
 	this.optioninput = '<input placeholder="option text" name="option-text"><br>';
 	this.group_name =  _.uniqueId("gridchoice_");
+	this.rowoptions = [];
+	this.coloptions = [];
     },
     subrenderEdit : function() {
 	var self = this;
@@ -369,11 +393,6 @@ var GridQuestion = Question.extend({
     subrenderDisplay : function(el) {
 	this.sub_el_display = $(el);
 	this.onOptionChange();
-    },
-    onOptionChange : function() {
-	var self = this;
-	if (this.sub_el_display !== undefined)
-	    this.sub_el_display.html(_.template(self.display_subtemplate, self.objectifyOptions()));
     },
     addRowOption : function() {
 	var self = this;
@@ -415,38 +434,41 @@ var GridQuestion = Question.extend({
 	this.coloptions_holder.append(new_option_holder);
 	this.onOptionChange();
     },
-    objectifyOptions : function() {
-	var row_options = [],
-	    col_options = [];
+    onOptionChange : function() {
+	var self = this;
+	this.rowoptions = [];
+	this.coloptions = [];
 	if (this.rowoptions_holder !== undefined && this.coloptions_holder !== undefined) {
 	    this.rowoptions_holder.find('input[name="option-text"]').each(function() {
-		row_options.push($(this).val());
+		self.rowoptions.push($(this).val());
 	    });
 	    this.coloptions_holder.find('input[name="option-text"]').each(function() {
-		col_options.push($(this).val());
+		self.coloptions.push($(this).val());
 	    });
 	}
+	this.subupdateDisplay();
+    },
+    subupdateDisplay : function() {
+	if (this.sub_el_display !== undefined)
+	    this.sub_el_display.html(_.template(this.display_subtemplate, this.objectifyOptions()));
+    },
+    objectifyOptions : function() {
 	return {
-	    rowoptions : row_options, 
-	    coloptions : col_options,
+	    rowoptions : this.rowoptions, 
+	    coloptions : this.coloptions,
 	    group_name : this.group_name
 	};
     },
     subserialize : function() {
-	var row_options = [],
-	    col_options = [];
-	if (this.rowoptions_holder !== undefined && this.coloptions_holder !== undefined) {
-	    this.rowoptions_holder.find('input[name="option-text"]').each(function() {
-		row_options.push($(this).val());
-	    });
-	    this.coloptions_holder.find('input[name="option-text"]').each(function() {
-		col_options.push($(this).val());
-	    });
-	}
 	return {
-	    rowoptions : row_options, 
-	    coloptions : col_options
+	    rowoptions : this.rowoptions, 
+	    coloptions : this.coloptions
 	};
+    },
+    subdeserialize : function(data) {
+	this.rowoptions = data.rowoptions;
+	this.coloptions = data.coloptions;
+	this.subupdateDisplay();
     }
 });
 
@@ -479,5 +501,8 @@ var TextQuestion = Question.extend({
     },
     subserialize : function() {
 	return this.objectifyOptions();
+    },
+    subdeserialize : function() {
+	throw "DIDNT DO TEXT YET!!!";
     }
 });

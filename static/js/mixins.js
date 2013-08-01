@@ -60,8 +60,12 @@ var Model = SuperModel.extend({
     },
     updateDisplay : function() {
 	var disp_obj = this.objectifyDisplay();
-	for (var key in disp_obj) {
-	    this.el_display_props.filter('[data-prop="'+key+'"]').html(disp_obj[key]);
+	try {
+	    for (var key in disp_obj) {
+		this.el_display_props.filter('[data-prop="'+key+'"]').html(disp_obj[key]);
+	    }
+	} catch (e) {
+	    console.log(e.stack);
 	}
     }
 });

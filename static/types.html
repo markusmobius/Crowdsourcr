@@ -170,7 +170,7 @@
     <select name="question-type">
       <option value="radio" selected="selected">Radio</option>
       <option value="checkbox">Checkbox</option>
-      <option value="dropdown">Dropdown</option>
+      <option value="select">Dropdown</option>
       <option value="scale">Scale</option>
       <option value="grid">Grid</option>
       <option value="text">Text</option>
@@ -197,7 +197,7 @@
   </script>
   
   <script type="text/template" id="mcquestion-display-template">
-    <% if (question_type === 'dropdown') { %>
+    <% if (question_type === 'select') { %>
     <select>
       <% _.each(options, function(text) { %> 
       <option><%= text %></option> 
