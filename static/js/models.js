@@ -18,32 +18,35 @@ var CType = Model.extend({
 	this.questionlist = new QuestionList();
 	this.edit_template = $('#ctype-template').html();
 	this.display_template = $('#ctype-display-template').html();
-	this.el.append(this.renderEdit()).append(this.renderDisplay());
-	this.type_name = '';
+//	this.el.append(this.renderEdit()).append(this.renderDisplay());
+	this.type_name = params.type_name || '';
     },
-    renderEdit : function() {
+    renderEdit : function(el) {
 	var self = this;
-	this.el_edit = $(document.createElement('div')).html(self.edit_template);
-	this.el_edit.find('.question-container:first').append(this.questionlist.renderEdit());
-	this.el_edit.find('input[name="type-name"]').keyup(function() {
+	this.el_edit = $(el);
+	var sub_edit = $(document.createElement('div')).html(self.edit_template);
+	sub_edit.find('.question-container:first').append(this.questionlist.renderEdit());
+	sub_edit.find('input[name="type-name"]').keyup(function() {
 	    self.onNameEdit.call(self, $(this).val());
 	});
-	this.el_edit.find('button.create-new-type').click(function(evt) {
+	sub_edit.find('button.create-new-type').click(function(evt) {
 	    evt.preventDefault();
 	    self.onCreate(self.serialize());
 	});
-	return this.el_edit;
+	this.el_edit.append(sub_edit);
     },
-    renderDisplay : function() {
+    renderDisplay : function(el) {
 	var self = this;
+	this.el_display = $(el);
 	if (this.el_display !== undefined) {
 	    throw "Error: CType renderDisplay called multiple times!!";
 	}
-	this.el_display = $(document.createElement('div'));
-	this.el_display.html(self.display_template);
-	this.el_display_props = this.el_display.find('[data-prop]');
-	this.questionlist.renderDisplay(this.el_display.find('div.question-display-container:first'));
-	return this.el_display;
+	var sub_disp = $(document.createElement('div'));
+	sub_disp.html(self.display_template);
+	this.el_display_props = sub_disp.find('[data-prop]');
+	this.questionlist.renderDisplay(sub_disp.find('div.question-display-container:first'));
+	this.el_display.append(sub_disp);
+	this.updateDisplay();
     },
     objectifyDisplay : function() {
 	return {
@@ -51,7 +54,7 @@ var CType = Model.extend({
 	};
     },
     onNameEdit : function(val) {
-	this.type_name = val;
+	if (val !== undefined) this.type_name = val;
 	this.updateDisplay();
     },
     serialize : function() {
@@ -59,6 +62,13 @@ var CType = Model.extend({
 	    name : this.type_name,
 	    questions : this.questionlist.serialize()
 	};
+    },
+    deserialize : function(data) {
+	if (typeof data !== 'object') throw "Error: CType.deserialize must be passed an object argument.";
+	if (typeof data.name !== 'string') throw "Error: CType.deserialize must be passed a string name.";
+	if (!data.questions instanceof Array) throw "Error: CType.deserialize must be passed an array questions.";
+	this.type_name = data.name;
+	this.questionlist.deserialize(data.questions);
     }
 });
 
@@ -102,6 +112,18 @@ var QuestionList = Model.extend({
 	    all_q_serialization.push(this.questions[i].serialize());
 	}
 	return all_q_serialization;
+    },
+    deserialize : function(data) {
+	if (this.question_holder !== undefined) this.question_holder.empty();
+	if (this.el_display !== undefined) this.el_display.empty();
+	this.questions = [];
+	for (var i = 0; i < data.length; i++) {
+	    var new_question = new Question(data[i].type);
+	    new_question.deserialize(data[i]);
+	    this.questions.push(new_question);
+	    if (this.question_holder !== undefined) this.question_holder.append(new_question.renderEdit());
+	    if (this.el_display !== undefined) this.el_display.append(new_question.renderDisplay());
+	}
     }
 });
 
@@ -165,6 +187,10 @@ var Question = Model.extend({
 	    type : this.question_type,
 	    text : this.question_text
 	};
+    },
+    deserialize : function(data) {
+	this.question_text = data.text;
+	this.subdeserialize(data.content);
     }
 });
 
@@ -191,15 +217,26 @@ var MCQuestion = Question.extend({
 	this.onOptionChange();
     },
     onOptionChange : function() {
-	if (this.sub_el_display !== undefined)
-	    this.sub_el_display.html(_.template(this.display_subtemplate, this.objectifyOptions()));
+	var self = this;
+	this.options = [];
+	if (this.sub_el_edit !== undefined) {
+	    this.sub_el_edit.find('input[name="option-text"]').each(function() {
+		self.options.push($(this).val());
+	    });
+	}
+	this.updateDisplay();
     },
-    addOption : function() {
+    updateDisplay : function() {
+	if (this.sub_el_display !== undefined)
+	    this.sub_el_display.html(_.template(this.display_subtemplate, this.objectifyOptions()));	
+    },
+    addOption : function(val) {
 	var self = this;
 	var new_option_holder = $(document.createElement('div'));
 	var new_option = $(document.createElement('input'))
 	    .attr('placeholder', 'option text')
 	    .attr('name', 'option-text');
+	if (typeof val === 'string') new_option.val(val);
 	new_option.keyup(function() {
 	    self.onOptionChange();
 	});
@@ -215,14 +252,8 @@ var MCQuestion = Question.extend({
 	this.onOptionChange();
     },
     objectifyOptions : function() {
-	var all_options = [];
-	if (this.sub_el_edit !== undefined) {
-	    this.sub_el_edit.find('input[name="option-text"]').each(function() {
-		all_options.push($(this).val());
-	    });
-	}
 	return {
-	    options : all_options, 
+	    options : this.options, 
 	    question_type: this.question_type,
 	    group_name : this.group_name
 	};
@@ -235,6 +266,16 @@ var MCQuestion = Question.extend({
 	    });
 	}
 	return { options : all_options };
+    },
+    subdeserialize : function(data) {
+	this.options = data.options;
+	if (typeof this.options_holder !== undefined) {
+	    for (var i = 0; i < this.options.length; i++) {
+		this.addOption(this.options[i]);
+	    }
+	} else {
+	    
+	}
     }
 });
 

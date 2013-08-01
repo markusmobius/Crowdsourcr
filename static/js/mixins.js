@@ -53,7 +53,7 @@ var Model = SuperModel.extend({
 	if (typeof callback !== 'function') throw new Exception("Callback should be a function");
 	this.event_listeners = this.event_listeners || {};
 	if (!_.has(this.event_listeners, event_name)) {
-	    this.event_listeners[event_name] = [callback]
+	    this.event_listeners[event_name] = [callback];
 	} else {
 	    this.event_listeners[event_name].push(callback);
 	}
