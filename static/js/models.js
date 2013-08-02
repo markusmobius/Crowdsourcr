@@ -26,8 +26,8 @@ var CType = Model.extend({
 	this.el_edit = $(el);
 	var sub_edit = $(document.createElement('div')).html(self.edit_template);
 	sub_edit.find('.question-container:first').append(this.questionlist.renderEdit());
-	sub_edit.find('input[name="type-name"]').keyup(function() {
-	    self.onNameEdit.call(self, $(this).val());
+	sub_edit.find('input[name="type-name"]').val(this.type_name).keyup(function() {
+	    self.onNameEdit($(this).val());
 	});
 	sub_edit.find('button.create-new-type').click(function(evt) {
 	    evt.preventDefault();
@@ -86,11 +86,10 @@ var QuestionList = Model.extend({
 	}
 	var self = this;
 	this.el_edit = $(document.createElement('div')).html(self.edit_template);
-	this.new_q_type = this.el_edit.find('select[name="question-type"]');
 	this.question_holder = this.el_edit.find('div.all-questions');
-	this.el_edit.find('button.add-another-question:first').click(function (evt) {
+	this.el_edit.find('.add-another-question a').click(function (evt) {
 	    evt.preventDefault();
-	    self.add.call(self);
+	    self.add($(this).attr('data-question-type'));
 	});
 	return this.el_edit;
     },
@@ -101,8 +100,16 @@ var QuestionList = Model.extend({
 	this.el_display = $(el);
 	this.el_display.html(this.display_template);
     },
-    add : function() {
-	var new_question = new Question(this.new_q_type.val());
+    add : function(q_type) {
+	var self = this;
+	var new_question = new Question(q_type);
+	new_question.on('destroy', function(question) {
+	    var live_questions = [];
+	    for (var i = 0; i < self.questions.length; i++) {
+		if (self.questions[i] !== question) live_questions.push(self.questions[i]);
+	    }
+	    self.questions = live_questions;
+	});
 	this.questions.push(new_question);
 	this.question_holder.append(new_question.renderEdit());
 	this.el_display.append(new_question.renderDisplay());
@@ -165,10 +172,20 @@ var Question = Model.extend({
 	this.el_edit = $(document.createElement('div'))
 	    .html(self.edit_template)
 	    .append(self.subrenderEdit());
-	this.el_edit.find('input[name="question-text"]').keyup(function(evt) {
+	this.el_edit.find('textarea[name="question-text"]')
+	    .keyup(function(evt) {
+		evt.preventDefault();
+		self.onQuestionChange($(this).val());
+	    })
+	    .textareaAutoExpand();
+	this.el_edit.find('a.remove-question:first').click(function(evt) {
 	    evt.preventDefault();
-	    self.onQuestionChange($(this).val());
+	    self.el_display.remove();
+	    self.el_edit.remove();
+	    self.trigger('destroy', self);
 	});
+	this.el_edit.find('.question-header-info').html(self.question_type);
+	this.el_edit.append('<div><hr></div>');
 	return this.el_edit;
     },
     renderDisplay : function() {
@@ -202,7 +219,7 @@ var MCQuestion = Question.extend({
     constructor : function() {
 	this.display_subtemplate = $('#mcquestion-display-template').html();
 	this.edit_subtemplate = $('#mcquestion-template').html();
-	this.optioninput = '<input placeholder="option text" name="option-text"><br>';
+	this.optioninput = $('#mcquestion-option-template').html();
 	this.group_name = _.uniqueId("mulletchoice_");
     },
     subrenderEdit : function() {
@@ -236,22 +253,21 @@ var MCQuestion = Question.extend({
     },
     addOption : function(val) {
 	var self = this;
-	var new_option_holder = $(document.createElement('div'));
-	var new_option = $(document.createElement('input'))
-	    .attr('placeholder', 'option text')
-	    .attr('name', 'option-text');
-	if (typeof val === 'string') new_option.val(val);
-	new_option.keyup(function() {
+	var new_option_holder = $(document.createElement('div')).addClass('option-holder');
+	var new_option = $(this.optioninput);
+	var new_option_input = new_option.find('input:first');
+	if (typeof val === 'string') new_option_input.val(val);
+	new_option_input.keyup(function() {
 	    self.onOptionChange();
 	});
-	var new_option_close = $(document.createElement('button'));
-	new_option_close.html('&times;')
+	var new_option_close = new_option.find('button.remove-option:first');
+	new_option_close
 	    .click(function(evt) {
 		evt.preventDefault();
-		$(this).parent().remove();
+		new_option_holder.remove();
 		self.onOptionChange();
 	    });
-	new_option_holder.append(new_option).append(new_option_close);
+	new_option_holder.append(new_option);
 	this.options_holder.append(new_option_holder);
 	this.onOptionChange();
     },
@@ -299,15 +315,27 @@ var ScaleQuestion = Question.extend({
 	this.scalecont_option = this.sub_el_edit.find('select[name=scalecont]').change(function() {
 	    self.onChange();
 	});
-	this.scalemin_option = this.sub_el_edit.find('input[name=scalemin]').keyup(function() {
-	    self.onChange();
-	});
-	this.scalemax_option = this.sub_el_edit.find('input[name=scalemax]').keyup(function() {
-	    self.onChange();
-	});
-	this.scalestep_option = this.sub_el_edit.find('input[name=scalestep]').keyup(function() {
-	    self.onChange();
-	});
+	this.scalemin_option = this.sub_el_edit.find('input[name=scalemin]')
+	    .keyup(function() {
+		self.onChange();
+	    })
+	    .change(function() {
+		self.onChange();
+	    });
+	this.scalemax_option = this.sub_el_edit.find('input[name=scalemax]')
+	    .keyup(function() {
+		self.onChange();
+	    })
+	    .change(function() {
+		self.onChange();
+	    });
+	this.scalestep_option = this.sub_el_edit.find('input[name=scalestep]')
+	    .keyup(function() {
+		self.onChange();
+	    })
+	    .change(function() {
+		self.onChange();
+	    });
 	return this.sub_el_edit;
     },
     subrenderDisplay : function(el) {
@@ -368,7 +396,7 @@ var GridQuestion = Question.extend({
     constructor : function() {
 	this.display_subtemplate = $('#gridquestion-display-template').html();
 	this.edit_subtempate = $('#gridquestion-template').html();
-	this.optioninput = '<input placeholder="option text" name="option-text"><br>';
+	this.optioninput = $('#gridquestion-option-template').html();
 	this.group_name =  _.uniqueId("gridchoice_");
 	this.rowoptions = [];
 	this.coloptions = [];
@@ -394,44 +422,30 @@ var GridQuestion = Question.extend({
 	this.sub_el_display = $(el);
 	this.onOptionChange();
     },
-    addRowOption : function() {
+    generateOption : function() {
 	var self = this;
-	var new_option_holder = $(document.createElement('div'));
-	var new_option = $(document.createElement('input'))
-	    .attr('placeholder', 'option text')
-	    .attr('name', 'option-text');
-	new_option.keyup(function() {
+	var new_option_holder = $(document.createElement('div')).addClass('option-holder');
+	var new_option = $(self.optioninput);
+	var new_option_input = new_option.find('input:first');
+	new_option_input.keyup(function() {
 	    self.onOptionChange();
 	});
-	var new_option_close = $(document.createElement('button'));
-	new_option_close.html('&times;')
+	var new_option_close = new_option.find('button.remove-option:first');
+	new_option_close
 	    .click(function(evt) {
 		evt.preventDefault();
-		$(this).parent().remove();
+		new_option_holder.remove();
 		self.onOptionChange();
 	    });
-	new_option_holder.append(new_option).append(new_option_close);
-	this.rowoptions_holder.append(new_option_holder);
+	new_option_holder.append(new_option);
+	return new_option_holder;
+    },
+    addRowOption : function() {
+	this.rowoptions_holder.append(this.generateOption());
 	this.onOptionChange();
     },
     addColOption : function() {
-	var self = this;
-	var new_option_holder = $(document.createElement('div'));
-	var new_option = $(document.createElement('input'))
-	    .attr('placeholder', 'option text')
-	    .attr('name', 'option-text');
-	new_option.keyup(function() {
-	    self.onOptionChange();
-	});
-	var new_option_close = $(document.createElement('button'));
-	new_option_close.html('&times;')
-	    .click(function(evt) {
-		evt.preventDefault();
-		$(this).parent().remove();
-		self.onOptionChange();
-	    });
-	new_option_holder.append(new_option).append(new_option_close);
-	this.coloptions_holder.append(new_option_holder);
+	this.coloptions_holder.append(this.generateOption());
 	this.onOptionChange();
     },
     onOptionChange : function() {

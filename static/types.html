@@ -6,6 +6,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
   <script src="http://underscorejs.org/underscore-min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+  <script src="/static/js/autoexpand.js"></script>
   <script src="/static/js/mixins.js"></script>
   <script src="/static/js/models.js"></script>
   <script src="/static/js/types.js"></script>
@@ -117,6 +119,67 @@
     margin: 10px auto;
     text-align: center;
     }
+
+    div.splitscreen {
+    margin: 5%;
+    width: 40%;
+    display: inline-block;
+    float: left;
+    }
+    
+    div.splitscreen.smaller {
+    width: 30%;
+    }
+
+    div.splitscreen.bigger {
+    width: 50%;
+    }
+
+    .question-holder-header {
+    position: relative; 
+    display: block; 
+    height: 40px;
+    }
+
+    .question-header-info {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    height: 20px;
+    line-height: 20px;
+    font-size: 20px;
+    }
+
+    .remove-question, .remove-question:hover {
+    text-decoration: none; 
+    color: black; 
+    position: absolute; 
+    margin: 0; 
+    padding: 0; 
+    top: 0; 
+    right: 0; 
+    display: block; 
+    height: 20px; 
+    width: 20px; 
+    font-size: 20px; 
+    line-height: 20px; 
+    text-align: center;
+    }
+
+    a.remove-question:hover {
+    background-color: #EEEEEE;
+    }
+
+    div.option-holder {
+    margin: 5px 0;
+    }
+
+    textarea.question-text-area {
+    resize: none;
+    margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -133,12 +196,10 @@
           <button class="btn btn-default" type="button">Create New Type</button>
 	</span>
       </div>
-      <!--<div><input class="inner-hor-center" placeholder="Enter a type name"/></div>
-      <div><button class="btn btn-default inner-hor-center">Create new type!</button></div>-->
     </div>
     <div id="create-new-type" style="display:none;">
-      <div class="new-type-edit"></div>
-      <div class="new-type-display"></div>
+      <div class="splitscreen smaller new-type-edit"></div>
+      <div class="splitscreen bigger new-type-display"></div>
     </div>
     <div id="view-type" style="display:none;"></div>
   </div>
@@ -152,30 +213,40 @@
 
 
   <script type="text/template" id="ctype-template">
-    <form>
-      <p> CType </p>
-      <input name="type-name" placeholder="type name"/>
+    <form class="form-horizontal">
+      <div class="form-group">
+	<label class="col-lg-2 control-label">Type</label>
+	<div class="col-lg-10">
+	  <input type="text" class="form-control" placeholder="Type name" name="type-name">
+	</div>
+      </div>
+      <div><hr></div>
       <div class="question-container"></div>
-      <button class="create-new-type">Create!</button>
+      <div><hr></div>
+      <button class="create-new-type btn btn-success">Create!</button>
     </form>
   </script>
   
   <script type="text/template" id="ctype-display-template">
-    <h4 data-prop="name">&lt;Type Name&gt;</h4>
+<!--    <h4 data-prop="name">&lt;Type Name&gt;</h4> -->
     <div class="question-display-container"></div>
   </script>
   
   <script type="text/template" id="questionlist-template">
     <div class="all-questions"></div>
-    <select name="question-type">
-      <option value="radio" selected="selected">Radio</option>
-      <option value="checkbox">Checkbox</option>
-      <option value="select">Dropdown</option>
-      <option value="scale">Scale</option>
-      <option value="grid">Grid</option>
-      <option value="text">Text</option>
-    </select>
-    <button class="add-another-question">Add another question</button><br>      
+    <div class="btn-group">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+	Add another question<span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu add-another-question">
+	<li><a href="#" data-question-type="radio">Radio</a></li>
+	<li><a href="#" data-question-type="checkbox">Checkbox</a></li>
+	<li><a href="#" data-question-type="select">Dropdown</a></li>
+	<li><a href="#" data-question-type="scale">Scale</a></li>
+	<li><a href="#" data-question-type="grid">Grid</a></li>
+	<li><a href="#" data-question-type="text">Text</a></li>
+      </ul>
+    </div>
   </script>
   
   <script type="text/template" id="questionlist-display-template">
@@ -183,7 +254,11 @@
   </script>
   
   <script type="text/template" id="question-template">
-    <input placeholder="question text" name="question-text"/><br>
+    <div class="question-holder-header">
+      <span class="question-header-info"></span>
+      <a href="#" class="remove-question">&times;</a>
+    </div>
+      <textarea placeholder="Question text" name="question-text" class="form-control question-text-area"></textarea>
   </script>
   
   <script type="text/template" id="question-display-template">
@@ -193,7 +268,16 @@
   
   <script type="text/template" id="mcquestion-template">
     <div class="options-holder"></div>
-    <button class="add-option">Add another option</button>
+    <button class="add-option btn btn-default">Add another option</button>
+  </script>
+
+  <script type="text/template" id="mcquestion-option-template">
+    <div class="input-group">
+      <input type="text" class="form-control" name="option-text" placeholder="Option text">
+      <span class="input-group-btn">
+        <button class="btn btn-default remove-option" type="button">&times;</button>
+      </span>
+    </div>
   </script>
   
   <script type="text/template" id="mcquestion-display-template">
@@ -210,13 +294,35 @@
   </script>
   
   <script type="text/template" id="scalequestion-template">
-    <select name="scalecont">
-      <option value="buttons" selected="selected"> Buttons </option>
-      <option value="slider"> Slider </option>
-    </select>
-    <input type="text" name="scalemin" placeholder="minimum value" /> Min <br>
-    <input type="text" name="scalemax" placeholder="maximum value" /> Max <br>
-    <input type="text" name="scalestep" placeholder="step size" /> Step size <br>
+    <form class="form-horizontal">
+      <div class="form-group">
+	<label class="col-lg-2 control-label">Layout</label>
+	<div class="col-lg-10">
+	  <select class="form-control" name="scalecont">
+	    <option value="buttons" selected="selected"> Buttons </option>
+	    <option value="slider"> Slider </option>
+	  </select>
+	</div>
+      </div>
+      <div class="form-group">
+	<label class="col-lg-2 control-label">Min</label>
+	<div class="col-lg-10">
+	  <input type="number" class="form-control" placeholder="Minimum value" name="scalemin">
+	</div>
+      </div>
+      <div class="form-group">
+	<label class="col-lg-2 control-label">Max</label>
+	<div class="col-lg-10">
+	  <input type="number" class="form-control" placeholder="Maximum value" name="scalemax">
+	</div>
+      </div>
+      <div class="form-group">
+	<label class="col-lg-2 control-label">Step</label>
+	<div class="col-lg-10">
+	  <input type="number" class="form-control" placeholder="Step size" name="scalestep">
+	</div>
+      </div>
+    </form>
   </script>
   
   <script type="text/template" id="scalequestion-display-template">
@@ -237,10 +343,22 @@
   </script>
   
   <script type="text/template" id="gridquestion-template">
+    <p>Row options</p>
     <div class="rowoptions-holder"></div>
-    <button class="add-rowoption">Add another row</button>
+    <button class="add-rowoption btn btn-default">Add another row</button>
+    <br><br>
+    <p>Column options</p>
     <div class="columnoptions-holder"></div>
-    <button class="add-columnoption">Add another column</button>
+    <button class="add-columnoption btn btn-default">Add another column</button>
+  </script>
+
+  <script type="text/template" id="gridquestion-option-template">
+    <div class="input-group">
+      <input type="text" class="form-control" name="option-text" placeholder="Option text">
+      <span class="input-group-btn">
+        <button class="btn btn-default remove-option" type="button">&times;</button>
+      </span>
+    </div>
   </script>
   
   <script type="text/template" id="gridquestion-display-template">
@@ -254,12 +372,19 @@
       <% }); %>
     </table>
   </script>
-  
+
   <script type="text/template" id="textquestion-template">
-    <select name="textlength">
-      <option value="short" selected="selected"> Short </option>
-      <option value="long"> Long </option>
-    </select>
+    <form class="form-horizontal">
+      <div class="form-group">
+	<label class="col-lg-2 control-label">Length</label>
+	<div class="col-lg-10">
+	  <select class="form-control" name="textlength">
+	    <option value="short" selected="selected"> Short </option>
+	    <option value="long"> Long </option>
+	  </select>
+	</div>
+      </div>
+    </form>
   </script>
   
   <script type="text/template" id="textquestion-display-template">

@@ -37,12 +37,12 @@ var Model = SuperModel.extend({
 	if (typeof this.event_listeners === undefined) return;
 	if (!_.has(this.event_listeners, event_name)) return;
 	
-	for (var i = 0; i < this.event_handlers[event_name].length; i++) {
+	for (var i = 0; i < this.event_listeners[event_name].length; i++) {
 	    try {
-		this.event_handlers[event_name](args);
+		this.event_listeners[event_name][i](args);
 	    } catch (x) {
 		if (x === "removeHandler") {
-		    this.event_handlers[event_name].splice(i, 1); // really works
+		    this.event_listeners[event_name].splice(i, 1); // really works
 		} else {
 		    throw x;
 		}

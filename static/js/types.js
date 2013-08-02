@@ -31,6 +31,11 @@ var TypesPage = Model.extend({
 	    evt.preventDefault();
 	    self.initializeCreateForm();
 	});
+	this.el_all_type_view.show();
+	this.el_begin_type.show();
+	this.el_create_type.hide();
+	this.el_one_type_view.hide();
+
     },
     retrieveTypeNames : function(callback) {
 	$.get('/types/all', function(data) { callback(data); });
@@ -54,13 +59,19 @@ var TypesPage = Model.extend({
 	var self = this;
 	var name = this.el_begin_type.find('input:first').val();
 	this.el_begin_type.find('input:first').val('');
+	this.el_one_type_view.empty();
 	var ctype = new CType(undefined, {});
 	ctype.renderDisplay(this.el_one_type_view);
 	ctype.deserialize(data);
+	var back_button = $(document.createElement('button')).addClass('btn btn-default').html('Back');
+	back_button.click(function(evt) {
+	    evt.preventDefault();
+	    self.initializePage();
+	});
+	this.el_one_type_view.append(back_button);
 	this.el_all_type_view.hide();
 	this.el_begin_type.hide();
 	this.el_create_type.hide();
 	this.el_one_type_view.show();
-
     }
 });
