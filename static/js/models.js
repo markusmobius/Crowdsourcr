@@ -20,6 +20,8 @@ var CType = Model.extend({
 	this.display_template = $('#ctype-display-template').html();
 //	this.el.append(this.renderEdit()).append(this.renderDisplay());
 	this.type_name = params.type_name || '';
+	this.type_title = '<Title>';
+	this.type_description = '';
     },
     renderEdit : function(el) {
 	var self = this;
@@ -27,13 +29,17 @@ var CType = Model.extend({
 	var sub_edit = $(document.createElement('div')).html(self.edit_template);
 	sub_edit.find('.question-container:first').append(this.questionlist.renderEdit());
 	sub_edit.find('input[name="type-name"]').val(this.type_name).keyup(function() {
-	    self.onNameEdit($(this).val());
+	    self.onEdit();
 	});
 	sub_edit.find('button.create-new-type').click(function(evt) {
 	    evt.preventDefault();
 	    self.onCreate(self.serialize());
 	});
+	sub_edit.find('textarea').textareaAutoExpand().keyup(function() {
+	    self.onEdit();
+	});
 	this.el_edit.append(sub_edit);
+	this.updateDisplay();
     },
     renderDisplay : function(el) {
 	var self = this;
@@ -50,16 +56,24 @@ var CType = Model.extend({
     },
     objectifyDisplay : function() {
 	return {
-	    name : this.type_name
+	    name : this.type_name,
+	    title : this.type_title,
+	    description : this.type_description
 	};
     },
-    onNameEdit : function(val) {
-	if (val !== undefined) this.type_name = val;
+    onEdit : function() {
+	if (this.el_edit !== undefined) {
+	    this.type_name = this.el_edit.find('[name="type-name"]:first').val();
+	    this.type_title = this.el_edit.find('[name="type-title"]:first').val();
+	    this.type_description = this.el_edit.find('[name="type-description"]:first').val();
+	}
 	this.updateDisplay();
     },
     serialize : function() {
 	return {
 	    name : this.type_name,
+	    title : this.type_title,
+	    description: this.type_description,
 	    questions : this.questionlist.serialize()
 	};
     },

@@ -46,6 +46,7 @@ var TypesPage = Model.extend({
     initializeCreateForm : function() {
 	var self = this;
 	var name = this.el_begin_type.find('input:first').val();
+	this.el_create_type.children().empty();
 	this.el_begin_type.find('input:first').val('');
 	var ctype = new CType(undefined, {onCreate : self.createNewType, type_name : name});
 	ctype.renderEdit(this.el_create_type.find('.new-type-edit:first'));

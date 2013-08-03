@@ -36,9 +36,10 @@ class Application(tornado.web.Application):
             (r'/types/new', handlers.CTypeCreateHandler),
             (r'/types/all', handlers.CTypeAllHandler),
             (r'/types/view/(.*)', handlers.CTypeViewHandler),
-#            (r'/gettypeinfo/([^/]*)/?', handlers.CTypeViewHandler),
-#            (r'/types/([^/]*)/?', handlers.TypeViewStaticHandler),
-#            (r'/createtype/?', handlers.CTypeCreateHandler),
+            (r'/admin/', handlers.GoogleLoginHandler),
+            (r'/admin/all', handlers.AdminAllHandler),
+            (r'/admin/new', handlers.AdminCreateHandler),
+            (r'/superadmin/()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='superadmin.html')),
         ]
         tornado.web.Application.__init__(self, app_handlers, **settings)
  
