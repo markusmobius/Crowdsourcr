@@ -100,13 +100,13 @@ class GoogleLoginHandler(BaseHandler,
    @tornado.gen.coroutine
    def get(self):
        if self.admin_controller.get_by_email(self.get_secure_cookie('admin_email', '')):
-           self.redirect('/types/')
+           self.redirect('/admin/')
        elif self.get_argument("openid.mode", None):
            try:
                user = yield self.get_authenticated_user()
                # {'first_name': u'Sam', 'claimed_id': u'https://www.google.com/accounts/o8/id?id=AItOawkwMPsQnRxJcwHuqpxj5CaCSZ9mhkKMkPQ', 'name': u'Sam Grondahl', 'locale': u'en', 'last_name': u'Grondahl', 'email': u'samgrondahl@gmail.com'}
                self.set_secure_cookie('admin_email', user['email'])
-               self.write('authed!')
+               self.redirect('/admin/')
            except tornado.auth.AuthError as e:
                self.write('you did not auth!')
            except Exception as e:

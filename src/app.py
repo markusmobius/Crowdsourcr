@@ -14,7 +14,7 @@ import os
  
 from tornado.options import define, options
  
-define('port', default=8888, help="run on the given port", type=int)
+define('port', default=8000, help="run on the given port", type=int)
 
 def random256() :
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
@@ -32,14 +32,15 @@ class Application(tornado.web.Application):
 
         app_handlers = [
             (r'/', handlers.MainHandler),
-            (r'/types/()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='types.html')),
-            (r'/types/new', handlers.CTypeCreateHandler),
-            (r'/types/all', handlers.CTypeAllHandler),
+            (r'/types/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='types.html')),
+            (r'/types/new/?', handlers.CTypeCreateHandler),
+            (r'/types/all/?', handlers.CTypeAllHandler),
             (r'/types/view/(.*)', handlers.CTypeViewHandler),
-            (r'/admin/', handlers.GoogleLoginHandler),
-            (r'/admin/all', handlers.AdminAllHandler),
-            (r'/admin/new', handlers.AdminCreateHandler),
-            (r'/superadmin/()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='superadmin.html')),
+            (r'/admin/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='admin.html')),
+            (r'/admin/login/?', handlers.GoogleLoginHandler),
+            (r'/admin/all/?', handlers.AdminAllHandler),
+            (r'/admin/new/?', handlers.AdminCreateHandler),
+            (r'/superadmin/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='superadmin.html')),
         ]
         tornado.web.Application.__init__(self, app_handlers, **settings)
  
