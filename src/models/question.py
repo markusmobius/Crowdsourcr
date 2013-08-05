@@ -3,10 +3,10 @@ from model import Model
 class QTypeRegistry(type) :
     def __init__(cls, name, bases, dct) :
         if hasattr(cls, "typeName") :
-            QType.qtype_subclasses[cls.typeName] = cls
+            Question.qtype_subclasses[cls.typeName] = cls
         super(QTypeRegistry, cls).__init__(name, bases, dct)
 
-class QType(object) :
+class Question(object) :
     __metaclass__ = QTypeRegistry
     qtype_subclasses = {}
     def __init__(self, text):
@@ -20,9 +20,9 @@ class QType(object) :
                 "content" : self.to_dict()}
 
 
-class AbstractMultiQType(QType) :
+class AbstractMultiQType(Question) :
     def __init__(self, text, options) :
-        QType.__init__(self, text)
+        Question.__init__(self, text)
         self.options = options
     @classmethod
     def from_dict(cls, text, d) :
@@ -37,10 +37,10 @@ class CheckboxQType(AbstractMultiQType) :
 class SelectQType(AbstractMultiQType) :
     typeName = "select"
 
-class ScaleQType(QType) :
+class ScaleQType(Question) :
     typeName = "scale"
     def __init__(self, text, scalecont, scalemin, scalemax, scalestep):
-        QType.__init__(self, text)
+        Question.__init__(self, text)
         self.scalecont = scalecont
         self.scalemin = scalemin
         self.scalemax = scalemax
@@ -58,10 +58,10 @@ class ScaleQType(QType) :
                  'scalemax' : self.scalemax,
                  'scalestep' : self.scalestep }
 
-class TextQType(QType) :
+class TextQType(Question) :
     typeName = "text"
     def __init__(self, text, textlength):
-        QType.__init__(self, text)
+        Question.__init__(self, text)
         self.textlength = textlength
     @classmethod
     def from_dict(cls, text, d) :
@@ -70,10 +70,10 @@ class TextQType(QType) :
     def to_dict(self) :
         return { 'textlength' : self.textlength }
 
-class GridQType(QType) :
+class GridQType(Question) :
     typeName = "grid"
     def __init__(self, text, rowoptions, coloptions):
-        QType.__init__(self, text)
+        Question.__init__(self, text)
         self.rowoptions = rowoptions
         self.coloptions = coloptions
     @classmethod

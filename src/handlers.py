@@ -6,6 +6,7 @@ import tornado.options
 import tornado.web
 import pymongo
 import models
+import controllers
 import json
  
 from tornado.options import define, options
@@ -16,13 +17,13 @@ class BaseHandler(tornado.web.RequestHandler):
         return self.application.db
     @property
     def ctype_controller(self):
-        return models.CTypeController(self.db)
+        return controllers.CTypeController(self.db)
     @property
     def ctask_controller(self):
-        return models.CTaskController(self.db)
+        return controllers.CTaskController(self.db)
     @property
     def admin_controller(self) :
-        return models.AdminController(self.db)
+        return controllers.AdminController(self.db)
     def is_super_admin(self):
         return self.get_secure_cookie('admin_email') == 'samgrondahl@gmail.com'
     def get_current_admin(self):
