@@ -132,3 +132,10 @@ class XMLUploadHandler(BaseHandler):
                 self.chit_controller.create(hit)
         self.return_json({'success' : True})
 
+class AdminInfoHandler(BaseHandler):
+    def get(self):
+        if (self.admin_controller.get_by_email(self.get_secure_cookie('admin_email', ''))):
+            self.finish('Logged in as ' + self.get_secure_cookie('admin_email', 'ERROR'))
+        else:
+            self.finish('Not logged in, <a href="/admin/login/">login here</a>.')
+

@@ -40,7 +40,9 @@ class Application(tornado.web.Application):
             (r'/admin/login/?', handlers.GoogleLoginHandler),
             (r'/admin/all/?', handlers.AdminAllHandler),
             (r'/admin/new/?', handlers.AdminCreateHandler),
+            (r'/admin/info/', handlers.AdminInfoHandler),
             (r'/superadmin/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='superadmin.html')),
+            (r'/xmlupload/?', handlers.XMLUploadHandler),
         ]
         tornado.web.Application.__init__(self, app_handlers, **settings)
  
