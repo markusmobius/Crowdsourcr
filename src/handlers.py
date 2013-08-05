@@ -24,6 +24,9 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def admin_controller(self) :
         return controllers.AdminController(self.db)
+    @property
+    def chit_controller(self):
+        return controllers.CHITController(self.db)
     def is_super_admin(self):
         return self.get_secure_cookie('admin_email') == 'samgrondahl@gmail.com'
     def get_current_admin(self):
@@ -119,11 +122,11 @@ class GoogleLoginHandler(BaseHandler,
 
 class XMLUploadHandler(BaseHandler):
     def post(self):
-        from tempfile import NamedTempFile
+        from tempfile import NamedTemporaryFile
         with NamedTemporaryFile() as temp:
             temp.write(self.request.files['file'][0]['body'])
             temp.flush()
-            xmltask = XMLTaskController.xml_upload(temp.name)
+            xmltask = controllers.XMLTaskController.xml_upload(temp.name)
             for module in xmltask.get_modules():
                 self.ctype_controller.create(module)
             for task in xmltask.get_tasks():
@@ -134,8 +137,8 @@ class XMLUploadHandler(BaseHandler):
 
 class AdminInfoHandler(BaseHandler):
     def get(self):
-        if (self.admin_controller.get_by_email(self.get_secure_cookie('admin_email', ''))):
-            self.finish('Logged in as ' + self.get_secure_cookie('admin_email', 'ERROR'))
+        if (self.admin_controller.get_by_email(self.get_secure_cookie('admin_email'))):
+            self.finish('Logged in as ' + self.get_secure_cookie('admin_email'))
         else:
             self.finish('Not logged in, <a href="/admin/login/">login here</a>.')
 

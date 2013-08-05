@@ -8,41 +8,36 @@ class QTypeRegistry(type) :
 class Question(object) :
     __metaclass__ = QTypeRegistry
     qtype_subclasses = {}
-    def __init__(self, varname=None, text=None, valuetype=None):
+    def __init__(self, varname=None, questiontext=None, valuetype=None):
         self.varname = varname
-        self.text = text
+        self.questiontext = questiontext
         self.valuetype = valuetype
     @classmethod
     def deserialize(cls, d) :
         return cls.qtype_subclasses[d['valuetype']].deserialize(d)
     def serialize(self) :
-        return {"type" : self.typeName,
-                "text" : self.text,
-                "content" : self.to_dict()}
-
+        return {'valuetype' : self.valuetype,
+                'varname' : self.varname,
+                'quesiontext' : self.questiontext,
+                'content' : self.content}
 
 class AbstractQuestion(Question):
-    def __init__(self, varname=None, text=None, valuetype=None, options=[]) :
-        Question.__init__(self, varname, text, valuetype)
-        self.options = options
+    def __init__(self, varname=None, questiontext=None, valuetype=None, content=[]) :
+        Question.__init__(self, varname, questiontext, valuetype)
+        self.content = content
     @classmethod
-    def deserialize(cls, dct={}):
+    def deserialize(cls, d):
         return cls(d['varname'],
-                   d['text'], 
+                   d['questiontext'], 
                    d['valuetype'],
                    d['content'])
-    def serialize(self):
-        return {'varname' : self.varname,
-                'text' : self.text,
-                'valuetype' : self.valuetype,
-                'content' : self.content}
 
 
 class CategoricalQuestion(AbstractQuestion):
     typeName = 'categorical'
 
-class NumericalQuestion(AbstractQuestion):
-    typeName = 'numerical'
+class NumericQuestion(AbstractQuestion):
+    typeName = 'numeric'
     
 
 

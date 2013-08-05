@@ -3,7 +3,7 @@ class CTaskController(object):
     def __init__(self, db):
         self.db = db
         self.db.ctasks.ensure_index('taskid', unique=True)
-    def create(self, d)
+    def create(self, d):
         from models import CTask
         ctask = CTask.deserialize(d)
         self.db.ctasks.insert(ctask.serialize())

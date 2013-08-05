@@ -10,6 +10,26 @@
       $.get('/admin/info/', function(data) {
       $('#admin-login-info').html(data);
       });
+      $('#xml-upload-form').find('button:first').click(function(evt) {
+      evt.preventDefault();
+      uploadXML();
+      });
+      }
+
+      function uploadXML() {
+      var data = new FormData();
+      data.append('file', $('#xml-upload-file')[0].files[0]);
+      $.ajax({
+      url: '/admin/xmlupload/',
+      data: data,
+      cache: false,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      success: function(data){
+      alert(data);
+      }
+      });
       }
     </script>
   </head>
@@ -19,10 +39,11 @@
     </div>
     <div class="header-push"></div>
     <div class="splitscreen">
-      <div id="admin-login-info"></div>
+      <div id="admin-login-info"></div><br><br>
       <div id="admin-xml-upload">
 	<form id="xml-upload-form">
-	  <input type="file" name="file"> Upload </input>
+	  <input id="xml-upload-file" type="file" name="file"/><br>
+	  <button class="btn btn-success">Upload XML</button>
 	</form>
       </div>
     </div>

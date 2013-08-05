@@ -1,5 +1,5 @@
 
-def CTask(object):
+class CTask(object):
     def __init__(self, taskid=None, content=None, modules=[]):
         self.taskid = taskid
         self.content = content
