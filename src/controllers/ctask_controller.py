@@ -8,11 +8,8 @@ class CTaskController(object):
         ctask = CTask.deserialize(d)
         self.db.ctasks.insert(ctask.serialize())
         return ctask
-
-
-
-
-
+    def get_task_count(self) :
+        return self.db.ctasks.count()
 
 
 """

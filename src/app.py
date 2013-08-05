@@ -43,6 +43,8 @@ class Application(tornado.web.Application):
             (r'/admin/info/', handlers.AdminInfoHandler),
             (r'/superadmin/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='superadmin.html')),
             (r'/admin/xmlupload/?', handlers.XMLUploadHandler),
+            (r'/HIT/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='hit.html')),
+            (r'/HIT/view/?', handlers.CHITViewHandler),
         ]
         tornado.web.Application.__init__(self, app_handlers, **settings)
  

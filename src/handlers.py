@@ -142,3 +142,13 @@ class AdminInfoHandler(BaseHandler):
         else:
             self.finish('Not logged in, <a href="/admin/login/">login here</a>.')
 
+class CHITViewHandler(BaseHandler):
+    def get(self):
+        if not self.get_secure_cookie('hitid') or not self.get_secure_cookie('taskindex'):
+            self.set_secure_cookie('hitid', self.chit_controller.get_next_chit_id())
+            self.set_secure_cookie('taskindex', '0')
+            self.return_json({'reload_for_first_task':True})
+        else:
+            chit = self.chit_controller.get_chit_by_id(self.get_secure_cookie('hitid'))
+            self.return_json(chit.serialize())
+
