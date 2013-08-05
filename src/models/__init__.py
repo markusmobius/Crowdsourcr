@@ -15,3 +15,4 @@ del module"""
 from admin import Admin
 from ctype import CType
 from question import Question
+from xmltask import XMLTask

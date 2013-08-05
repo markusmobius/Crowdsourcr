@@ -1,4 +1,3 @@
-from model import Model
 
 class QTypeRegistry(type) :
     def __init__(cls, name, bases, dct) :
@@ -9,20 +8,52 @@ class QTypeRegistry(type) :
 class Question(object) :
     __metaclass__ = QTypeRegistry
     qtype_subclasses = {}
-    def __init__(self, text):
+    def __init__(self, varname=None, text=None, valuetype=None):
+        self.varname = varname
         self.text = text
+        self.valuetype = valuetype
     @classmethod
     def deserialize(cls, d) :
-        return cls.qtype_subclasses[d['type']].from_dict(d['text'], d['content'])
+        return cls.qtype_subclasses[d['valuetype']].deserialize(d)
     def serialize(self) :
         return {"type" : self.typeName,
                 "text" : self.text,
                 "content" : self.to_dict()}
 
 
+class AbstractQuestion(Question):
+    def __init__(self, varname=None, text=None, valuetype=None, options=[]) :
+        Question.__init__(self, varname, text, valuetype)
+        self.options = options
+    @classmethod
+    def deserialize(cls, dct={}):
+        return cls(d['varname'],
+                   d['text'], 
+                   d['valuetype'],
+                   d['content'])
+    def serialize(self):
+        return {'varname' : self.varname,
+                'text' : self.text,
+                'valuetype' : self.valuetype,
+                'content' : self.content}
+
+
+class CategoricalQuestion(AbstractQuestion):
+    typeName = 'categorical'
+
+class NumericalQuestion(AbstractQuestion):
+    typeName = 'numerical'
+    
+
+
+
+
+
+
+"""
 class AbstractMultiQType(Question) :
-    def __init__(self, text, options) :
-        Question.__init__(self, text)
+    def __init__(self, varname=None, text=None, valuetype=None, options=[]) :
+        Question.__init__(self, varname, text, valuetype)
         self.options = options
     @classmethod
     def from_dict(cls, text, d) :
@@ -84,3 +115,5 @@ class GridQType(Question) :
     def to_dict(self) :
         return { 'rowoptions' : self.rowoptions,
                  'coloptions' : self.coloptions }
+
+"""

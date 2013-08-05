@@ -116,3 +116,19 @@ class GoogleLoginHandler(BaseHandler,
        else:
            self.clear_cookie('admin_email')
            yield self.authenticate_redirect()
+
+class XMLUploadHandler(BaseHandler):
+    def post(self):
+        from tempfile import NamedTempFile
+        with NamedTemporaryFile() as temp:
+            temp.write(self.request.files['file'][0]['body'])
+            temp.flush()
+            xmltask = XMLTaskController.xml_upload(temp.name)
+            for module in xmltask.get_modules():
+                self.ctype_controller.create(module)
+            for task in xmltask.get_tasks():
+                self.ctask_controller.create(task)
+            for hit in xmltask.get_hits():
+                self.chit_controller.create(hit)
+        self.return_json({'success' : True})
+

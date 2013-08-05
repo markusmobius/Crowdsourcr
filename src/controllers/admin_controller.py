@@ -21,3 +21,4 @@ class AdminController(object):
         c = models.Admin.from_dict(d)
         self.db.admin.insert(c.to_dict())
         return c
+        

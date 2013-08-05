@@ -12,4 +12,4 @@ del module"""
 from admin_controller import AdminController
 from ctype_controller import CTypeController
 from ctask_controller import CTaskController
-
+from xmltask_controller import XMLTaskController
