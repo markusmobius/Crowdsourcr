@@ -159,5 +159,7 @@ class CResponseHandler(BaseHandler):
     def post(self):
         task_index = int(self.get_secure_cookie('taskindex'))
         hitid = self.get_secure_cookie('hitid')
+        responses = json.loads(self.get_argument('data', '{}'))
+        print responses
         self.set_secure_cookie('taskindex', str(task_index + 1))
         self.return_json({'completed_hit' : False})

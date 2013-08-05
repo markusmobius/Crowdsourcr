@@ -11,33 +11,52 @@
     <script src="/static/js/simplemodels.js"></script>
     <script type="text/javascript">
       $(requestNextTask);
+      var MODULES = [];
+
       function requestNextTask() {
-      $.get('/HIT/view/', function(data) {
-        if (data.reload_for_first_task) {
-          requestNextTask();
-        } else if (data.completed_hit) {
-          alert('done');
-        } else {
-          $('#hit-content').html(data.content);
-          for (var i = 0; i < data.modules.length; i++){
-            getModule(data.modules[i], writeModule);
-          }
-        }
-      });
+	  $.get('/HIT/view/', function(data) {
+	      if (data.reload_for_first_task) {
+		  requestNextTask();
+	      } else if (data.completed_hit) {
+		  alert('done');
+	      } else {
+		  $('#hit-content').html(data.content);
+		  for (var i = 0; i < data.modules.length; i++){
+		      getModule(data.modules[i], registerModule);
+		  }
+	      }
+	      $('#next-task-button').click(function(evt) {
+		  evt.preventDefault();
+		  submitTask(requestNextTask);
+	      });
+	  });
       }
-			      
-      
-      function writeModule(data) {
-      var module_container = $(document.createElement('li'));
-      var module = module_container.CType(data);
-      module.renderDisplay();
-      $('#hit-modules').append(module_container);
+
+      function submitTask(callback) {
+	  $.post('/HIT/submit/', {data : JSON.stringify(serializeModules())}, callback);
+      }
+
+      function serializeModules() {
+	  var all_module_responses = [];
+	  for (var i = 0; i < MODULES.length; i++) {
+	      all_module_responses.push(MODULES[i].serialize());
+	  }
+	  return all_module_responses;
+      }
+
+      function registerModule(data) {
+	  $('#hit-modules').empty();
+	  var module_container = $(document.createElement('li'));
+	  var module = module_container.CType(data);
+	  module.renderDisplay();
+	  $('#hit-modules').append(module_container);
+	  MODULES.push(module);
       }
 
       function getModule(module, callback) {
-      $.get('/types/view/'+module, callback);
+	  $.get('/types/view/'+module, callback);
       }
-
+      
     </script>
   </head>
   <body>
@@ -47,7 +66,10 @@
     <div class="header-push"></div>
     <div class="content-main">
       <div id="hit-content" class="splitscreen"></div>
-      <div class="splitscreen"><ul id="hit-modules"></ul></div>
+      <div class="splitscreen">
+	<ul id="hit-modules"></ul><br>
+	<button id="next-task-button" class="btn btn-success">Continue to next task</button>
+      </div>
     </div>
 
 

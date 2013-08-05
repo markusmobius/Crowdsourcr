@@ -31,6 +31,12 @@ var CType = Model.extend({
 	    name : this.name,
 	    header : this.header
 	};
+    },
+    serialize : function() {
+	return {
+	    name : this.name,
+	    responses : this.questionlist.serialize()
+	};	    
     }
 });
 
@@ -39,16 +45,25 @@ var QuestionList = Model.extend({
     constructor : function(questions) {
 	this.questions = questions || [];
 	this.display_template = $('#questionlist-display-template').html();
+	this.renderedquestions = [];
     },
     renderDisplay : function(el) {
         this.el = $(el);
 	this.el.empty();
-	console.log(this.questions);
 	for (var i = 0; i < this.questions.length; i++) {
 	    var question_holder = $(document.createElement('li'));	    
-	    new Question(question_holder, this.questions[i]).renderDisplay();
+	    var question = new Question(question_holder, this.questions[i]);
+	    question.renderDisplay();
 	    this.el.append(question_holder);
+	    this.renderedquestions.push(question);
 	}	
+    },
+    serialize : function() {
+	var all_question_responses = [];
+	for (var i = 0; i < this.renderedquestions.length; i++) {
+	    all_question_responses.push(this.renderedquestions[i].serialize());
+	}
+	return all_question_responses;
     }
 });
 
@@ -62,6 +77,20 @@ var Question = Model.extend({
             default:
 		throw "Error: could not find type "+question.valuetype;
 	}	
+    },
+    serialize : function() {
+	return { 
+	    varname : this.varname,
+	    response : this.response()
+	};
+    },
+    serializeForDisplay : function() {
+	return {
+	    questiontext : this.questiontext,
+	    valuetype : this.valuetype,
+	    varname : this.varname,
+	    content : this.content
+	}
     }
 });
 
@@ -76,14 +105,11 @@ var NumericQuestion = Question.extend({
     },
     renderDisplay : function() {
         this.el.empty();
-        this.el.html(_.template(this.display_template, this.serialize()));
+        this.el.html(_.template(this.display_template, this.serializeForDisplay()));
     },
-    serialize : function() {
-        return {valuetype : this.valuetype,
-	        questiontext : this.questiontext,
- 		varname : this.varname,
-		content : this.content};
-    }   
+    response : function() {
+	return this.el.find('input:first').val();
+    }
 });
 
 var CategoricalQuestion = Question.extend({
@@ -97,12 +123,9 @@ var CategoricalQuestion = Question.extend({
     },
     renderDisplay : function() {
         this.el.empty();
-        this.el.html(_.template(this.display_template, this.serialize()));
+        this.el.html(_.template(this.display_template, this.serializeForDisplay()));
     },
-    serialize : function() {
-        return {valuetype : this.valuetype,
-	        questiontext : this.questiontext,
- 		varname : this.varname,
-		content : this.content};
+    response : function() {
+	return this.el.find('input:checked').val();
     } 
 });
