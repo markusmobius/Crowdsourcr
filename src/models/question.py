@@ -18,7 +18,7 @@ class Question(object) :
     def serialize(self) :
         return {'valuetype' : self.valuetype,
                 'varname' : self.varname,
-                'quesiontext' : self.questiontext,
+                'questiontext' : self.questiontext,
                 'content' : self.content}
 
 class AbstractQuestion(Question):

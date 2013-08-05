@@ -1,15 +1,19 @@
+from models import CTask
 
 class CTaskController(object):
     def __init__(self, db):
         self.db = db
         self.db.ctasks.ensure_index('taskid', unique=True)
     def create(self, d):
-        from models import CTask
         ctask = CTask.deserialize(d)
         self.db.ctasks.insert(ctask.serialize())
         return ctask
     def get_task_count(self) :
         return self.db.ctasks.count()
+    def get_task_by_id(self, taskid):
+        d = self.db.ctasks.find_one({'taskid' : taskid})
+        ctask = CTask.deserialize(d)
+        return ctask
 
 
 """

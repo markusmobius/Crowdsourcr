@@ -67,8 +67,6 @@ class AuthLoginHandler(BaseHandler):
 class CTypeViewHandler(BaseHandler):
     def get(self, type_name):
         ctype_info = self.ctype_controller.get_by_name(type_name).to_dict()
-        ctasks = self.ctask_controller.get_names(type_name)
-        ctype_info['tasks'] = ctasks
         self.return_json(ctype_info)
 
 class CTypeAllHandler(BaseHandler):
@@ -149,6 +147,17 @@ class CHITViewHandler(BaseHandler):
             self.set_secure_cookie('taskindex', '0')
             self.return_json({'reload_for_first_task':True})
         else:
+            task_index = int(self.get_secure_cookie('taskindex'))
             chit = self.chit_controller.get_chit_by_id(self.get_secure_cookie('hitid'))
-            self.return_json(chit.serialize())
+            if task_index >= len(chit.tasks):
+                self.return_json({'completed_hit':True})
+            else:
+                task = self.ctask_controller.get_task_by_id(chit.tasks[task_index])
+                self.return_json(task.serialize())
 
+class CResponseHandler(BaseHandler):
+    def post(self):
+        task_index = int(self.get_secure_cookie('taskindex'))
+        hitid = self.get_secure_cookie('hitid')
+        self.set_secure_cookie('taskindex', str(task_index + 1))
+        self.return_json({'completed_hit' : False})
