@@ -13,5 +13,6 @@ from admin_controller import AdminController
 from ctype_controller import CTypeController
 from ctask_controller import CTaskController
 from cresponse_controller import CResponseController
+from mturkconnection_controller import MTurkConnectionController
 from xmltask_controller import XMLTaskController
 from chit_controller import CHITController

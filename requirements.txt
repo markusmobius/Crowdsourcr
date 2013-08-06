@@ -1,6 +1,6 @@
-#easy_install pip
+#apt-get_install pip
 #pip install -r requirements.txt
 
 pymongo==2.5.2
 tornado==3.1
-boto==2.6.0
+boto==2.9.9

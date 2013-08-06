@@ -35,6 +35,9 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def cresponse_controller(self):
         return controllers.CResponseController(self.db)
+    @property
+    def mturkconnection_controller(self):
+        return controllers.MTurkConnectionController(self.db)
     def is_super_admin(self):
         return self.get_secure_cookie('admin_email') == 'samgrondahl@gmail.com'
     def get_current_admin(self):
@@ -141,12 +144,27 @@ class XMLUploadHandler(BaseHandler):
                 self.chit_controller.create(hit)
         self.return_json({'success' : True})
 
+class RecruitingBeginHandler(BaseHandler):
+    def post(self):
+        admin_email = self.get_secure_cookie('admin_email')
+        if admin_email:
+            recruiting_info = json.loads(self.get_argument('data', '{}'))
+            recruiting_info['email'] = admin_email
+            mtconn = self.mturkconnection_controller.create(recruiting_info)
+        self.finish()
+
 class AdminInfoHandler(BaseHandler):
     def get(self):
-        if (self.admin_controller.get_by_email(self.get_secure_cookie('admin_email'))):
-            self.finish('Logged in as ' + self.get_secure_cookie('admin_email'))
+        admin_email = self.get_secure_cookie('admin_email')
+        if admin_email and self.admin_controller.get_by_email(admin_email):
+            turk_info = self.mturkconnection_controller.get_by_email(admin_email)
+            turk_balance = turk_info.get_balance() if turk_info else None
+            self.return_json({'authed' : True,
+                              'email' : self.get_secure_cookie('admin_email'),
+                              'hitinfo' : self.chit_controller.get_agg_hit_info(),
+                              'turkinfo' : str(turk_balance) if turk_balance else False})
         else:
-            self.finish('Not logged in, <a href="/admin/login/">login here</a>.')
+            self.return_json({'authed' : False})
 
 class WorkerLoginHandler(BaseHandler):
     def post(self):
