@@ -28,12 +28,40 @@
 	</question>
       </questions>
     </module>
+    <module>
+      <header>Questions on Other Demo</header>
+      <name>otherdemo</name>
+      <questions>
+	<question>
+	  <varname>age</varname>
+	  <questiontext>What is your age?</questiontext>
+	  <valuetype>numeric</valuetype>
+	</question>
+	<question>
+	  <varname>married</varname>
+	  <questiontext>Are you married?</questiontext>
+	  <valuetype>categorical</valuetype>
+	  <content>
+	    <categories>
+	      <category>
+		<text>Yes</text>
+		<value>yes</value>
+	      </category>
+	      <category>
+		<text>No</text>
+		<value>no</value>
+	      </category>
+	    </categories>
+	  </content>
+	</question>
+      </questions>
+    </module>
   </modules>
   <tasks>
     <task>
       <content>content1.html</content>
       <taskid>1</taskid>
-      <modules>demographics</modules>
+      <modules>demographics otherdemo</modules>
     </task>
     <task>
       <content>content2.html</content>
@@ -44,16 +72,7 @@
   <hits>
     <hit>
       <hitid>1</hitid>
-      <tasks>
-	1
-	2
-      </tasks>
+      <tasks>1 2</tasks>
     </hit>
   </hits>
-  <documents>
-    <document>
-      <name>content1.html</name>
-      <content>This is stuff for content1.</content>
-    </document>
-  </documents>
 </xml>

@@ -50,10 +50,4 @@
       </tasks>
     </hit>
   </hits>
-  <documents>
-    <document>
-      <name>content1.html</name>
-      <content>This is stuff for content1.</content>
-    </document>
-  </documents>
 </xml>

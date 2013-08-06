@@ -28,6 +28,34 @@
 	</question>
       </questions>
     </module>
+    <module>
+      <header>Questions on Weather</header>
+      <name>weather</name>
+      <questions>
+	<question>
+	  <varname>temp</varname>
+	  <questiontext>What is the temperature outside?</questiontext>
+	  <valuetype>numeric</valuetype>
+	</question>
+	<question>
+	  <varname>rain</varname>
+	  <questiontext>Is it raining outside?</questiontext>
+	  <valuetype>categorical</valuetype>
+	  <content>
+	    <categories>
+	      <category>
+		<text>Yes</text>
+		<value>yes</value>
+	      </category>
+	      <category>
+		<text>No</text>
+		<value>no</value>
+	      </category>
+	    </categories>
+	  </content>
+	</question>
+      </questions>
+    </module>
   </modules>
   <tasks>
     <task>
@@ -38,7 +66,7 @@
     <task>
       <content>content2.html</content>
       <taskid>2</taskid>
-      <modules>demographics</modules>
+      <modules>demographics weather</modules>
     </task>
   </tasks>
   <hits>
@@ -49,11 +77,11 @@
 	2
       </tasks>
     </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>
+	2
+      </tasks>
+    </hit>
   </hits>
-  <documents>
-    <document>
-      <name>content1.html</name>
-      <content>This is stuff for content1.</content>
-    </document>
-  </documents>
 </xml>

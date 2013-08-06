@@ -5,6 +5,7 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 import datetime
+import os
 import uuid
 import pymongo
 import models
@@ -14,6 +15,7 @@ import json
 from tornado.options import define, options
  
 class BaseHandler(tornado.web.RequestHandler):
+    __superusers__ = ['samgrondahl@gmail.com', 'kmill31415@gmail.com']
     @property
     def db(self) :
         return self.application.db
@@ -39,7 +41,8 @@ class BaseHandler(tornado.web.RequestHandler):
     def mturkconnection_controller(self):
         return controllers.MTurkConnectionController(self.db)
     def is_super_admin(self):
-        return self.get_secure_cookie('admin_email') == 'samgrondahl@gmail.com'
+        admin_email = self.get_secure_cookie('admin_email')
+        return admin_email in self.__superusers__
     def get_current_admin(self):
         admin = self.admin_controller.get_by_email(self.get_secure_cookie("admin_email"))
     def return_json(self, data):
@@ -132,7 +135,8 @@ class GoogleLoginHandler(BaseHandler,
 class XMLUploadHandler(BaseHandler):
     def post(self):
         from tempfile import NamedTemporaryFile
-        with NamedTemporaryFile() as temp:
+        #windows can't open temp files
+        with open(os.path.join(os.getcwd(), uuid.uuid4().hex + '.upload'), 'wb') as temp: #NamedTemporaryFile() as temp:
             temp.write(self.request.files['file'][0]['body'])
             temp.flush()
             xmltask = self.xmltask_controller.xml_upload(temp.name)
@@ -176,14 +180,15 @@ class AdminInfoHandler(BaseHandler):
             turk_balance = False
             if turk_conn:
                 turk_info = turk_conn.serialize()
-                turk_balance = turk_conn.get_balance()
+                turk_balance = (turk_conn.get_balance() or [0])[0]
+                #TODO: move this to ioloop (instead of on info call) -- this makes payments to turkers who have submitted the turk HIT (human intelligence task)
                 self.mturkconnection_controller.make_payments(admin_email)
             
             self.return_json({'authed' : True,
                               'email' : self.get_secure_cookie('admin_email'),
                               'hitinfo' : self.chit_controller.get_agg_hit_info(),
                               'turkinfo' : turk_info,
-                              'turkbalance' : str(turk_balance[0])})
+                              'turkbalance' : turk_balance})
         else:
             self.return_json({'authed' : False})
 

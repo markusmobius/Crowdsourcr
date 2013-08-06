@@ -24,7 +24,7 @@ class CHITController(object):
         result = self.db.chits.map_reduce(self.sum_map, self.sum_reduce, "chit_mapreducesum_results")
         num_completed_hits = result.find_one()
         num_total_hits = self.db.chits.count()
-        return {'num_complete' : num_completed_hits['value'],
+        return {'num_complete' : num_completed_hits['value'] if num_completed_hits else 0,
                 'num_total' : num_total_hits}
     def add_completed_hit(self,chit=None, worker_id=None):
         hit_info = {'worker_id' : worker_id,

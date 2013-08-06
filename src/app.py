@@ -32,7 +32,7 @@ class Application(tornado.web.Application):
 
         app_handlers = [
             (r'/', handlers.MainHandler),
-            (r'/types/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='types.html')),
+#            (r'/types/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='types.html')),
             (r'/types/new/?', handlers.CTypeCreateHandler),
             (r'/types/all/?', handlers.CTypeAllHandler),
             (r'/types/view/(.*)', handlers.CTypeViewHandler),
