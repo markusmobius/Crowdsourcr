@@ -4,6 +4,8 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
+import datetime
+import uuid
 import pymongo
 import models
 import controllers
@@ -27,6 +29,12 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def chit_controller(self):
         return controllers.CHITController(self.db)
+    @property
+    def xmltask_controller(self):
+        return controllers.XMLTaskController(self.db)
+    @property
+    def cresponse_controller(self):
+        return controllers.CResponseController(self.db)
     def is_super_admin(self):
         return self.get_secure_cookie('admin_email') == 'samgrondahl@gmail.com'
     def get_current_admin(self):
@@ -124,7 +132,7 @@ class XMLUploadHandler(BaseHandler):
         with NamedTemporaryFile() as temp:
             temp.write(self.request.files['file'][0]['body'])
             temp.flush()
-            xmltask = controllers.XMLTaskController.xml_upload(temp.name)
+            xmltask = self.xmltask_controller.xml_upload(temp.name)
             for module in xmltask.get_modules():
                 self.ctype_controller.create(module)
             for task in xmltask.get_tasks():
@@ -140,26 +148,45 @@ class AdminInfoHandler(BaseHandler):
         else:
             self.finish('Not logged in, <a href="/admin/login/">login here</a>.')
 
+class WorkerLoginHandler(BaseHandler):
+    def post(self):
+        self.set_secure_cookie('workerid', self.get_argument('workerid', ''))
+        self.finish()
+
 class CHITViewHandler(BaseHandler):
     def get(self):
-        if not self.get_secure_cookie('hitid') or not self.get_secure_cookie('taskindex'):
+        if not self.get_secure_cookie('workerid'):
+            if not self.chit_controller.get_next_chit_id():
+                self.return_json({'no_hits' : True})
+            else:
+                self.return_json({'needs_login' : True})
+        elif not self.get_secure_cookie('hitid') or not self.get_secure_cookie('taskindex'):
             self.set_secure_cookie('hitid', self.chit_controller.get_next_chit_id())
             self.set_secure_cookie('taskindex', '0')
             self.return_json({'reload_for_first_task':True})
         else:
+            worker_id = self.get_secure_cookie('workerid')
             task_index = int(self.get_secure_cookie('taskindex'))
             chit = self.chit_controller.get_chit_by_id(self.get_secure_cookie('hitid'))
             if task_index >= len(chit.tasks):
-                self.return_json({'completed_hit':True})
+                self.clear_all_cookies()
+                completed_chit_info = self.chit_controller.add_completed_hit(chit=chit, worker_id=worker_id)
+                self.return_json({'completed_hit':True,
+                                  'verify_code' : completed_chit_info['turk_verify_code']})
             else:
                 task = self.ctask_controller.get_task_by_id(chit.tasks[task_index])
                 self.return_json(task.serialize())
 
 class CResponseHandler(BaseHandler):
     def post(self):
+        worker_id = self.get_secure_cookie('workerid')
         task_index = int(self.get_secure_cookie('taskindex'))
-        hitid = self.get_secure_cookie('hitid')
+        chit = self.chit_controller.get_chit_by_id(self.get_secure_cookie('hitid'))
+        taskid = chit.tasks[task_index]
         responses = json.loads(self.get_argument('data', '{}'))
-        print responses
+        self.cresponse_controller.create({'submitted' : datetime.datetime.utcnow(),
+                                          'response' : responses,
+                                          'workerid' : worker_id,
+                                          'taskid' : taskid})
         self.set_secure_cookie('taskindex', str(task_index + 1))
-        self.return_json({'completed_hit' : False})
+        self.finish()

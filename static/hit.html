@@ -10,26 +10,57 @@
     <script src="/static/js/mixins.js"></script>
     <script src="/static/js/simplemodels.js"></script>
     <script type="text/javascript">
-      $(requestNextTask);
+      $(onLoad);
       var MODULES = [];
 
       function requestNextTask() {
 	  $.get('/HIT/view/', function(data) {
+	      $('.loading-holder').hide();
+
+	      if (data.no_hits) {
+		  $('.content-main').hide();
+		  $('.login-content').hide();
+		  $('.turk-verify-content').hide();
+		  $('.turk-no-hits').show();
+		  return;
+	      }
+
+	      if (data.needs_login) {
+		  $('.login-content').show();
+		  return;
+	      }
+ 
+	      $('.content-main').show();
+	      $('.login-content').hide();
+
 	      if (data.reload_for_first_task) {
 		  requestNextTask();
 	      } else if (data.completed_hit) {
-		  alert('done');
+		  $('.content-main').hide();
+		  $('.login-content').hide();
+		  $('.turk-verify-content').show().find('.secret-code').html(data.verify_code);
 	      } else {
 		  $('#hit-content').html(data.content);
+		  $('#hit-modules').empty();
 		  for (var i = 0; i < data.modules.length; i++){
 		      getModule(data.modules[i], registerModule);
 		  }
 	      }
-	      $('#next-task-button').click(function(evt) {
-		  evt.preventDefault();
-		  submitTask(requestNextTask);
-	      });
 	  });
+      }
+
+      function onLoad() {
+	  $('#next-task-button').click(function(evt) {
+	      evt.preventDefault();
+	      submitTask(requestNextTask);
+	  });
+
+	  $('#worker-login-submit').click(function(evt) {
+	      evt.preventDefault();
+	      $.post('/worker/login/', {'workerid' : $('#worker-login-form').find('input:first').val()}, requestNextTask);
+	  });
+
+	  requestNextTask();
       }
 
       function submitTask(callback) {
@@ -45,11 +76,10 @@
       }
 
       function registerModule(data) {
-	  $('#hit-modules').empty();
-	  var module_container = $(document.createElement('li'));
+	  var module_container = $(document.createElement('div'));
 	  var module = module_container.CType(data);
 	  module.renderDisplay();
-	  $('#hit-modules').append(module_container);
+	  $('#hit-modules').append($(document.createElement('li')).html(module_container));
 	  MODULES.push(module);
       }
 
@@ -58,39 +88,79 @@
       }
       
     </script>
+    <style>
+      .centering {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
     <div class="header-container">
       <div class="header-title abs-center"><h3>News Crowdsourcer v1.0</h3></div>
     </div>
     <div class="header-push"></div>
-    <div class="content-main">
+    <div class="loading-holder narrow-center">
+      <div style="margin: 40px;">
+	<img src="/static/img/ajax-loader.gif" class="centering" /><br><br>
+	<p class="centering">loading HIT...</p>
+      </div>
+    </div>
+    <div class="login-content narrow-center" style="display:none;">
+      <form id="worker-login-form">
+	<h4> Please input your worker id to ensure you are paid upon completing this HIT. </h4>
+	<p> (If you don't know your worker id, <a href="https://www.mturk.com/mturk/dashboard"> you can find it here. </a> )</p>
+	<div class="input-group">
+	  <input type="text" class="form-control" placeholder="Worker ID" />
+	  <span class="input-group-btn">
+            <button id="worker-login-submit" class="btn btn-success" type="submit">Begin HIT</button>
+	  </span>
+	</div>
+      </form>
+    </div>
+    <div class="content-main" style="display:none;">
       <div id="hit-content" class="splitscreen"></div>
       <div class="splitscreen">
 	<ul id="hit-modules"></ul><br>
 	<button id="next-task-button" class="btn btn-success">Continue to next task</button>
       </div>
     </div>
+    <div class="turk-verify-content narrow-center" style="display: none;">
+      <h4> Thanks for completing this HIT! </h4>
+      <p> You should now return to mturk and submit the following code to receive payment: </p>
+      <div class="well inner-hor-center">
+	<h4 class="secret-code"></h4>
+      </div>
+    </div>
+    <div class="turk-no-hits narrow-center" style="display:none;">
+      <h4> No HITs. </h4>
+      <p> Sorry, you are not eligible for this HIT. </p>
+    </div>
 
+<!-- begin underscore templates -->
 
     <script type="text/template" id="ctype-display-template">
-      <h4 data-prop="header"></h4>
-      <form class="form-control">
-	<ul class="question-display-container"></ul>
+      <form>
+	<fieldset>
+	  <legend data-prop="header"></legend>
+	    <ul class="question-display-container"></ul>
+	</fieldset>
       </form>
     </script>
 
     <script type="text/template" id="numericquestion-display-template">
-      <div class="control-group">
+      <div class="form-group">
 	<label> <%= questiontext %> </label>
-	<input type="number" name="<%= varname %>"/>
+	<input class="form-control" type="number" name="<%= varname %>"/>
       </div>
     </script>
     
     <script type="text/template" id="catquestion-display-template">
-      <div class="control-group">
+      <div class="form-group">
 	<label> <%= questiontext %> </label>
-	<% _.each(content, function(choice) { %> <input type="radio" name="<%= varname %>" value="<%= choice.value %>"> <%= choice.text %> </input> <% }); %>
+	<% _.each(content, function(choice) { %> <div class="radio"><label><input type="radio" name="<%= varname %>" value="<%= choice.value %>"><%= choice.text %></label></div> <% }); %>
       </div>
     </script>
     

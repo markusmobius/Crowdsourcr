@@ -1,8 +1,13 @@
 import models
 
 class XMLTaskController(object):
-    @staticmethod
-    def xml_upload(xml_path=None) :
+    def __init__(self, db):
+        self.db = db
+    def xml_upload(self, xml_path=None) :
+        self.db.ctasks.drop()
+        self.db.ctypes.drop()
+        self.db.cresponses.drop()
+        self.db.chits.drop()
         return  models.XMLTask(xml_path)
 
 """
