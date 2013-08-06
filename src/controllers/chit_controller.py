@@ -33,11 +33,14 @@ class CHITController(object):
                              {'$push' : {'completed_hits' : hit_info},
                               '$inc' : {'num_completed_hits' : 1}})
         return hit_info
-    def secret_code_matches(self, worker_id=None, secret_code=None):
+    # static wasn't working ... ?
+    # utility method called by MTurkConnecitonController.make_payments
+    @classmethod
+    def secret_code_matches(cls, db=None, worker_id=None, secret_code=None):
         hit_info = [{'worker_id' : worker_id,
                     'turk_verify_code' : secret_code}]
         #ugly hack. TODO: improve storage struture for easier searching
-        d = self.db.chits.find_one({'num_completed_hits' : 1,
+        d = db.chits.find_one({'num_completed_hits' : 1,
                                     'completed_hits' : hit_info})
         return True if d else False
  

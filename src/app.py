@@ -41,7 +41,6 @@ class Application(tornado.web.Application):
             (r'/admin/recruit/?', handlers.RecruitingInfoHandler),
             (r'/admin/recruit/end/?', handlers.RecruitingEndHandler),
             (r'/admin/recruit/begin/?', handlers.RecruitingBeginHandler),
-            (r'/admin/recruit/payments/?', handlers.AssignmentTestHandler),
             (r'/admin/all/?', handlers.AdminAllHandler),
             (r'/admin/new/?', handlers.AdminCreateHandler),
             (r'/admin/info/', handlers.AdminInfoHandler),
