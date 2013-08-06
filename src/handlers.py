@@ -158,13 +158,6 @@ class RecruitingEndHandler(BaseHandler):
         self.mturkconnection_controller.end_run(admin_email)
         self.finish()
 
-class AssignmentTestHandler(BaseHandler):
-    def post(self):
-        admin_email = self.get_secure_cookie('admin_email')
-        mt_conn = self.mturkconnection_controller.get_by_email(admin_email)        
-        mt_conn.payments_to_make()
-        self.finish()
-
 class RecruitingInfoHandler(BaseHandler):
     def post(self):
         admin_email = self.get_secure_cookie('admin_email')
@@ -179,8 +172,13 @@ class AdminInfoHandler(BaseHandler):
         admin_email = self.get_secure_cookie('admin_email')
         if admin_email and self.admin_controller.get_by_email(admin_email):
             turk_conn = self.mturkconnection_controller.get_by_email(admin_email)
-            turk_info = turk_conn.serialize() if turk_conn else False
-            turk_balance = turk_conn.get_balance() if turk_conn else False
+            turk_info = False 
+            turk_balance = False
+            if turk_conn:
+                turk_info = turk_conn.serialize()
+                turk_balance = turk_conn.get_balance()
+                self.mturkconnection_controller.make_payments(admin_email)
+            
             self.return_json({'authed' : True,
                               'email' : self.get_secure_cookie('admin_email'),
                               'hitinfo' : self.chit_controller.get_agg_hit_info(),
