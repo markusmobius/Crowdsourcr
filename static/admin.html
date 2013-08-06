@@ -34,11 +34,22 @@
 	      if (data.authed) {
 		  $('#admin-login-info').html('Logged in as ' + data.email + '.');
 		  $('#admin-task-info').html(data.hitinfo.num_total + ' HITs loaded. ' + data.hitinfo.num_complete + ' HITs complete. ');
-		  if (!data.turkinfo) {
+		  if (data.turkbalance === false) {
 		      $('#admin-turk-info').html('Could not authenticate with MTurk.');
 		  } else {
-		      $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkinfo);
-		      $('#admin-begin-run').show();
+		      $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
+		      var mturk_form = $('#admin-mturk-cred-form');
+		      mturk_form.find('input[name="access_key"]:first').val(data.turkinfo.access_key);
+		      mturk_form.find('input[name="secret_key"]:first').val(data.turkinfo.secret_key);		  
+		      mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
+		      if (data.turkinfo.running) {
+			  $('#admin-turk-info').append('<p>Currently running with HITId ' + data.turkinfo.hitid + '.</p>');
+			  $('#admin-begin-run').hide();
+		      } else {
+			  $('#admin-turk-info').append('<p> Not currently running. </p>');
+			  $('#admin-begin-run').show();
+		      }
+
 		  }
 		  $('#admin-xml-upload').show();
 		  $('#admin-mturk-cred').show();
@@ -52,7 +63,7 @@
 	  var form_elem = $('#admin-mturk-cred-form');
 	  var mturk_info = {access_key : form_elem.find('input[name="access_key"]:first').val(),
 			    secret_key : form_elem.find('input[name="secret_key"]:first').val(),
-			    hit_payment : form_elem.find('input[name="hit_payment"]:first').val()};
+			    hitpayment : parseFloat(form_elem.find('input[name="hit_payment"]:first').val())};
 	  $.post('/admin/recruit/', {data : JSON.stringify(mturk_info)}, callback);
       }
       
@@ -72,6 +83,12 @@
 	  });
       }
     </script>
+    <style>
+      .vertical-padding {
+      margin: 20px 10px;
+      padding: 15px;
+      }
+    </style>
   </head>
   <body>
     <div class="header-container">
@@ -79,7 +96,7 @@
     </div>
     <div class="header-push"></div>
     <div class="splitscreen">
-      <div id="admin-info">
+      <div id="admin-info" class="vertical-padding">
 	<div id="admin-login-info"></div>
 	<div id="admin-task-info"></div>
 	<div id="admin-turk-info"></div>
@@ -90,7 +107,7 @@
 	  <button class="btn btn-success">Begin Run</button>
 	</div>
       </div>
-      <div id="admin-xml-upload" style="display: none;">
+      <div id="admin-xml-upload" class="vertical-padding" style="display: none;">
 	<form id="xml-upload-form">
 	  <fieldset>
 	    <legend> Upload Task XML </legend>
@@ -102,7 +119,7 @@
 	  </fieldset>
 	</form>
       </div>
-      <div id="admin-mturk-cred" style="display:none;">
+      <div id="admin-mturk-cred" class="vertical-padding" style="display:none;">
 	<form id="admin-mturk-cred-form">
 	  <fieldset>
 	    <legend> Recruit on MTurk </legend>
@@ -122,7 +139,7 @@
 		<input type="text" class="form-control" name="hit_payment">
 	      </div>
 	    </div>
-	    <button id="begin-recruiting-button" type="submit" class="btn btn-success">Begin recruiting</button>
+	    <button id="begin-recruiting-button" type="submit" class="btn btn-success">Update Turk Info</button>
 	  </fieldset>
 	</form>
       </div>

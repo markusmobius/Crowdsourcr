@@ -166,14 +166,14 @@ class AdminInfoHandler(BaseHandler):
     def get(self):
         admin_email = self.get_secure_cookie('admin_email')
         if admin_email and self.admin_controller.get_by_email(admin_email):
-            turk_info = self.mturkconnection_controller.get_by_email(admin_email)
-            turk_balance = turk_info.get_balance() if turk_info else None
-            all_hits = turk_info.get_all_hits() if turk_info else []
+            turk_conn = self.mturkconnection_controller.get_by_email(admin_email)
+            turk_info = turk_conn.serialize() if turk_conn else False
+            turk_balance = turk_conn.get_balance() if turk_conn else False
             self.return_json({'authed' : True,
                               'email' : self.get_secure_cookie('admin_email'),
                               'hitinfo' : self.chit_controller.get_agg_hit_info(),
-                              'turkinfo' : str(turk_balance) if turk_balance else False,
-                              'allhits' : all_hits})
+                              'turkinfo' : turk_info,
+                              'turkbalance' : str(turk_balance[0])})
         else:
             self.return_json({'authed' : False})
 

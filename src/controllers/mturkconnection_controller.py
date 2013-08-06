@@ -8,7 +8,9 @@ class MTurkConnectionController(object):
     def create(self, d):
         mtconn = MTurkConnection(access_key=d['access_key'],
                                  secret_key=d['secret_key'],
-                                 email=d['email'])
+                                 email=d['email'],
+                                 hitpayment=d['hitpayment'])
+        print mtconn.hitpayment
         self.update(mtconn)
         return mtconn
     def update(self, mtconn):
@@ -27,7 +29,7 @@ class MTurkConnectionController(object):
         mt_conn = self.get_by_email(email)
         is_authed = mt_conn.try_auth() if mt_conn else False
         if is_authed and mt_conn.begin_run(max_assignments):
-            self.update(mtconn)
+            self.update(mt_conn)
 
 
         
