@@ -35,4 +35,10 @@ class MTurkConnectionController(object):
         mt_conn = self.get_by_email(email)
         mt_conn.end_run()
         self.update(mt_conn)
+        
+    def make_payments(self, email=None):
+        from controllers import CHITController
+        mt_conn = self.get_by_email(email)
+        submitted_assignments = mt_conn.get_payments_to_make()
+        mt_conn.make_payments(assignment_ids=[a[0] for a in submitted_assignments if CHITController.secret_code_matches(a[1], a[2])])
             
