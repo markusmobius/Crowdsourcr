@@ -147,6 +147,15 @@ class XMLUploadHandler(BaseHandler):
 class RecruitingBeginHandler(BaseHandler):
     def post(self):
         admin_email = self.get_secure_cookie('admin_email')
+        max_assignments = self.chit_controller.get_agg_hit_info()['num_total']
+        if admin_email:
+            self.mturkconnection_controller.begin_run(admin_email, max_assignments)
+        self.finish()
+        
+
+class RecruitingInfoHandler(BaseHandler):
+    def post(self):
+        admin_email = self.get_secure_cookie('admin_email')
         if admin_email:
             recruiting_info = json.loads(self.get_argument('data', '{}'))
             recruiting_info['email'] = admin_email
@@ -159,10 +168,12 @@ class AdminInfoHandler(BaseHandler):
         if admin_email and self.admin_controller.get_by_email(admin_email):
             turk_info = self.mturkconnection_controller.get_by_email(admin_email)
             turk_balance = turk_info.get_balance() if turk_info else None
+            all_hits = turk_info.get_all_hits() if turk_info else []
             self.return_json({'authed' : True,
                               'email' : self.get_secure_cookie('admin_email'),
                               'hitinfo' : self.chit_controller.get_agg_hit_info(),
-                              'turkinfo' : str(turk_balance) if turk_balance else False})
+                              'turkinfo' : str(turk_balance) if turk_balance else False,
+                              'allhits' : all_hits})
         else:
             self.return_json({'authed' : False})
 

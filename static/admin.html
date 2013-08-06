@@ -17,7 +17,16 @@
 	      beginRecruiting(getStatus);
 	  });
 
+	  $('#admin-begin-run').find('button:first').click(function(evt) {
+	      evt.preventDefault();
+	      beginRun(getStatus);
+	  });
+
 	  getStatus();
+      }
+
+      function beginRun(callback) {
+	  $.post('/admin/recruit/begin', {}, callback);
       }
 
       function getStatus() {
@@ -28,7 +37,8 @@
 		  if (!data.turkinfo) {
 		      $('#admin-turk-info').html('Could not authenticate with MTurk.');
 		  } else {
-		      $('#admin-turk-info').html('MTurk running. Current balance: ' + data.turkinfo);
+		      $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkinfo);
+		      $('#admin-begin-run').show();
 		  }
 		  $('#admin-xml-upload').show();
 		  $('#admin-mturk-cred').show();
@@ -73,6 +83,12 @@
 	<div id="admin-login-info"></div>
 	<div id="admin-task-info"></div>
 	<div id="admin-turk-info"></div>
+	<div id="admin-is-running" style="display: none;">
+	  <h4> MTurk is running !!! </h4>
+	</div>
+	<div id="admin-begin-run" style="display:none;">
+	  <button class="btn btn-success">Begin Run</button>
+	</div>
       </div>
       <div id="admin-xml-upload" style="display: none;">
 	<form id="xml-upload-form">
