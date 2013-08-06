@@ -38,6 +38,7 @@ class Application(tornado.web.Application):
             (r'/types/view/(.*)', handlers.CTypeViewHandler),
             (r'/admin/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='admin.html')),
             (r'/admin/login/?', handlers.GoogleLoginHandler),
+            (r'/admin/download/?', handlers.CSVDownloadHandler),
             (r'/admin/recruit/?', handlers.RecruitingInfoHandler),
             (r'/admin/recruit/end/?', handlers.RecruitingEndHandler),
             (r'/admin/recruit/begin/?', handlers.RecruitingBeginHandler),

@@ -27,6 +27,11 @@
 	      $.post('/admin/recruit/end/', {}, getStatus);
 	  });
 
+	  $('#download-data-btn').click(function(evt) {
+	      evt.preventDefault();
+	      window.location.href = '/admin/download/';
+	  });
+
 	  getStatus();
       }
 
@@ -126,6 +131,7 @@
 	      <input id="xml-upload-file" type="file" name="file"/><br>
 	    </div>
 	    <button class="btn btn-success">Upload XML</button>
+	    <button id="download-data-btn" class="btn btn-default">Download current data</button>
 	  </fieldset>
 	</form>
       </div>

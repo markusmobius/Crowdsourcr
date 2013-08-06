@@ -229,3 +229,11 @@ class CResponseHandler(BaseHandler):
                                           'taskid' : taskid})
         self.set_secure_cookie('taskindex', str(task_index + 1))
         self.finish()
+
+class CSVDownloadHandler(BaseHandler):
+    def get(self):
+        self.set_header ('Content-Type', 'text/csv')
+        self.set_header ('Content-Disposition', 'attachment; filename=data.csv')
+        for row in self.cresponse_controller.write_response_to_csv():
+            self.write("%s\n" % row)
+        self.finish()

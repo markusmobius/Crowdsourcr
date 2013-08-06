@@ -73,8 +73,11 @@ class MTurkConnection(object):
         self.running = False
         self.hitid = None
     def get_payments_to_make(self):
-        all_assignments = self.mturk_conn.get_assignments(self.hitid)
-        return [[a.AssignmentId, a.WorkerId, a.answers[0][0].fields[0]] for a in all_assignments if a.AssignmentStatus == 'Submitted']
+        if not self.hitid or not self.running:
+            return []
+        else:
+            all_assignments = self.mturk_conn.get_assignments(self.hitid)
+            return [[a.AssignmentId, a.WorkerId, a.answers[0][0].fields[0]] for a in all_assignments if a.AssignmentStatus == 'Submitted']
 
     def make_payments(self, assignment_ids=[]) :
         for assignmentid in assignment_ids:

@@ -1,3 +1,4 @@
+import tornado.escape
 from models import CResponse
 
 class CResponseController(object):
@@ -12,3 +13,11 @@ class CResponseController(object):
     def get_reponse_info_by_worker(self, workerid):
         d = self.db.cresponses.find({'workerid' : workerid})
         return {'count' : len(d) }
+    def write_response_to_csv(self) :
+        return ("%s\t%s\t%s" % (d['taskid'],
+                                d['workerid'],
+                                tornado.escape.json_encode(d['response']))
+                for d in self.db.cresponses.find())
+
+            
+        
