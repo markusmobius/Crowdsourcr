@@ -31,6 +31,8 @@ class MTurkConnectionController(object):
         if is_authed and mt_conn.begin_run(max_assignments):
             self.update(mt_conn)
 
-
-        
+    def end_run(self, email=None) :
+        mt_conn = self.get_by_email(email)
+        mt_conn.end_run()
+        self.update(mt_conn)
             

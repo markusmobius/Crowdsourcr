@@ -22,6 +22,11 @@
 	      beginRun(getStatus);
 	  });
 
+	  $('#admin-end-run').find('button:first').click(function(evt) {
+	      evt.preventDefault();
+	      $.post('/admin/recruit/end/', {}, getStatus);
+	  });
+
 	  getStatus();
       }
 
@@ -45,8 +50,10 @@
 		      if (data.turkinfo.running) {
 			  $('#admin-turk-info').append('<p>Currently running with HITId ' + data.turkinfo.hitid + '.</p>');
 			  $('#admin-begin-run').hide();
+			  $('#admin-end-run').show();
 		      } else {
 			  $('#admin-turk-info').append('<p> Not currently running. </p>');
+			  $('#admin-end-run').hide();
 			  $('#admin-begin-run').show();
 		      }
 
@@ -105,6 +112,9 @@
 	</div>
 	<div id="admin-begin-run" style="display:none;">
 	  <button class="btn btn-success">Begin Run</button>
+	</div>
+	<div id="admin-end-run" style="display: none;">
+	  <button class="btn btn-danger">End Run</button>
 	</div>
       </div>
       <div id="admin-xml-upload" class="vertical-padding" style="display: none;">

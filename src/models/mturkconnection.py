@@ -68,5 +68,56 @@ class MTurkConnection(object):
         self.running = True
         self.hitid = hitinfo[0].HITId
         return True
+    def end_run(self):
+        self.mturk_conn.expire_hit(self.hitid)
+        self.running = False
+        self.hitid = None
+    def get_payments_to_make(self):
+        all_assignments = self.mturk_conn.get_assignments(self.hitid)
+        return [(a.AssignmentId, a.WorkerId, a.answers[0][0].fields[0]) for a in all_assignments]
 
-            
+    def make_payments(self, assignment_ids=[]) :
+        for assignmentid in assignment_ids:
+            try:
+                self.mturk_conn.approve_assignment(assignmentid)
+            except:
+                continue
+
+
+
+
+def _assignment_scratchpad():
+    """
+    # can only call this on status==Submitted
+    #        self.mturk_conn.approve_assignment(all_assignments[0].AssignmentId)
+    print all_assignments[0].AssignmentStatus
+    print all_assignments[0].AssignmentId
+    print all_assignments[0].AutoApprovalTime
+    print all_assignments[0].HITId
+    print all_assignments[0].WorkerId
+    print all_assignments[0].answers[0][0].fields[0]
+    print dir(all_assignments[0].answers[0][0].fields)
+    
+    
+    all_assignments = self.mturk_conn.get_assignments(self.hitid) returns
+    
+    list of ['AcceptTime', 'Assignment', 'AssignmentId', 'AssignmentStatus', 'AutoApprovalTime', 'HITId', 'SubmitTime', 'WorkerId']
+    print all_assignments[0].AssignmentStatus
+    print all_assignments[0].AssignmentId
+    print all_assignments[0].AutoApprovalTime
+    print all_assignments[0].HITId
+    print all_assignments[0].WorkerId
+    
+    outputs
+    
+    Submitted
+    2OQ5COW0LGRZ3MSYTQ365NUZ2G8Y75
+    2013-09-05T17:19:19Z
+    22ESBRI8IUB2Y8PFXMJTVB3L22CG4T
+    A1C3R0EZ6HI9OX
+    
+    and we can fetch the answer (we only have one field, the secret code...) with:
+    all_assignments[0].answers[0][0].fields[0]
+    
+    """
+    

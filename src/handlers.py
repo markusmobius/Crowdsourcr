@@ -151,7 +151,19 @@ class RecruitingBeginHandler(BaseHandler):
         if admin_email:
             self.mturkconnection_controller.begin_run(admin_email, max_assignments)
         self.finish()
-        
+
+class RecruitingEndHandler(BaseHandler):
+    def post(self):
+        admin_email = self.get_secure_cookie('admin_email')
+        self.mturkconnection_controller.end_run(admin_email)
+        self.finish()
+
+class AssignmentTestHandler(BaseHandler):
+    def post(self):
+        admin_email = self.get_secure_cookie('admin_email')
+        mt_conn = self.mturkconnection_controller.get_by_email(admin_email)        
+        mt_conn.payments_to_make()
+        self.finish()
 
 class RecruitingInfoHandler(BaseHandler):
     def post(self):
