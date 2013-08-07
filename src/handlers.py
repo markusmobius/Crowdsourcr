@@ -8,6 +8,7 @@ import datetime
 import os
 import uuid
 import pymongo
+import Settings
 import models
 import controllers
 import json
@@ -51,7 +52,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class MainHandler(BaseHandler):
     def get(self):
-        self.render("index.html", username='Sam')
+        self.render("index.html")
 
 class AuthLoginHandler(BaseHandler):
     def get(self):
@@ -134,19 +135,23 @@ class GoogleLoginHandler(BaseHandler,
 
 class XMLUploadHandler(BaseHandler):
     def post(self):
-        from tempfile import NamedTemporaryFile
-        #windows can't open temp files
-        with open(os.path.join(os.getcwd(), uuid.uuid4().hex + '.upload'), 'wb') as temp: #NamedTemporaryFile() as temp:
-            temp.write(self.request.files['file'][0]['body'])
-            temp.flush()
-            xmltask = self.xmltask_controller.xml_upload(temp.name)
-            for module in xmltask.get_modules():
-                self.ctype_controller.create(module)
-            for task in xmltask.get_tasks():
-                self.ctask_controller.create(task)
-            for hit in xmltask.get_hits():
-                self.chit_controller.create(hit)
-        self.return_json({'success' : True})
+        if not self.request.files :
+            self.return_json({'error' : "Error: No file selected."});
+            return
+        try :
+            with open(os.path.join(Settings.TMP_PATH, uuid.uuid4().hex + '.upload'), 'wb') as temp:
+                temp.write(self.request.files['file'][0]['body'])
+                temp.flush()
+                xmltask = self.xmltask_controller.xml_upload(temp.name)
+                for module in xmltask.get_modules():
+                    self.ctype_controller.create(module)
+                for task in xmltask.get_tasks():
+                    self.ctask_controller.create(task)
+                for hit in xmltask.get_hits():
+                    self.chit_controller.create(hit)
+            self.return_json({'success' : True})
+        except Exception as x :
+            self.return_json({'error' : type(x).__name__ + ": " + str(x)})
 
 class RecruitingBeginHandler(BaseHandler):
     def post(self):

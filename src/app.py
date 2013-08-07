@@ -14,7 +14,7 @@ import os
  
 from tornado.options import define, options
  
-define('port', default=8000, help="run on the given port", type=int)
+define('port', default=8080, help="run on the given port", type=int)
 
 def random256() :
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
@@ -33,9 +33,9 @@ class Application(tornado.web.Application):
         app_handlers = [
             (r'/', handlers.MainHandler),
 #            (r'/types/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='types.html')),
-            (r'/types/new/?', handlers.CTypeCreateHandler),
-            (r'/types/all/?', handlers.CTypeAllHandler),
-            (r'/types/view/(.*)', handlers.CTypeViewHandler),
+#            (r'/types/new/?', handlers.CTypeCreateHandler),
+#            (r'/types/all/?', handlers.CTypeAllHandler),
+#            (r'/types/view/(.*)', handlers.CTypeViewHandler),
             (r'/admin/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='admin.html')),
             (r'/admin/login/?', handlers.GoogleLoginHandler),
             (r'/admin/download/?', handlers.CSVDownloadHandler),
@@ -58,6 +58,7 @@ def main():
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port)
+    Settings.logging.info("Started news_crowdsourcer.")
     tornado.ioloop.IOLoop.instance().start()
  
 if __name__ == "__main__":
