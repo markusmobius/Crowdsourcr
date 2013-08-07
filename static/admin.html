@@ -71,6 +71,8 @@
 	      }
 	  });
           $.get('/admin/hits', function (data) {
+              $('#admin-hits').hide();
+              $('#admin-hit-tasks').hide();
               if (data.ids !== undefined) {
                   var $d = $('#admin-hits-dest');
                   $d.empty();
