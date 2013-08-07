@@ -13,7 +13,35 @@
       $(onLoad);
       var MODULES = [];
 
+      function getAdminTask() {
+        var hash = $(window.location).attr('hash');
+        var prefix = '#task='
+        if (hash.slice(0, prefix.length) === prefix) {
+          return hash.slice(prefix.length);
+        } else {
+          return undefined;
+        }
+      }
+
+      function showWithData(data) {
+          $('.content-main').show();
+          $('.login-content').hide();
+          $('#hit-content').html(data.content);
+          $('#hit-modules').empty();
+          for (var i = 0; i < data.modules.length; i++){
+              getModule(data.modules[i], registerModule);
+          }
+      }
+
       function requestNextTask() {
+          if (getAdminTask() !== undefined) {
+            $('#next-task-button').attr('disabled', true);
+            $.get('/admin/tasks/' + getAdminTask(), function (data) {
+                $('.loading-holder').hide();
+                showWithData(data);
+            });
+            return;
+          }
 	  $.get('/HIT/view/', function(data) {
 	      $('.loading-holder').hide();
 
@@ -40,11 +68,7 @@
 		  $('.login-content').hide();
 		  $('.turk-verify-content').show().find('.secret-code').html(data.verify_code);
 	      } else {
-		  $('#hit-content').html(data.content);
-		  $('#hit-modules').empty();
-		  for (var i = 0; i < data.modules.length; i++){
-		      getModule(data.modules[i], registerModule);
-		  }
+                  showWithData(data);
 	      }
 	  });
       }

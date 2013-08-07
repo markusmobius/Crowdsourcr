@@ -11,6 +11,8 @@ class XMLTask(object) :
         self.modules = self.root.find('modules')
         self.tasks = self.root.find('tasks')
         self.hits = self.root.find('hits')
+        self.documents = self.root.find('documents')
+        self.docs = self.get_documents()
     def get_modules(self):
         for module in self.modules.iter('module'):
             module_out = {'header' : module.find('header').text,
@@ -26,13 +28,22 @@ class XMLTask(object) :
 
     def get_tasks(self):
         for task in self.tasks.iter('task'):
-                 yield {'content' : task.find('content').text,
-                        'taskid' : task.find('taskid').text,
-                        'modules' : task.find('modules').text.split()}
+            # first see if there is a corresponding document
+            content = task.find('content').text.strip()
+            content = self.docs.get(content, content)
+            yield {'content' : content,
+                   'taskid' : task.find('taskid').text,
+                   'modules' : task.find('modules').text.split()}
     def get_hits(self):
         for hit in self.hits.iter('hit'):
             yield {'hitid' : hit.find('hitid').text,
                    'tasks' : hit.find('tasks').text.split()}
+    def get_documents(self) :
+        docs = {}
+        if self.documents :
+            for doc in self.documents.iter('document') :
+                docs[doc.find('name').text.strip()] = doc.find('content').text
+        return docs
 
 class XMLQuestionRegistry(type):
     def __init__(cls, name, bases, dct) :

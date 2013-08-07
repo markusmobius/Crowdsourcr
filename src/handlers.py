@@ -54,6 +54,7 @@ class MainHandler(BaseHandler):
     def get(self):
         self.render("index.html")
 
+# Doesn't appear to be used (instead using GoogleLoginHandler)
 class AuthLoginHandler(BaseHandler):
     def get(self):
         try:
@@ -122,7 +123,10 @@ class GoogleLoginHandler(BaseHandler,
            try:
                user = yield self.get_authenticated_user()
                # {'first_name': u'Sam', 'claimed_id': u'https://www.google.com/accounts/o8/id?id=AItOawkwMPsQnRxJcwHuqpxj5CaCSZ9mhkKMkPQ', 'name': u'Sam Grondahl', 'locale': u'en', 'last_name': u'Grondahl', 'email': u'samgrondahl@gmail.com'}
+               full_name = " ".join(u for u in [user['first_name'], user['last_name']]
+                                    if u != None)
                self.set_secure_cookie('admin_email', user['email'])
+               self.set_secure_cookie('admin_name', full_name)
                self.redirect('/admin/')
            except tornado.auth.AuthError as e:
                self.write('you did not auth!')
@@ -186,16 +190,59 @@ class AdminInfoHandler(BaseHandler):
             if turk_conn:
                 turk_info = turk_conn.serialize()
                 turk_balance = (turk_conn.get_balance() or [0])[0]
-                #TODO: move this to ioloop (instead of on info call) -- this makes payments to turkers who have submitted the turk HIT (human intelligence task)
-                self.mturkconnection_controller.make_payments(admin_email)
+                ensure_automatic_make_payments(admin_email)
             
             self.return_json({'authed' : True,
                               'email' : self.get_secure_cookie('admin_email'),
+                              'full_name' : self.get_secure_cookie('admin_name'),
                               'hitinfo' : self.chit_controller.get_agg_hit_info(),
                               'turkinfo' : turk_info,
                               'turkbalance' : turk_balance})
         else:
             self.return_json({'authed' : False})
+
+class AdminHitInfoHandler(BaseHandler):
+    def get(self, id=None) :
+        admin_email = self.get_secure_cookie('admin_email')
+        if admin_email and self.admin_controller.get_by_email(admin_email):
+            if id == None :
+                ids = self.chit_controller.get_chit_ids()
+                self.return_json({'ids' : ids})
+            else :
+                chit = self.chit_controller.get_chit_by_id(id)
+                self.return_json({'tasks' : chit.tasks})
+        else :
+            self.return_json({'authed' : False})
+
+class AdminTaskInfoHandler(BaseHandler):
+    def get(self, tid) :
+        admin_email = self.get_secure_cookie('admin_email')
+        if admin_email and self.admin_controller.get_by_email(admin_email):
+            task = self.ctask_controller.get_task_by_id(tid)
+            self.return_json(task.serialize())
+        else :
+            self.return_json(False)
+
+
+PERIODIC_PAYERS = {} # admin_email -> payer
+def ensure_automatic_make_payments(admin_email) :
+    """Adds an automatic payer to the ioloop if one does not already
+    exist for the particular admin."""
+    def _ensure() :
+        if admin_email not in PERIODIC_PAYERS :
+            Settings.logger.info("Adding periodic payer for " + admin_email)
+            def callback() :
+                try :
+                    self.mturkconnection_controller.make_payments(admin_email)
+                except :
+                    Settings.logger.exception("Error in automatic payer for " + admin_email)
+                    pc.stop()
+            callback_time = 1000 * 10 # 10 seconds
+            pc = tornado.ioloop.PeriodicCallback(callback, callback_time)
+            PERIODIC_PAYERS[admin_email] = pc
+            pc.start()
+    # run this from the main ioloop just in case we have multiple threads
+    tornado.ioloop.instance().add_callback(_ensure)
 
 class WorkerLoginHandler(BaseHandler):
     def post(self):

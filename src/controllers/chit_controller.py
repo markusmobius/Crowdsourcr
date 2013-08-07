@@ -20,6 +20,9 @@ class CHITController(object):
     def get_next_chit_id(self):
         d = self.db.chits.find_one({'num_completed_hits' : {'$lt' : 1}})
         return d['hitid'] if d else None
+    def get_chit_ids(self) :
+        ds = self.db.chits.find({}, {'hitid' : True})
+        return [d['hitid'] for d in ds]
     def get_agg_hit_info(self):
         result = self.db.chits.map_reduce(self.sum_map, self.sum_reduce, "chit_mapreducesum_results")
         num_completed_hits = result.find_one()
