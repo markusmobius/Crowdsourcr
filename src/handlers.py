@@ -190,7 +190,8 @@ class AdminInfoHandler(BaseHandler):
             if turk_conn:
                 turk_info = turk_conn.serialize()
                 turk_balance = (turk_conn.get_balance() or [0])[0]
-                ensure_automatic_make_payments(admin_email)
+                ensure_automatic_make_payments(self.mturkconnection_controller,
+                                               admin_email)
             
             self.return_json({'authed' : True,
                               'email' : self.get_secure_cookie('admin_email'),
@@ -225,24 +226,24 @@ class AdminTaskInfoHandler(BaseHandler):
 
 
 PERIODIC_PAYERS = {} # admin_email -> payer
-def ensure_automatic_make_payments(admin_email) :
+def ensure_automatic_make_payments(mturk_controller, admin_email) :
     """Adds an automatic payer to the ioloop if one does not already
     exist for the particular admin."""
     def _ensure() :
         if admin_email not in PERIODIC_PAYERS :
-            Settings.logger.info("Adding periodic payer for " + admin_email)
+            Settings.logging.info("Adding periodic payer for " + admin_email)
             def callback() :
                 try :
-                    self.mturkconnection_controller.make_payments(admin_email)
+                    mturk_controller.make_payments(admin_email)
                 except :
-                    Settings.logger.exception("Error in automatic payer for " + admin_email)
+                    Settings.logging.exception("Error in automatic payer for " + admin_email)
                     pc.stop()
             callback_time = 1000 * 10 # 10 seconds
             pc = tornado.ioloop.PeriodicCallback(callback, callback_time)
             PERIODIC_PAYERS[admin_email] = pc
             pc.start()
     # run this from the main ioloop just in case we have multiple threads
-    tornado.ioloop.instance().add_callback(_ensure)
+    tornado.ioloop.IOLoop.instance().add_callback(_ensure)
 
 class WorkerLoginHandler(BaseHandler):
     def post(self):
