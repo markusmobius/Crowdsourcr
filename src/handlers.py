@@ -33,6 +33,9 @@ class BaseHandler(tornado.web.RequestHandler):
     def chit_controller(self):
         return controllers.CHITController(self.db)
     @property
+    def cdocument_controller(self):
+        return controllers.CDocumentController(self.db)
+    @property
     def xmltask_controller(self):
         return controllers.XMLTaskController(self.db)
     @property
@@ -153,9 +156,18 @@ class XMLUploadHandler(BaseHandler):
                     self.ctask_controller.create(task)
                 for hit in xmltask.get_hits():
                     self.chit_controller.create(hit)
+                for name, doc in xmltask.docs.iteritems():
+                    self.cdocument_controller.create(name, doc)
             self.return_json({'success' : True})
         except Exception as x :
             self.return_json({'error' : type(x).__name__ + ": " + str(x)})
+
+class DocumentViewHandler(BaseHandler):
+    def get(self, name):
+        try :
+            self.finish(self.cdocument_controller.get_document_by_name(name))
+        except :
+            raise tornado.web.HTTPError(404)
 
 class RecruitingBeginHandler(BaseHandler):
     def post(self):

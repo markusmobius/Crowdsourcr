@@ -8,6 +8,7 @@ class XMLTaskController(object):
         self.db.ctypes.drop()
         self.db.cresponses.drop()
         self.db.chits.drop()
+        self.db.cdocs.drop()
         return  models.XMLTask(xml_path)
 
 """

@@ -50,6 +50,7 @@ class Application(tornado.web.Application):
             (r'/admin/tasks/(.+)', handlers.AdminTaskInfoHandler),
             (r'/superadmin/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='superadmin.html')),
             (r'/admin/xmlupload/?', handlers.XMLUploadHandler),
+            (r'/document/(.+)', handlers.DocumentViewHandler),
             (r'/HIT/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='hit.html')),
             (r'/HIT/view/?', handlers.CHITViewHandler),
             (r'/HIT/submit/?', handlers.CResponseHandler),
