@@ -108,6 +108,14 @@ class AdminCreateHandler(BaseHandler) :
         else:
             self.write("error: unauthorized")
 
+class AdminRemoveHandler(BaseHandler) :
+    def post(self):
+        if self.is_super_admin():
+            self.admin_controller.remove(json.loads(self.get_argument("data", "{}")))
+            self.return_json({"success" : True})
+        else:
+            self.write("error: unauthorized")
+
 class AdminAllHandler(BaseHandler) :
     def get(self):
         if self.is_super_admin():
@@ -195,7 +203,11 @@ class RecruitingInfoHandler(BaseHandler):
 class AdminInfoHandler(BaseHandler):
     def get(self):
         admin_email = self.get_secure_cookie('admin_email')
-        if admin_email and self.admin_controller.get_by_email(admin_email):
+        if not admin_email:
+            self.return_json({'authed' : False, 'reason' : 'no_login'})
+        if not self.admin_controller.get_by_email(admin_email):
+            self.return_json({'authed' : False, 'reason' : 'not_admin'})
+        else :
             turk_conn = self.mturkconnection_controller.get_by_email(admin_email)
             turk_info = False 
             turk_balance = False
@@ -211,8 +223,6 @@ class AdminInfoHandler(BaseHandler):
                               'hitinfo' : self.chit_controller.get_agg_hit_info(),
                               'turkinfo' : turk_info,
                               'turkbalance' : turk_balance})
-        else:
-            self.return_json({'authed' : False})
 
 class AdminHitInfoHandler(BaseHandler):
     def get(self, id=None) :

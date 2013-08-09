@@ -66,8 +66,14 @@
 		  $('#admin-xml-upload').show();
 		  $('#admin-mturk-cred').show();
 	      } else {
-                  // Not authenticated. Just redirect to the login page.
-                  window.location = "/admin/login";
+                  if (data.reason === 'not_admin') {
+                    $('#admin-login-info').html('You are not an admin.  Talk to a superadmin to add you to the admins.');
+                  } else if (data.reason === 'no_login') {
+                    // Not authenticated. Just redirect to the login page.
+                    window.location = "/admin/login";
+                  } else {
+                    $('#admin-login-info').html('You cannot see this for some unknown reason.');
+                  }
 	      }
 	  });
           $.get('/admin/hits', function (data) {
@@ -240,10 +246,12 @@
       </div>
     </div>
     <div class="splitscreen">
-      <div id="admin-hits" style="display:none;">
-	<legend>Uploaded HITs</legend>
-	<div id="admin-hits-dest"></div>
-	<div id="admin-hit-tasks" style="padding-top: 2em;">
+      <div class="vertical-padding">
+	<div id="admin-hits" style="display:none;">
+	  <legend>Uploaded HITs</legend>
+	  <div id="admin-hits-dest"></div>
+	  <div id="admin-hit-tasks" style="padding-top: 2em;">
+	  </div>
 	</div>
       </div>
     </div>
