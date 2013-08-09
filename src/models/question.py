@@ -1,4 +1,3 @@
-from model import Model
 
 class QTypeRegistry(type) :
     def __init__(cls, name, bases, dct) :
@@ -9,20 +8,47 @@ class QTypeRegistry(type) :
 class Question(object) :
     __metaclass__ = QTypeRegistry
     qtype_subclasses = {}
-    def __init__(self, text):
-        self.text = text
+    def __init__(self, varname=None, questiontext=None, valuetype=None):
+        self.varname = varname
+        self.questiontext = questiontext
+        self.valuetype = valuetype
     @classmethod
     def deserialize(cls, d) :
-        return cls.qtype_subclasses[d['type']].from_dict(d['text'], d['content'])
+        return cls.qtype_subclasses[d['valuetype']].deserialize(d)
     def serialize(self) :
-        return {"type" : self.typeName,
-                "text" : self.text,
-                "content" : self.to_dict()}
+        return {'valuetype' : self.valuetype,
+                'varname' : self.varname,
+                'questiontext' : self.questiontext,
+                'content' : self.content}
+
+class AbstractQuestion(Question):
+    def __init__(self, varname=None, questiontext=None, valuetype=None, content=[]) :
+        Question.__init__(self, varname, questiontext, valuetype)
+        self.content = content
+    @classmethod
+    def deserialize(cls, d):
+        return cls(d['varname'],
+                   d['questiontext'], 
+                   d['valuetype'],
+                   d['content'])
 
 
+class CategoricalQuestion(AbstractQuestion):
+    typeName = 'categorical'
+
+class NumericQuestion(AbstractQuestion):
+    typeName = 'numeric'
+    
+
+
+
+
+
+
+"""
 class AbstractMultiQType(Question) :
-    def __init__(self, text, options) :
-        Question.__init__(self, text)
+    def __init__(self, varname=None, text=None, valuetype=None, options=[]) :
+        Question.__init__(self, varname, text, valuetype)
         self.options = options
     @classmethod
     def from_dict(cls, text, d) :
@@ -84,3 +110,5 @@ class GridQType(Question) :
     def to_dict(self) :
         return { 'rowoptions' : self.rowoptions,
                  'coloptions' : self.coloptions }
+
+"""

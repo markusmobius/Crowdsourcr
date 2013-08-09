@@ -1,0 +1,25 @@
+<QuestionForm xmlns="[the QuestionForm schema URL]">
+  <Overview>
+    <Title>This is a news classifcation task.</Title>
+    <Text>
+      You will be reading news articles and answering questions about them. To begin, navigate to the following url : localhost:8000/HIT/
+    </Text>
+  </Overview>
+  <Question>
+    <QuestionIdentifier>secretcode</QuestionIdentifier>
+    <DisplayName>Secret Code</DisplayName>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+      <Text>
+	Input the 16 character secret code you receive after the game to receive payment.
+      </Text>
+    </QuestionContent>
+    <AnswerSpecification>
+      <FreeTextAnswer>
+        <Constraints>
+          <Length minLength="16" maxLength="16" />
+        </Constraints>
+      </FreeTextAnswer>
+    </AnswerSpecification>
+  </Question>
+</QuestionForm>

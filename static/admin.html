@@ -4,16 +4,248 @@
     <link rel="stylesheet" href="/static/css/main.css" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript">
+      $(onReady);
+      function onReady() {
+	  $('#xml-upload-form').find('button:first').click(function(evt) {
+	      evt.preventDefault();
+	      uploadXML();
+	  });
 
+	  $('#begin-recruiting-button').click(function(evt) {
+	      evt.preventDefault();
+	      beginRecruiting(getStatus);
+	  });
+
+	  $('#admin-begin-run').find('button:first').click(function(evt) {
+	      evt.preventDefault();
+	      beginRun(getStatus);
+	  });
+
+	  $('#admin-end-run').find('button:first').click(function(evt) {
+	      evt.preventDefault();
+	      $.post('/admin/recruit/end/', {}, getStatus);
+	  });
+
+	  $('#download-data-btn').click(function(evt) {
+	      evt.preventDefault();
+	      window.location.href = '/admin/download/';
+	  });
+
+	  getStatus();
+      }
+
+      function beginRun(callback) {
+	  $.post('/admin/recruit/begin', {}, callback);
+      }
+
+      function getStatus() {
+	  $.get('/admin/info/', function(data) {
+	      if (data.authed) {
+		  $('#admin-login-info').text('Logged in as ' + data.full_name + ' (' + data.email + ').');
+		  $('#admin-task-info').html(data.hitinfo.num_total + ' HITs loaded. ' + data.hitinfo.num_complete + ' HITs complete. ');
+		  if (data.turkbalance === false) {
+		      $('#admin-turk-info').html('Could not authenticate with MTurk.');
+		  } else {
+		      $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
+		      var mturk_form = $('#admin-mturk-cred-form');
+		      mturk_form.find('input[name="access_key"]:first').val(data.turkinfo.access_key);
+		      mturk_form.find('input[name="secret_key"]:first').val(data.turkinfo.secret_key);		  
+		      mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
+		      if (data.turkinfo.running) {
+			  $('#admin-turk-info').append('<p>Currently running with HITId ' + data.turkinfo.hitid + '.</p>');
+			  $('#admin-begin-run').hide();
+			  $('#admin-end-run').show();
+		      } else {
+			  $('#admin-turk-info').append('<p> Not currently running. </p>');
+			  $('#admin-end-run').hide();
+			  $('#admin-begin-run').show();
+		      }
+
+		  }
+		  $('#admin-xml-upload').show();
+		  $('#admin-mturk-cred').show();
+	      } else {
+                  // Not authenticated. Just redirect to the login page.
+                  window.location = "/admin/login";
+	      }
+	  });
+          $.get('/admin/hits', function (data) {
+              $('#admin-hits').hide();
+              $('#admin-hit-tasks').hide();
+              if (data.ids !== undefined) {
+                  var $d = $('#admin-hits-dest');
+                  $d.empty();
+                  var sep = "";
+                  for (var i = 0, hid; hid = data.ids[i]; i++) {
+                      $d.append(sep);
+                      sep = ", ";
+                      var $a = $('<a href="#"/>').text(hid);
+                      (function (hid) {
+                          $a.on("click", function (e) {
+                              e.preventDefault();
+                              showTasks(hid);
+                              return false;
+                          });
+                      })(hid);
+                      $d.append($a);
+                  }
+                  $('#admin-hits').show();
+              }
+          });
+      }
+
+      function showTasks(hid) {
+          var $h = $('#admin-hit-tasks');
+          $h.hide().empty();
+          $.get('/admin/hits/' + hid, function (data) {
+              $h.append($('<legend/>').text("Tasks for " + hid));
+              var $dest = $('<div/>').appendTo($h);
+              var sep = "";
+              for (var i = 0, tid; tid = data.tasks[i]; i++) {
+                  $dest.append(sep);
+                  sep = ", ";
+                  var $a = $('<a target="_blank"/>').text(tid).attr('href', '/HIT/#task=' + tid);
+                  (function (tid) {
+                    $a.on('click', function (e) {
+                        e.preventDefault();
+                        showTask(tid);
+                        return false;
+                    });
+                  });//(tid);
+                  $dest.append($a);
+              }
+              $h.slideDown();
+          });
+      }
+
+      function showTask(tid) {
+          $.get('/admin/tasks/' + tid, function (data) {
+              console.log(data);
+          });
+      }
+
+      function beginRecruiting(callback) {
+	  var form_elem = $('#admin-mturk-cred-form');
+	  var mturk_info = {access_key : form_elem.find('input[name="access_key"]:first').val(),
+			    secret_key : form_elem.find('input[name="secret_key"]:first').val(),
+			    hitpayment : parseFloat(form_elem.find('input[name="hit_payment"]:first').val())};
+	  $.post('/admin/recruit/', {data : JSON.stringify(mturk_info)}, callback);
+      }
+      
+      function uploadXML() {
+          $("#xml-upload-error").hide();
+          $("#xml-upload-success").hide();
+	  var data = new FormData();
+	  data.append('file', $('#xml-upload-file')[0].files[0]);
+	  $.ajax({
+	      url: '/admin/xmlupload/',
+	      data: data,
+	      cache: false,
+	      contentType: false,
+	      processData: false,
+	      type: 'POST',
+	      success: function(data){
+                  if (data.success !== undefined) {
+                      var $succ = $("#xml-upload-success");
+                      $succ.text("Successfully uploaded.")
+                      $succ.fadeIn();
+                      getStatus();
+                  } else {
+                      var $err = $("#xml-upload-error");
+                      $err.text(data.error);
+                      $err.fadeIn();
+                  }
+	      }
+	  });
+      }
+    </script>
+    <style>
+      .vertical-padding {
+      margin: 20px 10px;
+      padding: 15px;
+      }
+      #xml-upload-error {
+        margin-top: 0.5em;
+        padding-left: 1em;
+        color: #e33;
+        display: inline-block;
+      }
+      #xml-upload-success {
+        margin-top: 0.5em;
+        padding-left: 1em;
+        color: #0a0;
+        display: inline-block;
+      }
+    </style>
   </head>
   <body>
     <div class="header-container">
       <div class="header-title abs-center"><h3>News Crowdsourcer v1.0</h3></div>
     </div>
     <div class="header-push"></div>
-    <div class="splitscreen all-admin-view">
-      <a href="/admin/login/">Login here</a>
+    <div class="splitscreen">
+      <div id="admin-info" class="vertical-padding">
+	<div id="admin-login-info"></div>
+	<div id="admin-task-info"></div>
+	<div id="admin-turk-info"></div>
+	<div id="admin-is-running" style="display: none;">
+	  <h4> MTurk is running !!! </h4>
+	</div>
+	<div id="admin-begin-run" style="display:none;">
+	  <button class="btn btn-success">Begin Run</button>
+	</div>
+	<div id="admin-end-run" style="display: none;">
+	  <button class="btn btn-danger">End Run</button>
+	</div>
+      </div>
+      <div id="admin-xml-upload" class="vertical-padding" style="display: none;">
+	<form id="xml-upload-form">
+	  <fieldset>
+	    <legend> Upload Task XML </legend>
+	    <div class="form-group">
+	      <label> Select XML File </label>
+	      <input id="xml-upload-file" type="file" name="file"/><br>
+	    </div>
+	    <button class="btn btn-success">Upload XML</button>
+	    <button id="download-data-btn" class="btn btn-default">Download current data</button>
+	    <div id="xml-upload-error" style="display:none"></div>
+	    <div id="xml-upload-success" style="display:none"></div>
+	  </fieldset>
+	</form>
+      </div>
+      <div id="admin-mturk-cred" class="vertical-padding" style="display:none;">
+	<form id="admin-mturk-cred-form">
+	  <fieldset>
+	    <legend> Recruit on MTurk </legend>
+	    <p> Your account information can be found <a href="https://portal.aws.amazon.com/gp/aws/securityCredentials">here.</a></p>
+	    <div class="form-group">
+	      <label>Access Key</label>
+	      <input type="text" name="access_key" class="form-control"/>
+	    </div>
+	    <div class="form-group">
+	      <label>Secret Key</label>
+	      <input type="text" name="secret_key" class="form-control" />
+	    </div>
+	    <div class="form-group">
+	      <label>Payment per HIT</label>
+	      <div class="input-group">
+		<span class="input-group-addon">$</span>
+		<input type="text" class="form-control" name="hit_payment">
+	      </div>
+	    </div>
+	    <button id="begin-recruiting-button" type="submit" class="btn btn-success">Update Turk Info</button>
+	  </fieldset>
+	</form>
+      </div>
     </div>
-    <div class="splitscreen create-new-admin"></div>
+    <div class="splitscreen">
+      <div id="admin-hits" style="display:none;">
+	<legend>Uploaded HITs</legend>
+	<div id="admin-hits-dest"></div>
+	<div id="admin-hit-tasks" style="padding-top: 2em;">
+	</div>
+      </div>
+    </div>
  </body>
 </html>

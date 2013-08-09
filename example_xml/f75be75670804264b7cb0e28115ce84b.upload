@@ -1,0 +1,53 @@
+<xml>
+  <modules>
+    <module>
+      <header>Questions on Demographics</header>
+      <name>demographics</name>
+      <questions>
+	<question>
+	  <varname>age</varname>
+	  <questiontext>What is your age?</questiontext>
+	  <valuetype>numeric</valuetype>
+	</question>
+	<question>
+	  <varname>married</varname>
+	  <questiontext>Are you married?</questiontext>
+	  <valuetype>categorical</valuetype>
+	  <content>
+	    <categories>
+	      <category>
+		<text>Yes</text>
+		<value>yes</value>
+	      </category>
+	      <category>
+		<text>No</text>
+		<value>no</value>
+	      </category>
+	    </categories>
+	  </content>
+	</question>
+      </questions>
+    </module>
+  </modules>
+  <tasks>
+    <task>
+      <content>content1.html</content>
+      <taskid>1</taskid>
+      <modules>demographics</modules>
+    </task>
+    <task>
+      <content>content2.html</content>
+      <taskid>2</taskid>
+      <modules>demographics</modules>
+    </task>
+  </tasks>
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>
+	1
+	2
+      </tasks>
+    </hit>
+  </hits>
+</xml>

@@ -1,9 +1,18 @@
 import os
+import errno
+
 DEBUG = True
 DIRNAME = os.path.dirname(__file__)
 STATIC_PATH = os.path.join(DIRNAME, '..', 'static')
 TEMPLATE_PATH = os.path.join(DIRNAME, '..', 'template')
- 
+TMP_PATH = os.path.join(DIRNAME, '..', 'tmp')
+
+try :
+    os.makedirs(TMP_PATH)
+except OSError as x :
+    if x.errno != errno.EEXIST :
+        raise
+
 import logging
 import sys
 #log linked to the standard error stream
