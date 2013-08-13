@@ -274,6 +274,11 @@ class WorkerLoginHandler(BaseHandler):
 
 class CHITViewHandler(BaseHandler):
     def get(self):
+        if self.get_argument('force', False) :
+            print "Hit view forced by", self.get_argument('workid', None), "for id", self.get_argument('hitid', None)
+            self.set_secure_cookie('hitid', self.get_argument('hitid', None))
+            self.set_secure_cookie('workerid', self.get_argument('workerid', None))
+            self.set_secure_cookie('taskindex', '0')
         if not self.get_secure_cookie('workerid'):
             if not self.chit_controller.get_next_chit_id():
                 self.return_json({'no_hits' : True})
