@@ -108,6 +108,14 @@ class AdminCreateHandler(BaseHandler) :
         else:
             self.write("error: unauthorized")
 
+class AdminRemoveHandler(BaseHandler) :
+    def post(self):
+        if self.is_super_admin():
+            self.admin_controller.remove(json.loads(self.get_argument("data", "{}")))
+            self.return_json({"success" : True})
+        else:
+            self.write("error: unauthorized")
+
 class AdminAllHandler(BaseHandler) :
     def get(self):
         if self.is_super_admin():
@@ -195,7 +203,11 @@ class RecruitingInfoHandler(BaseHandler):
 class AdminInfoHandler(BaseHandler):
     def get(self):
         admin_email = self.get_secure_cookie('admin_email')
-        if admin_email and self.admin_controller.get_by_email(admin_email):
+        if not admin_email:
+            self.return_json({'authed' : False, 'reason' : 'no_login'})
+        if not self.admin_controller.get_by_email(admin_email):
+            self.return_json({'authed' : False, 'reason' : 'not_admin'})
+        else :
             turk_conn = self.mturkconnection_controller.get_by_email(admin_email)
             turk_info = False 
             turk_balance = False
@@ -211,8 +223,6 @@ class AdminInfoHandler(BaseHandler):
                               'hitinfo' : self.chit_controller.get_agg_hit_info(),
                               'turkinfo' : turk_info,
                               'turkbalance' : turk_balance})
-        else:
-            self.return_json({'authed' : False})
 
 class AdminHitInfoHandler(BaseHandler):
     def get(self, id=None) :
@@ -264,6 +274,11 @@ class WorkerLoginHandler(BaseHandler):
 
 class CHITViewHandler(BaseHandler):
     def get(self):
+        if self.get_argument('force', False) :
+            print "Hit view forced by", self.get_argument('workid', None), "for id", self.get_argument('hitid', None)
+            self.set_secure_cookie('hitid', self.get_argument('hitid', None))
+            self.set_secure_cookie('workerid', self.get_argument('workerid', None))
+            self.set_secure_cookie('taskindex', '0')
         if not self.get_secure_cookie('workerid'):
             if not self.chit_controller.get_next_chit_id():
                 self.return_json({'no_hits' : True})
@@ -284,7 +299,9 @@ class CHITViewHandler(BaseHandler):
                                   'verify_code' : completed_chit_info['turk_verify_code']})
             else:
                 task = self.ctask_controller.get_task_by_id(chit.tasks[task_index])
-                self.return_json(task.serialize())
+                self.return_json({"task" : task.serialize(),
+                                  "task_num" : task_index,
+                                  "num_tasks" : len(chit.tasks)})
 
 class CResponseHandler(BaseHandler):
     def post(self):
@@ -296,6 +313,7 @@ class CResponseHandler(BaseHandler):
         self.cresponse_controller.create({'submitted' : datetime.datetime.utcnow(),
                                           'response' : responses,
                                           'workerid' : worker_id,
+                                          'hitid' : chit.hitid,
                                           'taskid' : taskid})
         self.set_secure_cookie('taskindex', str(task_index + 1))
         self.finish()

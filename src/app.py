@@ -44,6 +44,7 @@ class Application(tornado.web.Application):
             (r'/admin/recruit/begin/?', handlers.RecruitingBeginHandler),
             (r'/admin/all/?', handlers.AdminAllHandler),
             (r'/admin/new/?', handlers.AdminCreateHandler),
+            (r'/admin/remove/?', handlers.AdminRemoveHandler),
             (r'/admin/info/?', handlers.AdminInfoHandler),
             (r'/admin/hits/?', handlers.AdminHitInfoHandler),
             (r'/admin/hits/(.+)', handlers.AdminHitInfoHandler),
