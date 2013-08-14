@@ -1,15 +1,52 @@
 /*global jQuery Model _ $*/
 
-"use scrict";
+"use strict";
 
-jQuery.fn.CType = function(params) {
-    return new CType(this[0], params);
+jQuery.fn.CType = function(typeGroup, params) {
+    return new CType(this[0], typeGroup, params);
 };
 
+var CTypeGroup = Model.extend({
+    constructor : function () {
+	this.types = [];
+    },
+    addType : function (ctype) {
+	this.types.push(ctype);
+    },
+    showType : function (ctype) {
+	ctype = ctype || this.types[0];
+	_.each(this.types, function (t) {
+	    if (t === ctype) {
+		t.show();
+	    } else {
+		t.hide();
+	    }
+	});
+    },
+    serialize : function () {
+	var all_module_responses = [];
+	for (var i = 0; i < this.types.length; i++) {
+	    all_module_responses.push(this.types[i].serialize());
+	}
+	return all_module_responses;
+    },
+    validate : function () {
+	for (var i = 0; i < this.types.length; i++) {
+	    if (!this.types[i].validate()) {
+		this.showType(this.types[i]);
+		return false;
+	    }
+	}
+	return true;
+    }
+});
+
 var CType = Model.extend({
-    constructor : function(el, params) {
+    constructor : function(el, typeGroup, params) {
 	params = params || {};
 	this.el = $(el);
+	this.typeGroup = typeGroup;
+	typeGroup.addType(this);
 	this.display_template = $('#ctype-display-template').html();
 	this.name = params.name || '';
 	this.header = params.header || '';
@@ -24,12 +61,20 @@ var CType = Model.extend({
 	this.question_container = sub_disp.find('.question-display-container:first');
 	this.questionlist.renderDisplay(this.question_container);
 	this.el.append(sub_disp);
-	this.updateDisplay();
+	this.hide(); // updatesdisplay, too
+	this.el.find(".ctype-when-hidden").on("click", function () {
+	    self.typeGroup.showType(self);
+	});
+	this.el.find("form").on("change", function () {
+	    $(".question-invalid").removeClass("question-invalid");
+	});
     },
     objectifyDisplay : function() {
 	return {
 	    name : this.name,
-	    header : this.header
+	    header : this.header,
+	    numQuestions : this.questionlist.numQuestions(),
+	    numCompleted : this.questionlist.numCompleted()
 	};
     },
     serialize : function() {
@@ -37,6 +82,19 @@ var CType = Model.extend({
 	    name : this.name,
 	    responses : this.questionlist.serialize()
 	};	    
+    },
+    hide : function () {
+	this.el.find(".ctype-when-visible").slideUp();
+	this.el.find(".ctype-when-hidden").show();
+	this.updateDisplay();
+    },
+    show : function () {
+	this.el.find(".ctype-when-visible").slideDown();
+	this.el.find(".ctype-when-hidden").hide();
+	this.updateDisplay();
+    },
+    validate : function () {
+	return this.questionlist.validate();
     }
 });
 
@@ -46,6 +104,7 @@ var QuestionList = Model.extend({
 	this.questions = questions || [];
 	this.display_template = $('#questionlist-display-template').html();
 	this.renderedquestions = [];
+	this.holders = [];
     },
     renderDisplay : function(el) {
         this.el = $(el);
@@ -55,6 +114,7 @@ var QuestionList = Model.extend({
 	    var question = new Question(question_holder, this.questions[i]);
 	    question.renderDisplay();
 	    this.el.append(question_holder);
+	    this.holders.push(question_holder);
 	    this.renderedquestions.push(question);
 	}	
     },
@@ -64,6 +124,27 @@ var QuestionList = Model.extend({
 	    all_question_responses.push(this.renderedquestions[i].serialize());
 	}
 	return all_question_responses;
+    },
+    numQuestions : function () {
+	return this.renderedquestions.length;
+    },
+    numCompleted : function () {
+	var c = 0;
+	for (var i = 0; i < this.renderedquestions.length; i++) {
+	    if (this.renderedquestions[i].validate()) {
+		c += 1;
+	    }
+	}
+	return c;
+    },
+    validate : function () {
+	for (var i = 0; i < this.renderedquestions.length; i++) {
+	    if (!this.renderedquestions[i].validate()) {
+		this.holders[i].addClass("question-invalid");
+		return false;
+	    }
+	}
+	return true;
     }
 });
 
@@ -91,6 +172,13 @@ var Question = Model.extend({
 	    varname : this.varname,
 	    content : this.content
 	}
+    },
+    validate : function () {
+	if (this.response() === undefined) {
+	    return false;
+	} else {
+	    return true;
+	}
     }
 });
 
@@ -116,14 +204,20 @@ var CategoricalQuestion = Question.extend({
     constructor : function(el, question) {
         this.el = $(el);
 	this.display_template = $('#catquestion-display-template').html();
+	this.display_template_sideways = $('#catquestionsideways-display-template').html();
 	this.valuetype = question.valuetype;
 	this.questiontext = question.questiontext;
 	this.varname = question.varname;
 	this.content = question.content;
     },
+    shouldBeSideways : function () {
+	return (this.content.length >=5
+		&& _.all(this.content, function (choice) { return choice.text.length <= 2; }));
+    },
     renderDisplay : function() {
         this.el.empty();
-        this.el.html(_.template(this.display_template, this.serializeForDisplay()));
+	var t = this.shouldBeSideways() ? this.display_template_sideways : this.display_template;
+        this.el.html(_.template(t, this.serializeForDisplay()));
     },
     response : function() {
 	return this.el.find('input:checked').val();

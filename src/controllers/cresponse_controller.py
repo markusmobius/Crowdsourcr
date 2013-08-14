@@ -14,9 +14,10 @@ class CResponseController(object):
         d = self.db.cresponses.find({'workerid' : workerid})
         return {'count' : len(d) }
     def write_response_to_csv(self) :
-        return ("%s\t%s\t%s" % (d['taskid'],
-                                d['workerid'],
-                                tornado.escape.json_encode(d['response']))
+        return ("%s\t%s\t%s\t%s" % (d['hitid'],
+                                   d['taskid'],
+                                   d['workerid'],
+                                   tornado.escape.json_encode(d['response']))
                 for d in self.db.cresponses.find())
 
             

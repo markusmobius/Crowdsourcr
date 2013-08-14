@@ -299,7 +299,9 @@ class CHITViewHandler(BaseHandler):
                                   'verify_code' : completed_chit_info['turk_verify_code']})
             else:
                 task = self.ctask_controller.get_task_by_id(chit.tasks[task_index])
-                self.return_json(task.serialize())
+                self.return_json({"task" : task.serialize(),
+                                  "task_num" : task_index,
+                                  "num_tasks" : len(chit.tasks)})
 
 class CResponseHandler(BaseHandler):
     def post(self):
@@ -311,6 +313,7 @@ class CResponseHandler(BaseHandler):
         self.cresponse_controller.create({'submitted' : datetime.datetime.utcnow(),
                                           'response' : responses,
                                           'workerid' : worker_id,
+                                          'hitid' : chit.hitid,
                                           'taskid' : taskid})
         self.set_secure_cookie('taskindex', str(task_index + 1))
         self.finish()
