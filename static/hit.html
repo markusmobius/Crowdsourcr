@@ -8,7 +8,7 @@
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/autoexpand.js"></script>
     <script src="/static/js/mixins.js"></script>
-    <script src="/static/js/simplemodels.js"></script>
+    <script src="/static/js/simplemodels.js?cache=22"></script>
     <script type="text/javascript">
       $(onLoad);
 
@@ -52,7 +52,10 @@
           currentTypeGroup = new CTypeGroup();
           $('#hit-modules').empty();
           for (var i = 0; i < data.modules.length; i++){
-              getModule(data.modules[i], registerModule);
+              (function (i) {
+                var dest = $('<div/>').appendTo($('#hit-modules'));
+                getModule(data.modules[i], function (mod) { registerModule(mod, dest); });
+              })(i);
           }
       }
 
@@ -136,11 +139,11 @@
           return currentTypeGroup.serialize();
       }
 
-      function registerModule(data) {
+      function registerModule(data, dest) {
 	  var module_container = $(document.createElement('div'));
 	  var module = module_container.CType(currentTypeGroup, data);
 	  module.renderDisplay();
-	  $('#hit-modules').append($(document.createElement('li')).html(module_container));
+	  dest.append($(document.createElement('li')).html(module_container));
           currentTypeGroup.showType(); // shows first
       }
 
@@ -362,7 +365,7 @@
     </script>
 
     <script type="text/template" id="catquestionsnested-display-template">
-      <% if (n <= 1) { %> <legend> <%= questiontext %> </legend> <% } %>
+      <% if (n <= 1) { %> <label> <%= questiontext %> </label> <% } %>
       <% var hidden = n > 1 ? 'style="display:none;"' : ''; %>
 	<div class="form-group" nesting-level="<%= n %>" <%= hidden %>>
 	  <% for (choice in content) { %> 
