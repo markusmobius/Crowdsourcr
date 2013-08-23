@@ -273,40 +273,54 @@ class WorkerLoginHandler(BaseHandler):
         self.finish()
 
 class CHITViewHandler(BaseHandler):
-    def get(self):
+    def post(self):
+        forced = False
+        hitid = self.get_secure_cookie('hitid')
+        workerid = self.get_secure_cookie('workerid')
+        taskindex = self.get_secure_cookie('taskindex')
         if self.get_argument('force', False) :
-            print "Hit view forced by", self.get_argument('workid', None), "for id", self.get_argument('hitid', None)
-            self.set_secure_cookie('hitid', self.get_argument('hitid', None))
-            self.set_secure_cookie('workerid', self.get_argument('workerid', None))
-            self.set_secure_cookie('taskindex', '0')
-        if not self.get_secure_cookie('workerid'):
-            if not self.chit_controller.get_next_chit_id():
+            forced = True
+            hitid = self.get_argument('hitid', None)
+            self.set_secure_cookie('hitid', hitid)
+            workerid = self.get_argument('workerid', None)
+            self.set_secure_cookie('workerid', workerid)
+            taskindex = '0'
+            self.set_secure_cookie('taskindex', taskindex)
+        if not workerid:
+            if forced :
+                self.return_json({'needs_login' : True, 'reforce' : True})
+            elif self.chit_controller.get_next_chit_id() == None :
                 self.return_json({'no_hits' : True})
             else:
                 self.return_json({'needs_login' : True})
-        elif not self.get_secure_cookie('hitid') or not self.get_secure_cookie('taskindex'):
-            self.set_secure_cookie('hitid', self.chit_controller.get_next_chit_id())
-            self.set_secure_cookie('taskindex', '0')
-            self.return_json({'reload_for_first_task':True})
-        else:
-            worker_id = self.get_secure_cookie('workerid')
-            task_index = int(self.get_secure_cookie('taskindex'))
-            chit = self.chit_controller.get_chit_by_id(self.get_secure_cookie('hitid'))
-            if task_index >= len(chit.tasks):
+        elif not hitid or not taskindex:
+            next = self.chit_controller.get_next_chit_id()
+            if next == None :
                 self.clear_all_cookies()
-                completed_chit_info = self.chit_controller.add_completed_hit(chit=chit, worker_id=worker_id)
+                self.return_json({'no_hits' : True})
+            else :
+                self.set_secure_cookie('hitid', self.chit_controller.get_next_chit_id())
+                self.set_secure_cookie('taskindex', '0')
+                self.return_json({'reload_for_first_task':True})
+        else:
+            taskindex = int(taskindex)
+            chit = self.chit_controller.get_chit_by_id(hitid)
+            if taskindex >= len(chit.tasks):
+                self.clear_all_cookies()
+                completed_chit_info = self.chit_controller.add_completed_hit(chit=chit, worker_id=workerid)
                 self.return_json({'completed_hit':True,
                                   'verify_code' : completed_chit_info['turk_verify_code']})
             else:
-                task = self.ctask_controller.get_task_by_id(chit.tasks[task_index])
+                task = self.ctask_controller.get_task_by_id(chit.tasks[taskindex])
                 self.return_json({"task" : task.serialize(),
-                                  "task_num" : task_index,
+                                  "task_num" : taskindex,
                                   "num_tasks" : len(chit.tasks)})
 
 class CResponseHandler(BaseHandler):
     def post(self):
         worker_id = self.get_secure_cookie('workerid')
         task_index = int(self.get_secure_cookie('taskindex'))
+        print "***",task_index
         chit = self.chit_controller.get_chit_by_id(self.get_secure_cookie('hitid'))
         taskid = chit.tasks[task_index]
         responses = json.loads(self.get_argument('data', '{}'))

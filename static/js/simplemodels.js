@@ -61,7 +61,7 @@ var CType = Model.extend({
 	this.question_container = sub_disp.find('.question-display-container:first');
 	this.questionlist.renderDisplay(this.question_container);
 	this.el.append(sub_disp);
-	this.hide(); // updatesdisplay, too
+	this.hide(true); // updatesdisplay, too
 	this.el.find(".ctype-when-hidden").on("click", function () {
 	    self.typeGroup.showType(self);
 	});
@@ -83,8 +83,12 @@ var CType = Model.extend({
 	    responses : this.questionlist.serialize()
 	};	    
     },
-    hide : function () {
-	this.el.find(".ctype-when-visible").slideUp();
+    hide : function (fast) {
+	if (fast) {
+	    this.el.find(".ctype-when-visible").hide()
+	} else {
+	    this.el.find(".ctype-when-visible").slideUp();
+	}
 	this.el.find(".ctype-when-hidden").show();
 	this.updateDisplay();
     },

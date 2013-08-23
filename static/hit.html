@@ -72,7 +72,7 @@
             getData['hitid'] = forcedId;
             getData['workerid'] = $('#worker-login-form').find('input:first').val();
           }
-	  $.get('/HIT/view/', getData, function(data) {
+	  $.post('/HIT/view/', getData, function(data) {
 	      $('.loading-holder').hide();
 
 	      if (data.no_hits) {
@@ -84,6 +84,9 @@
 	      }
 
 	      if (data.needs_login) {
+	          if (data.reforce) {
+                      haveUsedForcedHit = false;
+                  }
 		  $('.login-content').show();
 		  return;
 	      }
@@ -255,6 +258,12 @@
       table.radio-table * label {
         font-weight: normal;
       }
+      div.border-kludge {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -box-sizing: border-box;
+        border-style:solid;border-width:0 0 0 4px; border-color: #ccc;
+      }
     </style>
   </head>
   <body>
@@ -283,8 +292,8 @@
       <div class="clear-header splitscreen-full">
 	<div id="hit-content" class="splitscreen-content"></div>
       </div>
-      <div class="clear-header splitscreen-full">
-	<div id="hit-modules-scroll" class="splitscreen-content" style="border-style:solid;border-width:0 0 0 4px; border-color: #ccc;">
+      <div class="clear-header splitscreen-full border-kludge">
+	<div id="hit-modules-scroll" class="splitscreen-content" style="">
 	  <ul id="hit-modules"></ul><br>
 	  <button id="next-task-button" class="btn btn-success">Continue to next task</button>
 	  <div class="hit-progress-indicator">Progress</div>
