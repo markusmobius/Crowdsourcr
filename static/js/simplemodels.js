@@ -174,14 +174,27 @@ var Question = Model.extend({
 	    questiontext : this.questiontext,
 	    valuetype : this.valuetype,
 	    varname : this.varname,
-	    content : this.content
-	}
+	    content : this.content,
+	    helptext : this.helptext
+	};
     },
     validate : function () {
 	if (this.response() === undefined) {
 	    return false;
 	} else {
 	    return true;
+	}
+    },
+    renderHelpText : function() {
+	var self = this;
+	if (this.helptext) {
+	    this.el.find('.help:first').popover({ placement : 'bottom',
+						  title : undefined,
+						  content : self.helptext,
+						  trigger : 'manual' });
+	    this.el.find('.help:first').click(function() {
+		$(this).popover('toggle');
+	    });
 	}
     }
 });
@@ -192,12 +205,15 @@ var NumericQuestion = Question.extend({
 	this.display_template = $('#numericquestion-display-template').html();
 	this.valuetype = question.valuetype;
 	this.questiontext = question.questiontext;
+	this.helptext = question.helptext;
 	this.varname = question.varname;
 	this.content = question.content;
     },
     renderDisplay : function() {
         this.el.empty();
         this.el.html(_.template(this.display_template, this.serializeForDisplay()));
+	console.log(this.serializeForDisplay());
+	this.renderHelpText();
     },
     response : function() {
 	return this.el.find('input:first').val();
@@ -212,6 +228,7 @@ var CategoricalQuestion = Question.extend({
 	this.nested_display_template = $('#catquestionsnested-display-template').html();
 	this.valuetype = question.valuetype;
 	this.questiontext = question.questiontext;
+	this.helptext = question.helptext;
 	this.varname = question.varname;
 	this.content = question.content;
 	this.nesting_delimiter = '|';
@@ -225,8 +242,8 @@ var CategoricalQuestion = Question.extend({
     },
     renderDisplay : function() {
         this.el.empty();
+	var self = this;
 	if (this.nest) {
-	    var self = this;
 	    var rendered_nest = $(this.drawNesting(this.nest, 
 						   this.nested_display_template, 
 						   0, 
@@ -242,6 +259,7 @@ var CategoricalQuestion = Question.extend({
 	    var t = this.shouldBeSideways() ? this.display_template_sideways : this.display_template;
             this.el.html(_.template(t, this.serializeForDisplay()));
 	}
+	this.renderHelpText();
     },
     isNested : function() {
 	var self = this;
@@ -254,7 +272,7 @@ var CategoricalQuestion = Question.extend({
 	_.each(this.content, function(c) {
 	    var n_pointer = self.nest;
 	    _.each(c.text.split(/\s*\|\s*/), function(ordered_token) {
-		n_pointer = n_pointer[ordered_token] || (n_pointer[ordered_token] = {})
+		n_pointer = n_pointer[ordered_token] || (n_pointer[ordered_token] = {});
 	    });
 	    n_pointer['__val__'] = c.value;
 	});
@@ -274,7 +292,7 @@ var CategoricalQuestion = Question.extend({
 	}
     },
     drawNesting : function() {
-	return nestedTemplate(this.nest, this.nested_display_template, 0, this.questiontext, this.varname)
+	return nestedTemplate(this.nest, this.nested_display_template, 0, this.questiontext, this.varname);
     },
     response : function() {
 	// darn selectors... (gross)

@@ -128,6 +128,15 @@
 	      $.post('/worker/login/', {'workerid' : $('#worker-login-form').find('input:first').val()}, requestNextTask);
 	  });
 
+      $('body').on('click', function (e) {
+        var target = $(e.target);
+        if (!target.hasClass('popover') && !target.parent().hasClass('popover') && !target.hasClass('help')) {
+          $('.help').each(function() {
+            $(this).popover('hide');
+          });
+        }
+      });
+
 	  requestNextTask();
       }
 
@@ -153,6 +162,31 @@
       
     </script>
     <style>
+      .help {
+      margin-left: 2em;
+      display: inline-block;
+      height: 16px;
+      width: 16px;
+      border: 1px solid #999;
+      text-align: center;
+      line-height: 16px;
+      font-size: 12px;
+      border-radius: 14px;
+      font-family: sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      background: #999;
+      color: #fff;
+      }
+      .help:hover {
+      background: #6c6;
+      border-color: #6c6;
+      }
+
+      .popover-content {
+      font-weight: normal !important;
+      }
+
       .centering {
         margin-left: auto;
         margin-right: auto;
@@ -335,14 +369,20 @@
 
     <script type="text/template" id="numericquestion-display-template">
       <div class="form-group">
-	<label> <%= questiontext %> </label>
+	<label> 
+	  <%= questiontext %> 
+	  <% if (helptext) { %><div class="help">?</div><% } %>
+	</label>
 	<input class="form-control" type="number" name="<%= varname %>"/>
       </div>
     </script>
     
     <script type="text/template" id="catquestion-display-template">
       <div class="form-group">
-	<label> <%= questiontext %> </label>
+	<label> 
+	  <%= questiontext %> 
+	  <% if (helptext) { %><div class="help">?</div><% } %>
+	</label>
 	<% _.each(content, function(choice) { %> <div class="radio"><label><input type="radio" name="<%= varname %>" value="<%= choice.value %>"/><%= choice.text %></label></div> <% }); %>
       </div>
     </script>
