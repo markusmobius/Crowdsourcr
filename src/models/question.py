@@ -8,9 +8,11 @@ class QTypeRegistry(type) :
 class Question(object) :
     __metaclass__ = QTypeRegistry
     qtype_subclasses = {}
-    def __init__(self, varname=None, questiontext=None, valuetype=None):
+    def __init__(self, varname=None, questiontext=None, helptext=None, options=None, valuetype=None):
         self.varname = varname
         self.questiontext = questiontext
+        self.helptext = helptext
+        self.options = options
         self.valuetype = valuetype
     @classmethod
     def deserialize(cls, d) :
@@ -19,18 +21,17 @@ class Question(object) :
         return {'valuetype' : self.valuetype,
                 'varname' : self.varname,
                 'questiontext' : self.questiontext,
+                'helptext' : self.helptext,
+                'options' : self.options,
                 'content' : self.content}
 
 class AbstractQuestion(Question):
-    def __init__(self, varname=None, questiontext=None, valuetype=None, content=[]) :
-        Question.__init__(self, varname, questiontext, valuetype)
+    def __init__(self, content=[], **kwargs) :
+        Question.__init__(self, **kwargs)
         self.content = content
     @classmethod
     def deserialize(cls, d):
-        return cls(d['varname'],
-                   d['questiontext'], 
-                   d['valuetype'],
-                   d['content'])
+        return cls(**d)
 
 
 class CategoricalQuestion(AbstractQuestion):
