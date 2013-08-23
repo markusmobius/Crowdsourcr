@@ -360,7 +360,23 @@
 	  </tr>
       </div>
     </script>
-    
 
- </body>
+    <script type="text/template" id="catquestionsnested-display-template">
+      <% if (n <= 1) { %> <legend> <%= questiontext %> </legend> <% } %>
+      <% var hidden = n > 1 ? 'style="display:none;"' : ''; %>
+	<div class="form-group" nesting-level="<%= n %>" <%= hidden %>>
+	  <% for (choice in content) { %> 
+	  <%     if (choice === '__val__') continue; %>
+	  <%     var val = content[choice].hasOwnProperty('__val__') ? content[choice]['__val__'] : ''; %>
+	  <div class="radio">
+	    <label>
+	      <input type="radio" name="<%= varname + n %>" value="<%= val %>"/><%= choice %>
+	    </label>
+	    <%= generator(content[choice], template, n, questiontext, varname) %>
+	  </div> 
+	  <% } %>
+	</div>
+    </script>
+
+</body>
 </html>

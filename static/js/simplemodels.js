@@ -209,10 +209,15 @@ var CategoricalQuestion = Question.extend({
         this.el = $(el);
 	this.display_template = $('#catquestion-display-template').html();
 	this.display_template_sideways = $('#catquestionsideways-display-template').html();
+	this.nested_display_template = $('#catquestionsnested-display-template').html();
 	this.valuetype = question.valuetype;
 	this.questiontext = question.questiontext;
 	this.varname = question.varname;
 	this.content = question.content;
+	this.nesting_delimiter = '|';
+	if (this.isNested()) {
+	    this.constructNesting();
+	} 
     },
     shouldBeSideways : function () {
 	return (this.content.length >=5
@@ -220,10 +225,74 @@ var CategoricalQuestion = Question.extend({
     },
     renderDisplay : function() {
         this.el.empty();
-	var t = this.shouldBeSideways() ? this.display_template_sideways : this.display_template;
-        this.el.html(_.template(t, this.serializeForDisplay()));
+	if (this.nest) {
+	    var self = this;
+	    var rendered_nest = $(this.drawNesting(this.nest, 
+						   this.nested_display_template, 
+						   0, 
+						   this.questiontext, 
+						   this.varname));
+	    rendered_nest
+		.find('input[type="radio"]')
+		.change(function() {
+		    self.expandNest($(this), rendered_nest);
+		});
+	    this.el.html(rendered_nest);
+	} else {
+	    var t = this.shouldBeSideways() ? this.display_template_sideways : this.display_template;
+            this.el.html(_.template(t, this.serializeForDisplay()));
+	}
+    },
+    isNested : function() {
+	var self = this;
+	return _.some(this.content, function(c) { return _.contains(c.text, self.nesting_delimiter); });
+    },
+    constructNesting : function() {
+	this.nest = {};
+	var self = this;
+	var nest = {};
+	_.each(this.content, function(c) {
+	    var n_pointer = self.nest;
+	    _.each(c.text.split(/\s*\|\s*/), function(ordered_token) {
+		n_pointer = n_pointer[ordered_token] || (n_pointer[ordered_token] = {})
+	    });
+	    n_pointer['__val__'] = c.value;
+	});
+    },
+    expandNest : function(el, top_el) {
+	var el_num = parseInt(el.attr('name').slice(this.varname.length), 10);
+	top_el
+	    .find('div.form-group')
+	    .each(function() {
+		if (parseInt($(this).attr('nesting-level'), 10) > el_num) { $(this).slideUp(); }
+	    });
+	el.parent().siblings('div.form-group').slideDown();
+    },
+    drawNesting : function() {
+	return nestedTemplate(this.nest, this.nested_display_template, 0, this.questiontext, this.varname)
     },
     response : function() {
-	return this.el.find('input:checked').val();
+	if (this.nest) {
+	    var val = undefined
+	    this.el.find('input:checked').each(function() {
+		if ($(this).val() != '') {
+		    val = $(this).val();
+		}
+	    });
+	    return val;
+	} else {
+	    return this.el.find('input:checked').val();
+	}
     } 
 });
+
+function nestedTemplate(nest, template, n, questiontext, varname) {
+    if (nest === undefined) return '';
+
+    return _.template(template, { varname : varname,
+				  questiontext : questiontext,
+				  content : nest,
+				  generator : nestedTemplate,
+				  template : template,
+				  n : ++n });
+}
