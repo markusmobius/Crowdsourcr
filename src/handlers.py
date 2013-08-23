@@ -222,7 +222,7 @@ class AdminInfoHandler(BaseHandler):
                               'full_name' : self.get_secure_cookie('admin_name'),
                               'hitinfo' : self.chit_controller.get_agg_hit_info(),
                               'turkinfo' : turk_info,
-                              'turkbalance' : turk_balance})
+                              'turkbalance' : str(turk_balance)})
 
 class AdminHitInfoHandler(BaseHandler):
     def get(self, id=None) :
