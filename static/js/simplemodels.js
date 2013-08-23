@@ -260,29 +260,25 @@ var CategoricalQuestion = Question.extend({
 	});
     },
     expandNest : function(el, top_el) {
-	var el_num = parseInt(el.attr('name').slice(this.varname.length), 10);
-	top_el
-	    .find('div.form-group')
-	    .each(function() {
-		if (parseInt($(this).attr('nesting-level'), 10) > el_num) { $(this).slideUp(); }
-	    });
-	el.parent().siblings('div.form-group').slideDown();
+	if (el.prop('name') !== this.varname) {
+	    var el_num = parseInt(el.attr('nesting-level'), 10);
+	    top_el.find('input[name="' + this.varname + '"]').prop('checked', false);
+	    top_el
+		.find('div.form-group')
+		.each(function() {
+		    if (parseInt($(this).attr('nesting-level'), 10) > el_num) {
+			$(this).slideUp();
+		    }
+		});
+	    el.parent().siblings('div.form-group').slideDown();
+	}
     },
     drawNesting : function() {
 	return nestedTemplate(this.nest, this.nested_display_template, 0, this.questiontext, this.varname)
     },
     response : function() {
-	if (this.nest) {
-	    var val = undefined
-	    this.el.find('input:checked').each(function() {
-		if ($(this).val() != '') {
-		    val = $(this).val();
-		}
-	    });
-	    return val;
-	} else {
-	    return this.el.find('input:checked').val();
-	}
+	// darn selectors... (gross)
+	return this.el.find('input[name="' + this.varname + '"]:checked').val();
     } 
 });
 

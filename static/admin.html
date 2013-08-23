@@ -6,6 +6,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript">
       $(onReady);
+      function nocache() {
+          return "?nocache=" + new Date().getTime();
+      }
       function onReady() {
 	  $('#xml-upload-form').find('button:first').click(function(evt) {
 	      evt.preventDefault();
@@ -40,7 +43,7 @@
       }
 
       function getStatus() {
-	  $.get('/admin/info/', function(data) {
+	  $.get('/admin/info/' + nocache(), function(data) {
 	      if (data.authed) {
 		  $('#admin-login-info').text('Logged in as ' + data.full_name + ' (' + data.email + ').');
 		  $('#admin-task-info').html(data.hitinfo.num_total + ' HITs loaded. ' + data.hitinfo.num_complete + ' HITs complete. ');
@@ -76,7 +79,7 @@
                   }
 	      }
 	  });
-          $.get('/admin/hits', function (data) {
+          $.get('/admin/hits' + nocache(), function (data) {
               $('#admin-hits').hide();
               $('#admin-hit-tasks').hide();
               if (data.ids !== undefined) {
@@ -106,7 +109,7 @@
       function showTasks(hid) {
           var $h = $('#admin-hit-tasks');
           $h.hide().empty();
-          $.get('/admin/hits/' + hid, function (data) {
+          $.get('/admin/hits/' + hid + nocache(), function (data) {
               $h.append($('<legend/>').text("Tasks for " + hid));
               var $dest = $('<p/>').appendTo($h);
               var sep = "";
