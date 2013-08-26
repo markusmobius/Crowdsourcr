@@ -9,7 +9,7 @@
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/autoexpand.js"></script>
     <script src="/static/js/mixins.js"></script>
-    <script src="/static/js/simplemodels.js?cache=222"></script>
+    <script src="/static/js/simplemodels.js?cache=2222"></script>
     <script type="text/javascript">
       $(onLoad);
 
@@ -55,7 +55,7 @@
           for (var i = 0; i < data.modules.length; i++){
               (function (i) {
                 var dest = $('<div/>').appendTo($('#hit-modules'));
-                getModule(data.modules[i], function (mod) { registerModule(mod, dest); });
+                getModule(data.modules[i], function (mod) { registerModule(i, mod, dest); });
               })(i);
           }
       }
@@ -149,12 +149,14 @@
           return currentTypeGroup.serialize();
       }
 
-      function registerModule(data, dest) {
+      function registerModule(i, data, dest) {
 	  var module_container = $(document.createElement('div'));
 	  var module = module_container.CType(currentTypeGroup, data);
 	  module.renderDisplay();
 	  dest.append($(document.createElement('li')).html(module_container));
-          currentTypeGroup.showType(); // shows first
+          if (i == 0) {
+            currentTypeGroup.showType(module);
+          }
       }
 
       function getModule(module, callback) {
