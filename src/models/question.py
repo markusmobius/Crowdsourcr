@@ -40,7 +40,8 @@ class CategoricalQuestion(AbstractQuestion):
 class NumericQuestion(AbstractQuestion):
     typeName = 'numeric'
     
-
+class TextQuestion(AbstractQuestion) :
+    typeName = 'text'
 
 
 

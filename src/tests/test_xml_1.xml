@@ -11,6 +11,12 @@
 	  <valuetype>numeric</valuetype>
 	</question>
 	<question>
+	  <helptext>We want to better understand the strenghts and weaknesses of our survey in order to improve it for future workers. Your answer to this question will not influence your payment.</helptext>
+	  <varname>thoughts</varname>
+	  <questiontext>What were your overall perceptions of the survey? Which questions were most confusing? You may also submit any other comments that you may have.</questiontext>
+	  <valuetype>text</valuetype>
+	</question>
+	<question>
 	  <varname>married</varname>
 	  <questiontext>Are you married?</questiontext>
 	  <helptext>You might feel that this is a vague question. Thankfully, we've added helptext to clear things up. Here you go: You'll receive notifications for all issues, pull requests, and comments that happen inside the repository. If you would like to stop watching this repository, you can manage your settings somewhere.</helptext>
@@ -24,6 +30,46 @@
 	      <category>
 		<text>No</text>
 		<value>no</value>
+	      </category>
+	    </categories>
+	  </content>
+	</question>
+	<question>
+	  <varname>bias</varname>
+	  <questiontext>How biased is this?</questiontext>
+	  <valuetype>categorical</valuetype>
+	  <options>
+	    <layout>horizontal</layout>
+	    <lowLabel>Conservative</lowLabel>
+	    <highLabel>Liberal</highLabel>
+	    <outsideCategories>N/A</outsideCategories>
+	    <outsideCategories>Unsure</outsideCategories>
+	  </options>
+	  <content>
+	    <categories>
+	      <category>
+		<text>1</text>
+		<value>1</value>
+	      </category>
+	      <category>
+		<text>2</text>
+		<value>2</value>
+	      </category>
+	      <category>
+		<text>3</text>
+		<value>3</value>
+	      </category>
+	      <category>
+		<text>4</text>
+		<value>4</value>
+	      </category>
+	      <category>
+		<text>5</text>
+		<value>5</value>
+	      </category>
+	      <category>
+		<text>6</text>
+		<value>6</value>
 	      </category>
 	    </categories>
 	  </content>

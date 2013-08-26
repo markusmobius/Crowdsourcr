@@ -4,10 +4,28 @@
 
  iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
 
+### Scale Questions
+
+After the scale question type was dropped from a previous release, scale questions must now be added as categorical types. All questions may have an options tag, and the nested layout tag specifies whether the radio buttons are rendered horizontally or vertically (the latter being the default). Several other options are available, as in the following example:
+
+```xml
+<options>
+  <layout>horizontal</layout>
+  <lowLabel>Conservative</lowLabel>
+  <highLabel>Liberal</highLabel>
+  <outsideCategories>N/A</outsideCategories>
+  <outsideCategories>Unsure</outsideCategories>
+</options>
+```
+
+This will yield the following layout:
+
+![new project](https://github.com/sgrondahl/news_crowdsourcer/raw/master/markdown/ScaleQuestion.png)
+
 
 ### Nested Categorical Questions
 
-See src/tests/test_xml_cat_expand_1.xml for example usage. To control nesting, encode nests in <text>, i.e. 
+See src/tests/test_xml_cat_expand_1.xml for example usage. To control nesting, encode nests in text tags, i.e. 
 
 ```xml
 <text> Hard News | Science and Tech | Computers </text>.

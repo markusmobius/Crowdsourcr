@@ -376,6 +376,16 @@
 	<input class="form-control" type="number" name="<%= varname %>"/>
       </div>
     </script>
+
+    <script type="text/template" id="textquestion-display-template">
+      <div class="form-group">
+	<label> 
+	  <%= questiontext %> 
+	  <% if (helptext) { %><div class="help">?</div><% } %>
+	</label>
+	<textarea class="form-control" name="<%= varname %>"></textarea>
+      </div>
+    </script>
     
     <script type="text/template" id="catquestion-display-template">
       <div class="form-group">
@@ -392,14 +402,28 @@
 	<label> <%= questiontext %> </label>
 	<table class="radio-table">
 	  <tr>
+	    <% if (options.lowLabel) { %><th></th><% } %>
 	    <% _.each(content, function(choice) { %>
 	      <th><label for="<%= varname + "_" + choice.value %>"><%= choice.text %></label></th>
 	    <% }); %>
+	    <% if (options.highLabel) { %><th></th><% } %>
+	    <% if (options.outsideCategories) { %>
+	    <th><div style="display: block; width: 2em;"></div></th>
+	    <% _.each(options.outsideCategories, function(cat) { %><th><label for="<%= varname + "_" + cat %>"><%= cat %></label></th><% }); %>
+	    <% } %>
 	  </tr>
 	  <tr>
+	    <% if (options.lowLabel) { %><th><%= options.lowLabel %></th><% } %>
 	    <% _.each(content, function(choice) { %>
   	      <td><input id="<%= varname + "_" + choice.value %>" type="radio" name="<%= varname %>" value="<%= choice.value %>"/></td>
 	    <% }); %>
+	    <% if (options.highLabel) { %><th><%= options.highLabel %></th><% } %>
+	    <% if (options.outsideCategories) { %>
+	    <th><div style="display: block; width: 2em;"></div></th>
+	    <% _.each(options.outsideCategories, function(cat) { %>
+  	      <td><input id="<%= varname + "_" + cat %>" type="radio" name="<%= varname %>" value="<%= cat %>"/></td>
+	    <% }); %>
+	    <% } %>
 	  </tr>
       </div>
     </script>

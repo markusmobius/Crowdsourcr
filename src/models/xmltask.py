@@ -87,3 +87,9 @@ class XMLNumericQuestion(XMLQuestion):
     @staticmethod
     def parse(question_content=None):
         return []
+
+class XMLTextQuestion(XMLQuestion):
+    typeName = 'text'
+    @staticmethod
+    def parse(question_content=None):
+        return []

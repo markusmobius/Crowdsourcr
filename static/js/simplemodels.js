@@ -154,14 +154,28 @@ var QuestionList = Model.extend({
 
 var Question = Model.extend({
     constructor : function(el, question) {
+	var new_question = undefined;
 	switch (question.valuetype) {
 	    case 'numeric':
-                return new NumericQuestion(el, question);
+                new_question = new NumericQuestion(el, question);
+	        break;
 	    case 'categorical':
-	    	 return new CategoricalQuestion(el, question);
-            default:
-		throw "Error: could not find type "+question.valuetype;
-	}	
+	    	new_question = new CategoricalQuestion(el, question);
+	        break;
+	    case 'text':
+	        new_question = new TextQuestion(el, question);
+	        break;
+	}
+
+	if (new_question === undefined) throw "Error: could not find type "+question.valuetype;
+
+	new_question.valuetype = question.valuetype;
+	new_question.questiontext = question.questiontext;
+	new_question.helptext = question.helptext;
+	new_question.varname = question.varname;
+	new_question.content = question.content;
+	new_question.options = question.options;
+	return new_question;
     },
     serialize : function() {
 	return { 
@@ -175,7 +189,8 @@ var Question = Model.extend({
 	    valuetype : this.valuetype,
 	    varname : this.varname,
 	    content : this.content,
-	    helptext : this.helptext
+	    helptext : this.helptext,
+	    options : this.options
 	};
     },
     validate : function () {
@@ -199,20 +214,29 @@ var Question = Model.extend({
     }
 });
 
-var NumericQuestion = Question.extend({
+var TextQuestion = Question.extend({
     constructor : function(el, question) {
         this.el = $(el);
-	this.display_template = $('#numericquestion-display-template').html();
-	this.valuetype = question.valuetype;
-	this.questiontext = question.questiontext;
-	this.helptext = question.helptext;
-	this.varname = question.varname;
-	this.content = question.content;
+	this.display_template = $('#textquestion-display-template').html();
     },
     renderDisplay : function() {
         this.el.empty();
         this.el.html(_.template(this.display_template, this.serializeForDisplay()));
-	console.log(this.serializeForDisplay());
+	this.renderHelpText();
+    },
+    response : function() {
+	return this.el.find('textarea:first').val();
+    }
+});
+
+var NumericQuestion = Question.extend({
+    constructor : function(el, question) {
+        this.el = $(el);
+	this.display_template = $('#numericquestion-display-template').html();
+    },
+    renderDisplay : function() {
+        this.el.empty();
+        this.el.html(_.template(this.display_template, this.serializeForDisplay()));
 	this.renderHelpText();
     },
     response : function() {
@@ -226,23 +250,20 @@ var CategoricalQuestion = Question.extend({
 	this.display_template = $('#catquestion-display-template').html();
 	this.display_template_sideways = $('#catquestionsideways-display-template').html();
 	this.nested_display_template = $('#catquestionsnested-display-template').html();
-	this.valuetype = question.valuetype;
-	this.questiontext = question.questiontext;
-	this.helptext = question.helptext;
-	this.varname = question.varname;
-	this.content = question.content;
 	this.nesting_delimiter = '|';
-	if (this.isNested()) {
-	    this.constructNesting();
-	} 
     },
     shouldBeSideways : function () {
-	return (this.content.length >=5
+	return this.options.layout === 'horizontal' || (this.content.length >= 5
 		&& _.all(this.content, function (choice) { return choice.text.length <= 2; }));
     },
     renderDisplay : function() {
         this.el.empty();
 	var self = this;
+	if (this.nest === undefined && this.isNested()) {
+	    this.constructNesting();
+	} else {
+	    this.nest = false;
+	}
 	if (this.nest) {
 	    var rendered_nest = $(this.drawNesting(this.nest, 
 						   this.nested_display_template, 

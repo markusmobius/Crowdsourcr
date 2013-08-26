@@ -9,7 +9,7 @@ class XMLTaskController(object):
         self.db.cresponses.drop()
         self.db.chits.drop()
         self.db.cdocs.drop()
-        return  models.XMLTask(xml_path)
+        return models.XMLTask(xml_path)
 
 """
         for module in xmltask.get_modules():
