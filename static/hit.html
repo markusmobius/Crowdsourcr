@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -413,11 +414,11 @@
 	    <% } %>
 	  </tr>
 	  <tr>
-	    <% if (options.lowLabel) { %><th><%= options.lowLabel %></th><% } %>
+	    <% if (options.lowLabel) { %><td><%= options.lowLabel %></td><% } %>
 	    <% _.each(content, function(choice) { %>
   	      <td><input id="<%= varname + "_" + choice.value %>" type="radio" name="<%= varname %>" value="<%= choice.value %>"/></td>
 	    <% }); %>
-	    <% if (options.highLabel) { %><th><%= options.highLabel %></th><% } %>
+	    <% if (options.highLabel) { %><td><%= options.highLabel %></td><% } %>
 	    <% if (options.outsideCategories) { %>
 	    <th><div style="display: block; width: 2em;"></div></th>
 	    <% _.each(options.outsideCategories, function(cat) { %>

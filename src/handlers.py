@@ -294,9 +294,12 @@ class CHITViewHandler(BaseHandler):
             else:
                 self.return_json({'needs_login' : True})
         elif not hitid or not taskindex:
-            next = self.chit_controller.get_next_chit_id()
+            completed_hits = self.cresponse_controller.get_hits_for_worker(workerid)
+            next = self.chit_controller.get_next_chit_id(exclusions=completed_hits)
             if next == None :
-                self.clear_all_cookies()
+                self.clear_cookie('hitid')
+                self.clear_cookie('workerid')
+                self.clear_cookie('taskindex')
                 self.return_json({'no_hits' : True})
             else :
                 self.set_secure_cookie('hitid', self.chit_controller.get_next_chit_id())
@@ -306,7 +309,9 @@ class CHITViewHandler(BaseHandler):
             taskindex = int(taskindex)
             chit = self.chit_controller.get_chit_by_id(hitid)
             if taskindex >= len(chit.tasks):
-                self.clear_all_cookies()
+                self.clear_cookie('hitid')
+                self.clear_cookie('workerid')
+                self.clear_cookie('taskindex')
                 completed_chit_info = self.chit_controller.add_completed_hit(chit=chit, worker_id=workerid)
                 self.return_json({'completed_hit':True,
                                   'verify_code' : completed_chit_info['turk_verify_code']})

@@ -3,6 +3,32 @@
 
  iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
 
+### Exclusions
+
+Each HIT may specify a set of exclusions, a comma separated list of other HIT IDs such that if a worker has completed any of the HITs listed as exclusions she may not complete the HIT that listed those exlclusions. Perhaps an example would be most informative. Consider the following HITs:
+
+```xml
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <exclusions>2</exclusions>
+      <tasks>
+	1
+	2
+      </tasks>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>
+	1
+      </tasks>
+    </hit> 
+  </hits>
+```
+
+In this case, a worker who first completes HIT 2 may not then complete HIT 1, since HIT 1 excludes HIT 2. However, since HIT 2 lists no exclusions, a worker who first completes HIT 1 would then be permitted to complete HIT 2. There is no enforcement that exclusions be symmetric.
+
+
 ### Scale Questions
 
 After the scale question type was dropped from a previous release, scale questions must now be added as categorical types. All questions may have an options tag, and the nested layout tag specifies whether the radio buttons are rendered horizontally or vertically (the latter being the default). Several other options are available, as in the following example:

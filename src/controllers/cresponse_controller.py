@@ -13,6 +13,9 @@ class CResponseController(object):
     def get_reponse_info_by_worker(self, workerid):
         d = self.db.cresponses.find({'workerid' : workerid})
         return {'count' : len(d) }
+    def get_hits_for_worker(self, workerid):
+        d = self.db.cresponses.find({'workerid' : workerid}, {'hitid' : 1})
+        return [r['hitid'] for r in d]
     def write_response_to_csv(self) :
         return ("%s\t%s\t%s\t%s" % (d['hitid'],
                                    d['taskid'],

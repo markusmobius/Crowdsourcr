@@ -49,8 +49,12 @@ class XMLTask(object) :
                    'taskid' : task.find('taskid').text,
                    'modules' : task.find('modules').text.split()}
     def get_hits(self):
+        def get_exclusions(hittag):
+            exctag = hittag.find('exclusions')
+            return exctag.text.split() if exctag != None else []
         for hit in self.hits.iter('hit'):
             yield {'hitid' : hit.find('hitid').text,
+                   'exclusions' : get_exclusions(hit),
                    'tasks' : hit.find('tasks').text.split()}
     def get_documents(self) :
         docs = {}

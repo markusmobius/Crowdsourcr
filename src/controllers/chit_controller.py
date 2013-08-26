@@ -17,8 +17,9 @@ class CHITController(object):
         d = self.db.chits.find_one({'hitid' : hitid})
         chit = CHIT.deserialize(d)
         return chit
-    def get_next_chit_id(self):
-        d = self.db.chits.find_one({'num_completed_hits' : {'$lt' : 1}})
+    def get_next_chit_id(self, exclusions=[]):
+        d = self.db.chits.find_one({'num_completed_hits' : {'$lt' : 1},
+                                    'exclusions' : {'$nin' : exclusions}})
         return d['hitid'] if d else None
     def get_chit_ids(self) :
         ds = self.db.chits.find({}, {'hitid' : True})
@@ -31,7 +32,7 @@ class CHITController(object):
                 'num_total' : num_total_hits}
     def add_completed_hit(self,chit=None, worker_id=None):
         hit_info = {'worker_id' : worker_id,
-                     'turk_verify_code' : uuid.uuid4().hex[:16]}
+                    'turk_verify_code' : uuid.uuid4().hex[:16]}
         self.db.chits.update({'hitid' : chit.hitid},
                              {'$push' : {'completed_hits' : hit_info},
                               '$inc' : {'num_completed_hits' : 1}})
@@ -44,6 +45,6 @@ class CHITController(object):
                     'turk_verify_code' : secret_code}]
         #ugly hack. TODO: improve storage struture for easier searching
         d = db.chits.find_one({'num_completed_hits' : 1,
-                                    'completed_hits' : hit_info})
+                               'completed_hits' : hit_info})
         return True if d else False
  
