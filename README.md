@@ -1,5 +1,4 @@
 
-
 #### To give user-mode access to port 80:
 
  iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
@@ -20,7 +19,7 @@ After the scale question type was dropped from a previous release, scale questio
 
 This will yield the following layout:
 
-![new project](https://github.com/sgrondahl/news_crowdsourcer/raw/master/markdown/ScaleQuestion.png)
+![new project](https://github.com/sgrondahl/news_crowdsourcer/raw/master/markdown/ScaleQuestion.PNG)
 
 
 ### Nested Categorical Questions
