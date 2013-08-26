@@ -320,7 +320,7 @@ var CategoricalQuestion = Question.extend({
     },
     response : function() {
 	// darn selectors... (gross)
-	return this.el.find('input[name="' + this.varname + '"]:checked').val();
+	return this.el.find('input:not([value=""]):checked').val();
     } 
 });
 
