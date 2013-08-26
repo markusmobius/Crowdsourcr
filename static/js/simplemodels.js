@@ -299,18 +299,21 @@ var CategoricalQuestion = Question.extend({
 	});
     },
     expandNest : function(el, top_el) {
-	if (el.prop('name') !== this.varname) {
-	    var el_num = parseInt(el.attr('nesting-level'), 10);
-	    top_el.find('input[name="' + this.varname + '"]').prop('checked', false);
-	    top_el
-		.find('div.form-group')
-		.each(function() {
-		    if (parseInt($(this).attr('nesting-level'), 10) > el_num) {
-			$(this).slideUp();
-		    }
-		});
-	    el.parent().siblings('div.form-group').slideDown();
-	}
+	var el_num = parseInt(el.attr('nesting-level'), 10);
+	// eliminate selections on all descendant radio buttons
+	el.find('input[type="radio"]').prop('checked', false);
+	// eliminate selections on all terminal radio buttons
+	top_el.find('input[type="radio"]').each(function() {
+	    if ($(this).val() && $(this).val() !== el.val()) { $(this).prop('checked', false); }
+	});
+	top_el
+	    .find('div.form-group')
+	    .each(function() {
+		if (parseInt($(this).attr('nesting-level'), 10) > el_num) {
+		    $(this).slideUp();
+		}
+	    });
+	el.parent().siblings('div.form-group').slideDown();
     },
     drawNesting : function() {
 	return nestedTemplate(this.nest, this.nested_display_template, 0, this.questiontext, this.varname);

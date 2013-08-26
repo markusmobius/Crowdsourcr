@@ -437,8 +437,7 @@
 	  <%     var val = content[choice].hasOwnProperty('__val__') ? content[choice]['__val__'] : ''; %>
 	  <div class="radio">
 	    <label>
-	      <% var act_varname = content[choice].hasOwnProperty('__val__') ? varname : '__' + varname + '__' + n; %>
-	      <input type="radio" nesting-level="<%= n %>" name="<%= act_varname %>" value="<%= val %>"/><%= choice %>
+	      <input type="radio" nesting-level="<%= n %>" name="<%= '__' + varname + '__' + n %>" value="<%= val %>"/><%= choice %>
 	    </label>
 	    <% if (!content[choice].hasOwnProperty('__val__')) { %>
 	      <%= generator(content[choice], template, n, questiontext, varname) %>
@@ -449,4 +448,4 @@
     </script>
 
 </body>
-</html>
+`</html>
