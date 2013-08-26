@@ -33,8 +33,7 @@ class Application(tornado.web.Application):
 
         app_handlers = [
             (r'/', handlers.MainHandler),
-            (r'/help/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='help.html')),
-            (r'/help/(README.md)', tornado.web.StaticFileHandler, dict(path=settings['root_path'], default_filename='README.md')),
+            (r'/help/?(.*)', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='help.html')),
 #            (r'/types/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='types.html')),
 #            (r'/types/new/?', handlers.CTypeCreateHandler),
 #            (r'/types/all/?', handlers.CTypeAllHandler),
@@ -59,6 +58,7 @@ class Application(tornado.web.Application):
             (r'/HIT/view/?', handlers.CHITViewHandler),
             (r'/HIT/submit/?', handlers.CResponseHandler),
             (r'/worker/login/?', handlers.WorkerLoginHandler),
+            (r'.*()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='404.html'))
         ]
         tornado.web.Application.__init__(self, app_handlers, **settings)
  
