@@ -11,7 +11,7 @@ import base64
 import hashlib
 import Settings
 import os
- 
+
 from tornado.options import define, options
  
 define('port', default=8080, help="run on the given port", type=int)
@@ -27,11 +27,14 @@ class Application(tornado.web.Application):
             "static_path":Settings.STATIC_PATH,
             "debug":Settings.DEBUG,
             "cookie_secret": Settings.COOKIE_SECRET,
+            "root_path": Settings.ROOT_PATH,
             "login_url": "/auth/login/"
         }
 
         app_handlers = [
             (r'/', handlers.MainHandler),
+            (r'/help/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='help.html')),
+            (r'/help/(README.md)', tornado.web.StaticFileHandler, dict(path=settings['root_path'], default_filename='README.md')),
 #            (r'/types/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='types.html')),
 #            (r'/types/new/?', handlers.CTypeCreateHandler),
 #            (r'/types/all/?', handlers.CTypeAllHandler),

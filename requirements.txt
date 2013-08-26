@@ -4,3 +4,4 @@
 pymongo==2.5.2
 tornado==3.1
 boto==2.9.9
+grip==1.2.0
