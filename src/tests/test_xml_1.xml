@@ -74,6 +74,35 @@
 	    </categories>
 	  </content>
 	</question>
+	<question>
+	  <varname>level_category</varname>
+	  <questiontext>What is this category?</questiontext>
+	  <valuetype>categorical</valuetype>
+	  <content>
+	    <categories>
+	      <category>
+		<text>Hard|Science|Interesting</text>
+		<value>hard_science_interesting</value>
+	      </category>
+	      <category>
+		<text>Hard|Law</text>
+		<value>hard_law</value>
+	      </category>
+	      <category>
+		<text>Hard|Science|Difficult</text>
+		<value>hard_science_difficult</value>
+	      </category>
+	      <category>
+		<text>Hard|Science|Boring</text>
+		<value>hard_science_boring</value>
+	      </category>
+	      <category>
+		<text>Soft|Animals</text>
+		<value>soft</value>
+	      </category>
+	    </categories>
+	  </content>
+	</question>
       </questions>
     </module>
   </modules>
