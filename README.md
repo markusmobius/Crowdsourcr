@@ -5,7 +5,7 @@
 
 ### Exclusions
 
-Each HIT may specify a set of exclusions, a comma separated list of other HIT IDs such that if a worker has completed any of the HITs listed as exclusions she may not complete the HIT that listed those exlclusions. Perhaps an example would be most informative. Consider the following HITs:
+Each HIT may specify a set of exclusions, a whitespace separated list of other HIT IDs such that if a worker has completed any of the HITs listed as exclusions she may not complete the HIT that listed those exlclusions. Perhaps an example would be most informative. Consider the following HITs:
 
 ```xml
   <hits>
