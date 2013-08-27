@@ -24,7 +24,14 @@ class Question(object) :
                 'helptext' : self.helptext,
                 'options' : self.options,
                 'content' : self.content}
+    # Parses XML to get question 'content' (returns list).
+    # Currently only used for categorical questions.
+    @classmethod
+    def parse_content_from_xml(cls, question_type, question_content):
+        return cls.qtype_subclasses[question_type].parse_content_from_xml(question_content)
 
+# Allows question-specific deserialization (not currently used).
+# Otherwise unnecessary.
 class AbstractQuestion(Question):
     def __init__(self, content=[], **kwargs) :
         Question.__init__(self, **kwargs)
@@ -33,15 +40,25 @@ class AbstractQuestion(Question):
     def deserialize(cls, d):
         return cls(**d)
 
-
 class CategoricalQuestion(AbstractQuestion):
     typeName = 'categorical'
+    @staticmethod
+    def parse_content_from_xml(question_content):
+        return [{'text' : category.find('text').text,
+                 'value' : category.find('value').text}
+                for category in question_content.find('categories').iter('category')]
 
 class NumericQuestion(AbstractQuestion):
     typeName = 'numeric'
+    @staticmethod
+    def parse_content_from_xml(question_content=None):
+        return []
     
 class TextQuestion(AbstractQuestion) :
     typeName = 'text'
+    @staticmethod
+    def parse_content_from_xml(question_content=None):
+        return []
 
 
 

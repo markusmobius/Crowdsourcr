@@ -3,6 +3,8 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
+from question import Question
+
 class XMLTask(object) :
     def __init__(self, xml_path=None) :
         self.reader = ET.parse(xml_path)
@@ -27,8 +29,8 @@ class XMLTask(object) :
                                                 'helptext' : get_help_text(question),
                                                 'valuetype' : question.find('valuetype').text,
                                                 'options' : self.get_options(question),
-                                                'content' : XMLQuestion.parse(question.find('valuetype').text,
-                                                                                 question.find('content'))})
+                                                'content' : Question.parse_content_from_xml(question.find('valuetype').text,
+                                                                                            question.find('content'))})
             yield module_out
     def get_options(self, qelt) :
         opts = {}
@@ -62,38 +64,3 @@ class XMLTask(object) :
             for doc in self.documents.iter('document') :
                 docs[doc.find('name').text.strip()] = doc.find('content').text
         return docs
-
-class XMLQuestionRegistry(type):
-    def __init__(cls, name, bases, dct) :
-        if hasattr(cls, "typeName") :
-            XMLQuestion.question_types[cls.typeName] = cls
-        super(XMLQuestionRegistry, cls).__init__(name, bases, dct)
-
-class XMLQuestion(object):
-    __metaclass__ = XMLQuestionRegistry
-    question_types = {}
-    @classmethod
-    def parse(cls, question_type, question_content):
-        return cls.question_types[question_type].parse(question_content)
-
-class XMLCategoricalQuestion(XMLQuestion):
-    typeName = 'categorical'
-    @staticmethod
-    def parse(question_content):
-        all_categories = []
-        for category in question_content.find('categories').iter('category'):
-            all_categories.append({'text' : category.find('text').text,
-                                   'value' : category.find('value').text})
-        return all_categories
-
-class XMLNumericQuestion(XMLQuestion):
-    typeName = 'numeric'
-    @staticmethod
-    def parse(question_content=None):
-        return []
-
-class XMLTextQuestion(XMLQuestion):
-    typeName = 'text'
-    @staticmethod
-    def parse(question_content=None):
-        return []

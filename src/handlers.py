@@ -169,6 +169,7 @@ class XMLUploadHandler(BaseHandler):
             self.return_json({'success' : True})
         except Exception as x :
             self.return_json({'error' : type(x).__name__ + ": " + str(x)})
+            raise
 
 class DocumentViewHandler(BaseHandler):
     def get(self, name):
