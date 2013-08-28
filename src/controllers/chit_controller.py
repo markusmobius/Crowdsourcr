@@ -55,7 +55,8 @@ class CHITController(object):
         hit_info = [{'worker_id' : worker_id,
                     'turk_verify_code' : secret_code}]
         #ugly hack. TODO: improve storage struture for easier searching
-        d = db.chits.find_one({'num_completed_hits' : 1,
-                               'completed_hits' : hit_info})
+        d = db.chits.find_one({'$and' : 
+                               [{'num_completed_hits' : {"$gte" : 1}},
+                                {'completed_hits' : hit_info}]})
         return True if d else False
  
