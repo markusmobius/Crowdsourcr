@@ -44,6 +44,9 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def mturkconnection_controller(self):
         return controllers.MTurkConnectionController(self.db)
+    @property
+    def main_hit_url(self) :
+        return "http://" + self.request.host + "/HIT"
     def is_super_admin(self):
         admin_email = self.get_secure_cookie('admin_email')
         return admin_email in self.__superusers__
