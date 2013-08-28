@@ -1,17 +1,31 @@
 import os
 import boto.mturk.connection
 import boto.mturk.question 
+import boto.mturk.qualification
 #QuestionContent,Question,QuestionForm,Overview,AnswerSpecification,SelectionAnswer,FormattedContent,FreeTextAnswer
 
 class MTurkConnection(object):
-    def __init__(self, access_key=None, secret_key=None, email=None, hitpayment=1.0, running=False, hitid=None):
+    def __init__(self, 
+                 access_key=None, 
+                 secret_key=None, 
+                 email=None, 
+                 hitpayment=1.0, 
+                 running=False, 
+                 hitid=None, 
+                 title="News Classification Task", 
+                 description="You will be reading news articles and answering questions about them.",
+                 **kwargs):
+        self.title = title
+        self.description = description
         self.access_key = access_key
         self.secret_key = secret_key
         self.email = email
         self.running = running
         self.hitpayment = hitpayment
-        self.mturk_conn = boto.mturk.connection.MTurkConnection(self.access_key,
-                                                                self.secret_key)
+        # Use this for testing (as arg to MTurkConnection): host='mechanicalturk.sandbox.amazonaws.com')
+        self.mturk_conn = boto.mturk.connection.MTurkConnection(aws_access_key_id=self.access_key,
+                                                                aws_secret_access_key=self.secret_key,
+                                                                host='mechanicalturk.sandbox.amazonaws.com')
         self.hitid = hitid
     def try_auth(self, access_key=None, secret_key=None):
         return True if self.get_balance() else False
@@ -20,7 +34,7 @@ class MTurkConnection(object):
         try:
             return self.mturk_conn.get_account_balance()
         except:
-            raise
+            return None
 
     def get_all_hits(self):
         return [hit.HITId for hit in self.mturk_conn.get_all_hits()]
@@ -31,19 +45,16 @@ class MTurkConnection(object):
                  'email' : self.email,
                  'running' : self.running,
                  'hitpayment' : self.hitpayment,
-                 'hitid' : self.hitid }
+                 'hitid' : self.hitid,
+                 'title' : self.title,
+                 'description' : self.description }
     @classmethod
     def deserialize(cls, d):
-        return MTurkConnection(access_key=d['access_key'],
-                               secret_key=d['secret_key'],
-                               email=d['email'],
-                               hitpayment=d['hitpayment'],
-                               running=d['running'],
-                               hitid=d['hitid'])
-    def begin_run(self, max_assignments):
+        return MTurkConnection(**d)
+    def begin_run(self, max_assignments=1, url=""):
         overview = boto.mturk.question.Overview()
-        overview.append_field('Title', 'News Classification Task')
-        overview.append(boto.mturk.question.FormattedContent('<p> You will be reading news articles and answering questions about them. To begin, navigate to the following url: <a href="http://localhost:8000/HIT/">localhost:8000/HIT/</a> .</p>'))
+        overview.append_field('Title', self.title)
+        overview.append(boto.mturk.question.FormattedContent('<p>%(description)s  To begin, navigate to the following url: <a href="%(url)s">%(url)s</a>.</p>' % {'description' : self.description, 'url' : url}))
         
         
         qc1 = boto.mturk.question.QuestionContent()
@@ -59,12 +70,17 @@ class MTurkConnection(object):
         question_form.append(overview)
         question_form.append(q1)
 
+        qualifications = boto.mturk.qualification.Qualifications()
+        qualifications.add(boto.mturk.qualification.LocaleRequirement('EqualTo',
+                                                                      'US'))
+
         hitinfo = self.mturk_conn.create_hit(questions=question_form,
-                                   max_assignments=max_assignments,
-                                   title="News article classification.", 
-                                   description="Classify a set of news articles as part of an academic research study.", 
-                                   keywords="news, classification, research, academic",
-                                   reward=self.hitpayment)
+                                             max_assignments=max_assignments,
+                                             title="News article classification.", 
+                                             description="Classify a set of news articles as part of an academic research study.", 
+                                             keywords="news, classification, research, academic",
+                                             reward=self.hitpayment,
+                                             qualifications=qualifications)
         self.running = True
         self.hitid = hitinfo[0].HITId
         return True

@@ -6,11 +6,7 @@ class MTurkConnectionController(object):
         self.db = db
         self.db.mturkconnections.ensure_index('email', unique=True)
     def create(self, d):
-        mtconn = MTurkConnection(access_key=d['access_key'],
-                                 secret_key=d['secret_key'],
-                                 email=d['email'],
-                                 hitpayment=d['hitpayment'])
-        print mtconn.hitpayment
+        mtconn = MTurkConnection(**d)
         self.update(mtconn)
         return mtconn
     def update(self, mtconn):
@@ -25,10 +21,11 @@ class MTurkConnectionController(object):
         else:
             return MTurkConnection.deserialize(d)
 
-    def begin_run(self, email=None, max_assignments=1):
+    def begin_run(self, email=None, max_assignments=1, url=""):
         mt_conn = self.get_by_email(email)
         is_authed = mt_conn.try_auth() if mt_conn else False
-        if is_authed and mt_conn.begin_run(max_assignments):
+        if is_authed and mt_conn.begin_run(max_assignments=max_assignments,
+                                           url=url):
             self.update(mt_conn)
 
     def end_run(self, email=None) :

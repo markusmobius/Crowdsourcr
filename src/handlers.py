@@ -186,7 +186,9 @@ class RecruitingBeginHandler(BaseHandler):
         admin_email = self.get_secure_cookie('admin_email')
         max_assignments = self.chit_controller.get_agg_hit_info()['num_total']
         if admin_email:
-            self.mturkconnection_controller.begin_run(admin_email, max_assignments)
+            self.mturkconnection_controller.begin_run(email=admin_email, 
+                                                      max_assignments=max_assignments,
+                                                      url=self.main_hit_url)
         self.finish()
 
 class RecruitingEndHandler(BaseHandler):
@@ -217,7 +219,7 @@ class AdminInfoHandler(BaseHandler):
             turk_balance = False
             if turk_conn:
                 turk_info = turk_conn.serialize()
-                turk_balance = str((turk_conn.get_balance() or [0])[0])
+                turk_balance = str((turk_conn.get_balance() or [''])[0])
                 ensure_automatic_make_payments(self.mturkconnection_controller,
                                                admin_email)
             
