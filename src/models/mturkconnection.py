@@ -24,8 +24,7 @@ class MTurkConnection(object):
         self.hitpayment = hitpayment
         # Use this for testing (as arg to MTurkConnection): host='mechanicalturk.sandbox.amazonaws.com')
         self.mturk_conn = boto.mturk.connection.MTurkConnection(aws_access_key_id=self.access_key,
-                                                                aws_secret_access_key=self.secret_key,
-                                                                host='mechanicalturk.sandbox.amazonaws.com')
+                                                                aws_secret_access_key=self.secret_key)
         self.hitid = hitid
     def try_auth(self, access_key=None, secret_key=None):
         return True if self.get_balance() else False
