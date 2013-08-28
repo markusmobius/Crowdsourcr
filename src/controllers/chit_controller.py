@@ -1,6 +1,7 @@
 import uuid
 from models import CHIT
 import bson.code
+import datetime
 
 class CHITController(object):
     def __init__(self, db):
@@ -17,9 +18,13 @@ class CHITController(object):
         d = self.db.chits.find_one({'hitid' : hitid})
         chit = CHIT.deserialize(d)
         return chit
-    def get_next_chit_id(self, exclusions=[]):
+    def get_next_chit_id(self, exclusions=[], workerid=None):
         d = self.db.chits.find_one({'num_completed_hits' : {'$lt' : 1},
                                     'exclusions' : {'$nin' : exclusions}})
+        if d and workerid :
+            self.db.chitloads.insert({'workerid' : workerid,
+                                      'time' : datetime.datetime.utcnow()})
+
         return d['hitid'] if d else None
     def get_chit_ids(self) :
         ds = self.db.chits.find({}, {'hitid' : True})

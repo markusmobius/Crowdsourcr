@@ -301,7 +301,7 @@ class CHITViewHandler(BaseHandler):
                 self.return_json({'needs_login' : True})
         elif not hitid or not taskindex:
             completed_hits = self.cresponse_controller.get_hits_for_worker(workerid)
-            next = self.chit_controller.get_next_chit_id(exclusions=completed_hits)
+            next = self.chit_controller.get_next_chit_id(exclusions=completed_hits, workerid=workerid)
             if next == None :
                 self.clear_cookie('hitid')
                 self.clear_cookie('workerid')
