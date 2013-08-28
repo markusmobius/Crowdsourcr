@@ -19,11 +19,17 @@ class CHITController(object):
         chit = CHIT.deserialize(d)
         return chit
     def get_next_chit_id(self, exclusions=[], workerid=None):
-        d = self.db.chits.find_one({'num_completed_hits' : {'$lt' : 1},
-                                    'exclusions' : {'$nin' : exclusions}})
+        cl = self.db.chitloads.find({'hitid' : {'$exists' : True}}, {'hitid' : 1})
+        loaded_chits = [c['hitid'] for c in cl] if cl else []
+        d = self.db.chits.find_one({'$and' : 
+                                    [{ 'num_completed_hits' : {'$lt' : 1} },
+                                     { 'exclusions' : {'$nin' : exclusions}},
+                                     { 'hitid' : {'$nin' : loaded_chits} } ] },
+                                   {'hitid' : 1})
         if d and workerid :
             self.db.chitloads.insert({'workerid' : workerid,
-                                      'time' : datetime.datetime.utcnow()})
+                                      'time' : datetime.datetime.utcnow(),
+                                      'hitid' : d['hitid']})
 
         return d['hitid'] if d else None
     def get_chit_ids(self) :

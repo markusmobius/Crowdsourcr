@@ -84,7 +84,10 @@ class MTurkConnection(object):
         self.hitid = hitinfo[0].HITId
         return True
     def end_run(self):
-        self.mturk_conn.expire_hit(self.hitid)
+        try:
+            self.mturk_conn.expire_hit(self.hitid)
+        except:
+            pass
         self.running = False
         self.hitid = None
     def get_payments_to_make(self):

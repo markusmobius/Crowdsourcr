@@ -308,7 +308,7 @@ class CHITViewHandler(BaseHandler):
                 self.clear_cookie('taskindex')
                 self.return_json({'no_hits' : True})
             else :
-                self.set_secure_cookie('hitid', self.chit_controller.get_next_chit_id())
+                self.set_secure_cookie('hitid', next)
                 self.set_secure_cookie('taskindex', '0')
                 self.return_json({'reload_for_first_task':True})
         else:
