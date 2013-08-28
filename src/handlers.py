@@ -214,7 +214,7 @@ class AdminInfoHandler(BaseHandler):
             turk_balance = False
             if turk_conn:
                 turk_info = turk_conn.serialize()
-                turk_balance = (turk_conn.get_balance() or [0])[0]
+                turk_balance = str((turk_conn.get_balance() or [0])[0])
                 ensure_automatic_make_payments(self.mturkconnection_controller,
                                                admin_email)
             
@@ -223,7 +223,7 @@ class AdminInfoHandler(BaseHandler):
                               'full_name' : self.get_secure_cookie('admin_name'),
                               'hitinfo' : self.chit_controller.get_agg_hit_info(),
                               'turkinfo' : turk_info,
-                              'turkbalance' : str(turk_balance)})
+                              'turkbalance' : turk_balance})
 
 class AdminHitInfoHandler(BaseHandler):
     def get(self, id=None) :

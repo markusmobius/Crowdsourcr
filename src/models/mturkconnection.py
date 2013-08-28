@@ -14,13 +14,13 @@ class MTurkConnection(object):
                                                                 self.secret_key)
         self.hitid = hitid
     def try_auth(self, access_key=None, secret_key=None):
-        return True if self.get_balance else False
+        return True if self.get_balance() else False
 
     def get_balance(self):
         try:
             return self.mturk_conn.get_account_balance()
         except:
-            return None
+            raise
 
     def get_all_hits(self):
         return [hit.HITId for hit in self.mturk_conn.get_all_hits()]
