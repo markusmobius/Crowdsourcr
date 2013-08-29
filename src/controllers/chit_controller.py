@@ -18,7 +18,7 @@ class CHITController(object):
         return chit
     def get_chit_by_id(self, hitid):
         d = self.db.chits.find_one({'hitid' : hitid})
-        chit = CHIT.deserialize(d)
+        chit = CHIT.deserialize(d) if d else None
         return chit
     def get_next_chit_id(self, exclusions=[], workerid=None):
         cl = self.db.chitloads.find({'hitid' : {'$exists' : True}}, {'hitid' : 1})

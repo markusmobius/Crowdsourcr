@@ -339,9 +339,10 @@ class CHITViewHandler(BaseHandler):
             existing_status = self.currentstatus_controller.get_current_status(workerid)
             hitid = existing_status['hitid'] if existing_status else hitid
             taskindex = existing_status['taskindex'] if existing_status else taskindex
-            if hitid and taskindex:
+            chit = self.chit_controller.get_chit_by_id(hitid) if hitid and taskindex else None
+            if chit:
                 taskindex = int(taskindex)
-                chit = self.chit_controller.get_chit_by_id(hitid)
+
                 if taskindex >= len(chit.tasks):
                     self.clear_cookie('hitid')
                     self.clear_cookie('workerid')
