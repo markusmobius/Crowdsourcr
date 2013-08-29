@@ -8,6 +8,8 @@ class CTaskController(object):
         ctask = CTask.deserialize(d)
         self.db.ctasks.insert(ctask.serialize())
         return ctask
+    def get_task_ids(self) :
+        return [r['taskid'] for r in self.db.ctasks.find({}, {'taskid' : 1})]
     def get_task_count(self) :
         return self.db.ctasks.count()
     def get_task_by_id(self, taskid):

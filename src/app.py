@@ -11,24 +11,30 @@ import base64
 import hashlib
 import Settings
 import os
+import sys
 
 from tornado.options import define, options
  
 define('port', default=8080, help="run on the given port", type=int)
+define('environment', default="development", help="server environment", type=str)
+define('drop', default="", help="pass REALLYREALLY to drop the db", type=str)
 
 def random256() :
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
  
 class Application(tornado.web.Application):
-    def __init__(self):
+    def __init__(self, environment, drop):
         self.db = pymongo.Connection()['news_crowdsourcing']
+        if drop == "REALLYREALLY" :
+            clear_db(self.db)
         settings = {
             "template_path":Settings.TEMPLATE_PATH,
             "static_path":Settings.STATIC_PATH,
             "debug":Settings.DEBUG,
             "cookie_secret": Settings.COOKIE_SECRET,
             "root_path": Settings.ROOT_PATH,
-            "login_url": "/auth/login/"
+            "login_url": "/auth/login/",
+            "environment" : environment
         }
 
         app_handlers = [
@@ -65,10 +71,19 @@ class Application(tornado.web.Application):
  
 def main():
     tornado.options.parse_command_line()
-    http_server = tornado.httpserver.HTTPServer(Application())
+    http_server = tornado.httpserver.HTTPServer(Application(environment=options.environment, drop=options.drop))
     http_server.listen(options.port)
-    Settings.logging.info("Started news_crowdsourcer.")
+    Settings.logging.info("Started news_crowdsourcer in %s mode." % options.environment)
     tornado.ioloop.IOLoop.instance().start()
  
+
+def clear_db(db):
+    db.ctasks.drop()
+    db.ctypes.drop()
+    db.cresponses.drop()
+    db.chits.drop()
+    db.cdocs.drop()
+    db.chitloads.drop()
+
 if __name__ == "__main__":
     main()

@@ -14,23 +14,23 @@ class MTurkConnectionController(object):
                                         {'$set' : mtconn.serialize()},
                                         upsert=True )
         
-    def get_by_email(self, email):
+    def get_by_email(self, email=None, environment="development"):
         d = self.db.mturkconnections.find_one({'email' : email})
         if not d:
             return None
         else:
+            d['environment']=environment
             return MTurkConnection.deserialize(d)
 
-    def begin_run(self, email=None, max_assignments=1, url=""):
-        mt_conn = self.get_by_email(email)
+    def begin_run(self, email=None, max_assignments=1, url="", environment="development"):
+        mt_conn = self.get_by_email(email=email, environment=environment)
         is_authed = mt_conn.try_auth() if mt_conn else False
-        if is_authed and mt_conn.begin_run(max_assignments=max_assignments,
-                                           url=url):
+        if is_authed and mt_conn.begin_run(max_assignments=max_assignments, url=url):
             self.update(mt_conn)
 
-    def end_run(self, email=None) :
+    def end_run(self, email=None, bonus={}) :
         mt_conn = self.get_by_email(email)
-        mt_conn.end_run()
+        mt_conn.end_run(bonus=bonus)
         self.update(mt_conn)
         
     def make_payments(self, email=None):

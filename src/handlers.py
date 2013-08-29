@@ -21,6 +21,9 @@ class BaseHandler(tornado.web.RequestHandler):
     def db(self) :
         return self.application.db
     @property
+    def currentstatus_controller(self):
+        return controllers.CurrentStatusController(self.db)
+    @property
     def ctype_controller(self):
         return controllers.CTypeController(self.db)
     @property
@@ -184,17 +187,45 @@ class DocumentViewHandler(BaseHandler):
 class RecruitingBeginHandler(BaseHandler):
     def post(self):
         admin_email = self.get_secure_cookie('admin_email')
-        max_assignments = self.chit_controller.get_agg_hit_info()['num_total']
+        max_assignments = self.chit_controller.get_agg_hit_info()['num_hits']
         if admin_email:
             self.mturkconnection_controller.begin_run(email=admin_email, 
                                                       max_assignments=max_assignments,
-                                                      url=self.main_hit_url)
+                                                      url=self.main_hit_url,
+                                                      environment=self.settings['environment'])
         self.finish()
 
 class RecruitingEndHandler(BaseHandler):
     def post(self):
         admin_email = self.get_secure_cookie('admin_email')
-        self.mturkconnection_controller.end_run(admin_email)
+        worker_bonus_info = {}
+        for task in self.ctask_controller.get_task_ids():
+            all_responses = self.cresponse_controller.all_responses_by_task(task) # module -> varname -> response_value -> [workerid]
+            # pare down to only applicable ones and add __bonus__ key to response_values
+            filtered_responses = self.ctype_controller.filter_bonus_responses(all_responses)
+            for module, varnames in filtered_responses.iteritems() :
+                for varname, responses in varnames.iteritems() :
+                    bonus_info = responses['__bonus__']
+                    total_responses = 1.0 * sum([len(c) for c in responses if c != '__bonus__'])
+                    for response, workerids in responses.iteritems() :
+                        num_responses = 1.0 * len(workerids)
+                        for workerid in workerids :
+                            worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
+                                                                    'possible' : 0.0})
+                            worker_bonus_info[workerid]['earned'] += 1.0
+                            agreed = min(0, num_responses - 1)
+                            if bonus_info['type'] == 'linear' :
+                                worker_bonus_info[workerid]['earned'] += agreed / num_responses
+                            elif bonus_info['type'] == 'threshold' and 100.0 * agreed / num_responses >= bonus_info['threshold'] :
+                                worker_bonus_info[workerid]['earned'] += 1.0
+                            else :
+                                raise Exception('Error: unsupported bonus type %s.' % bonus_info['type'])
+        worker_bonus_percent = { a : worker_bonus_info[a]['earned'] / worker_bonus_info[a]['possible'] for a in worker_bonus_info}
+        max_bonus_percent = worker_bonus_percent[max(worker_bonus_percent.iterkeys(), key=(lambda key: worker_bonus_percent[key]))]
+        # scale by maximum
+        worker_bonus_percent = {a : worker_bonus_percent[a] / max_bonus_percent for a in worker_bonus_percent}
+        self.mturkconnection_controller.end_run(email=admin_email,
+                                                bonus=worker_bonus_percent)
         self.finish()
 
 class RecruitingInfoHandler(BaseHandler):
@@ -203,6 +234,7 @@ class RecruitingInfoHandler(BaseHandler):
         if admin_email:
             recruiting_info = json.loads(self.get_argument('data', '{}'))
             recruiting_info['email'] = admin_email
+            recruiting_info['environment']=self.settings['environment']
             mtconn = self.mturkconnection_controller.create(recruiting_info)
         self.finish()
 
@@ -214,9 +246,12 @@ class AdminInfoHandler(BaseHandler):
         if not self.admin_controller.get_by_email(admin_email):
             self.return_json({'authed' : False, 'reason' : 'not_admin'})
         else :
-            turk_conn = self.mturkconnection_controller.get_by_email(admin_email)
+            turk_conn = self.mturkconnection_controller.get_by_email(email=admin_email,
+                                                                     environment=self.settings['environment'])
             turk_info = False 
             turk_balance = False
+            hit_info = self.chit_controller.get_agg_hit_info()
+            hit_info = self.cresponse_controller.append_completed_task_info(**hit_info)
             if turk_conn:
                 turk_info = turk_conn.serialize()
                 turk_balance = str((turk_conn.get_balance() or [''])[0])
@@ -224,9 +259,10 @@ class AdminInfoHandler(BaseHandler):
                                                admin_email)
             
             self.return_json({'authed' : True,
+                              'environment' : self.settings['environment'],
                               'email' : self.get_secure_cookie('admin_email'),
                               'full_name' : self.get_secure_cookie('admin_name'),
-                              'hitinfo' : self.chit_controller.get_agg_hit_info(),
+                              'hitinfo' : hit_info,
                               'turkinfo' : turk_info,
                               'turkbalance' : turk_balance})
 
@@ -292,46 +328,58 @@ class CHITViewHandler(BaseHandler):
             self.set_secure_cookie('workerid', workerid)
             taskindex = '0'
             self.set_secure_cookie('taskindex', taskindex)
-        if not workerid:
+        if not workerid :
             if forced :
                 self.return_json({'needs_login' : True, 'reforce' : True})
             elif self.chit_controller.get_next_chit_id() == None :
                 self.return_json({'no_hits' : True})
             else:
                 self.return_json({'needs_login' : True})
-        elif not hitid or not taskindex:
-            completed_hits = self.cresponse_controller.get_hits_for_worker(workerid)
-            next = self.chit_controller.get_next_chit_id(exclusions=completed_hits, workerid=workerid)
-            if next == None :
-                self.clear_cookie('hitid')
-                self.clear_cookie('workerid')
-                self.clear_cookie('taskindex')
-                self.return_json({'no_hits' : True})
-            else :
-                self.set_secure_cookie('hitid', next)
-                self.set_secure_cookie('taskindex', '0')
-                self.return_json({'reload_for_first_task':True})
-        else:
-            taskindex = int(taskindex)
-            chit = self.chit_controller.get_chit_by_id(hitid)
-            if taskindex >= len(chit.tasks):
-                self.clear_cookie('hitid')
-                self.clear_cookie('workerid')
-                self.clear_cookie('taskindex')
-                completed_chit_info = self.chit_controller.add_completed_hit(chit=chit, worker_id=workerid)
-                self.return_json({'completed_hit':True,
-                                  'verify_code' : completed_chit_info['turk_verify_code']})
+        else :
+            existing_status = self.currentstatus_controller.get_current_status(workerid)
+            hitid = existing_status['hitid'] if existing_status else hitid
+            taskindex = existing_status['taskindex'] if existing_status else taskindex
+            if hitid and taskindex:
+                taskindex = int(taskindex)
+                chit = self.chit_controller.get_chit_by_id(hitid)
+                if taskindex >= len(chit.tasks):
+                    self.clear_cookie('hitid')
+                    self.clear_cookie('workerid')
+                    self.clear_cookie('taskindex')
+                    self.currentstatus_controller.remove(workerid)
+                    completed_chit_info = self.chit_controller.add_completed_hit(chit=chit, worker_id=workerid)
+                    self.return_json({'completed_hit':True,
+                                      'verify_code' : completed_chit_info['turk_verify_code']})
+                else:
+                    task = self.ctask_controller.get_task_by_id(chit.tasks[taskindex])
+                    self.currentstatus_controller.create_or_update(workerid=workerid,
+                                                                   hitid=hitid,
+                                                                   taskindex = taskindex)
+                    self.return_json({"task" : task.serialize(),
+                                      "task_num" : taskindex,
+                                      "num_tasks" : len(chit.tasks)})
             else:
-                task = self.ctask_controller.get_task_by_id(chit.tasks[taskindex])
-                self.return_json({"task" : task.serialize(),
-                                  "task_num" : taskindex,
-                                  "num_tasks" : len(chit.tasks)})
+                completed_hits = self.cresponse_controller.get_hits_for_worker(workerid)
+                nexthit = self.chit_controller.get_next_chit_id(exclusions=completed_hits, workerid=workerid)
+                if nexthit == None :
+                    self.clear_cookie('hitid')
+                    self.clear_cookie('workerid')
+                    self.clear_cookie('taskindex')
+                    self.return_json({'no_hits' : True})
+                else :
+                    self.set_secure_cookie('hitid', nexthit)
+                    self.set_secure_cookie('taskindex', '0')
+                    self.currentstatus_controller.create_or_update(workerid=workerid,
+                                                                   hitid=nexthit,
+                                                                   taskindex=0)
+                    self.return_json({'reload_for_first_task':True})
+
 
 class CResponseHandler(BaseHandler):
     def post(self):
         worker_id = self.get_secure_cookie('workerid')
         task_index = int(self.get_secure_cookie('taskindex'))
-        print "***",task_index
+        Settings.logger.info("%s submitted response for task_index %d" % (worker_id, task_index))
         chit = self.chit_controller.get_chit_by_id(self.get_secure_cookie('hitid'))
         taskid = chit.tasks[task_index]
         responses = json.loads(self.get_argument('data', '{}'))
@@ -350,3 +398,4 @@ class CSVDownloadHandler(BaseHandler):
         for row in self.cresponse_controller.write_response_to_csv():
             self.write("%s\n" % row)
         self.finish()
+

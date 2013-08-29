@@ -17,3 +17,4 @@ from mturkconnection_controller import MTurkConnectionController
 from xmltask_controller import XMLTaskController
 from chit_controller import CHITController
 from cdocument_controller import CDocumentController
+from current_status_controller import CurrentStatusController

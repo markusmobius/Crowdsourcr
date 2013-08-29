@@ -85,7 +85,7 @@ var CType = Model.extend({
     },
     hide : function (fast) {
 	if (fast) {
-	    this.el.find(".ctype-when-visible").hide()
+	    this.el.find(".ctype-when-visible").hide();
 	} else {
 	    this.el.find(".ctype-when-visible").slideUp();
 	}

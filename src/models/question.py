@@ -8,11 +8,25 @@ class QTypeRegistry(type) :
 class Question(object) :
     __metaclass__ = QTypeRegistry
     qtype_subclasses = {}
-    def __init__(self, varname=None, questiontext=None, helptext=None, options=None, valuetype=None):
+    def __init__(self, varname=None, questiontext=None, helptext=None, options=None, valuetype=None, bonus=None):
+        def validate_bonus(bonus) :
+            if bonus == None or bonus == 'linear':
+                return bonus
+            else :
+                try :
+                    split_bonus = bonus.split(':')
+                    bthreth = int(split_bonus[1])
+                    if bthresh > 100 or bthresh < 0 or split_bonus[0] != 'threshold':
+                        raise Exception
+                    else :
+                        return bonus
+                except:
+                    raise Exception('Question bonus string %s improperly formatted.' % bonus)
         self.varname = varname
         self.questiontext = questiontext
         self.helptext = helptext
         self.options = options
+        self.bonus = validate_bonus(bonus)
         self.valuetype = valuetype
     @classmethod
     def deserialize(cls, d) :
@@ -23,7 +37,18 @@ class Question(object) :
                 'questiontext' : self.questiontext,
                 'helptext' : self.helptext,
                 'options' : self.options,
-                'content' : self.content}
+                'content' : self.content,
+                'bonus' : self.bonus}
+    def get_bonus(self):
+        if not bonus:
+            return None
+        elif bonus == 'linear':
+            return { 'type' : 'linear' }
+        else:
+            split_bonus = bonus.split(':')
+            return { 'type' : 'threshold',
+                     'threshold' : int(split_bonus[1]) }
+
     # Parses XML to get question 'content' (returns list).
     # Currently only used for categorical questions.
     @classmethod

@@ -2,6 +2,8 @@ import os
 import boto.mturk.connection
 import boto.mturk.question 
 import boto.mturk.qualification
+import boto.mturk.price
+import datetime
 #QuestionContent,Question,QuestionForm,Overview,AnswerSpecification,SelectionAnswer,FormattedContent,FreeTextAnswer
 
 class MTurkConnection(object):
@@ -14,6 +16,8 @@ class MTurkConnection(object):
                  hitid=None, 
                  title="News Classification Task", 
                  description="You will be reading news articles and answering questions about them.",
+                 environment="development",
+                 bonus=0.0,
                  **kwargs):
         self.title = title
         self.description = description
@@ -22,9 +26,11 @@ class MTurkConnection(object):
         self.email = email
         self.running = running
         self.hitpayment = hitpayment
-        # Use this for testing (as arg to MTurkConnection): host='mechanicalturk.sandbox.amazonaws.com')
+        self.host = 'mechanicalturk.amazonaws.com' if environment == 'production' else 'mechanicalturk.sandbox.amazonaws.com'
+        self.bonus = bonus
         self.mturk_conn = boto.mturk.connection.MTurkConnection(aws_access_key_id=self.access_key,
-                                                                aws_secret_access_key=self.secret_key)
+                                                                aws_secret_access_key=self.secret_key,
+                                                                host=self.host)
         self.hitid = hitid
     def try_auth(self, access_key=None, secret_key=None):
         return True if self.get_balance() else False
@@ -46,7 +52,8 @@ class MTurkConnection(object):
                  'hitpayment' : self.hitpayment,
                  'hitid' : self.hitid,
                  'title' : self.title,
-                 'description' : self.description }
+                 'description' : self.description,
+                 'bonus' : self.bonus}
     @classmethod
     def deserialize(cls, d):
         return MTurkConnection(**d)
@@ -61,9 +68,9 @@ class MTurkConnection(object):
         qc1.append_field('Text', 'Enter the 16 character secret code that you will receive after you complete this task.')
         fta1 = boto.mturk.question.FreeTextAnswer()
         q1 = boto.mturk.question.Question(identifier='secretcode',
-                      content=qc1,
-                      answer_spec=boto.mturk.question.AnswerSpecification(fta1),
-                      is_required=True)
+                                          content=qc1,
+                                          answer_spec=boto.mturk.question.AnswerSpecification(fta1),
+                                          is_required=True)
 
         question_form = boto.mturk.question.QuestionForm()
         question_form.append(overview)
@@ -73,23 +80,34 @@ class MTurkConnection(object):
         qualifications.add(boto.mturk.qualification.LocaleRequirement('EqualTo',
                                                                       'US'))
 
+        duration = datetime.timedelta(hours=2)
+
         hitinfo = self.mturk_conn.create_hit(questions=question_form,
                                              max_assignments=max_assignments,
                                              title="News article classification.", 
                                              description="Classify a set of news articles as part of an academic research study.", 
+                                             duration=duration,
                                              keywords="news, classification, research, academic",
                                              reward=self.hitpayment,
                                              qualifications=qualifications)
         self.running = True
         self.hitid = hitinfo[0].HITId
         return True
-    def end_run(self):
+    def end_run(self, bonus={}):
         try:
+            worker_assignments = { a.WorkerId : a.AssignmentId for a in self.mturk_conn.get_assignments(self.hitid) }
+            for workerid, assignmentid in worker_assignments.iteritems() :
+                if workerid not in bonus :
+                    print "Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid
+                else :
+                    bonus_to_pay = boto.mturk.Price(amount=round(bonus[workerid] * self.bonus, 2))
+                    self.mturk_conn.grant_bonus(workerid, assignmentid, bonus_to_pay, 'Bonus for completion of news classification task.')
             self.mturk_conn.expire_hit(self.hitid)
         except:
-            pass
+            print "Error caught when trying to end run."
         self.running = False
-        self.hitid = None
+        # Retain HITId to continue making payments even after HIT has finished running.
+        # self.hitid = None
     def get_payments_to_make(self):
         if not self.hitid or not self.running:
             return []

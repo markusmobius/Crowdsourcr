@@ -21,6 +21,7 @@
 	  <questiontext>Are you married?</questiontext>
 	  <helptext>You might feel that this is a vague question. Thankfully, we've added helptext to clear things up. Here you go: You'll receive notifications for all issues, pull requests, and comments that happen inside the repository. If you would like to stop watching this repository, you can manage your settings somewhere.</helptext>
 	  <valuetype>categorical</valuetype>
+	  <bonus>linear</bonus>
 	  <content>
 	    <categories>
 	      <category>

@@ -22,17 +22,17 @@
 
 	  $('#begin-recruiting-button').click(function(evt) {
 	      evt.preventDefault();
-	      beginRecruiting(getStatus);
+	      beginRecruiting();//getStatus);
 	  });
 
 	  $('#admin-begin-run').find('button:first').click(function(evt) {
 	      evt.preventDefault();
-	      beginRun(getStatus);
+	      beginRun();//getStatus);
 	  });
 
 	  $('#admin-end-run').find('button:first').click(function(evt) {
 	      evt.preventDefault();
-	      $.post('/admin/recruit/end/', {}, getStatus);
+	      $.post('/admin/recruit/end/', {});//, getStatus);
 	  });
 
 	  $('#download-data-btn').click(function(evt) {
@@ -41,6 +41,35 @@
 	  });
 
 	  getStatus();
+	  getHITs();
+      }
+
+      function getHITs() {
+	  $.get('/admin/hits' + nocache(), function (data) {
+	      $('#admin-hits').hide();
+	      $('#admin-hit-tasks').hide();
+	      if (data.ids !== undefined) {
+		  var ids = data.ids.slice();
+		  ids.sort();
+		  var $d = $('#admin-hits-dest');
+		  $d.empty();
+                  var sep = "";
+                  for (var i = 0, hid; hid = ids[i]; i++) {
+                      $d.append(sep);
+                      sep = ", ";
+                      var $a = $('<a href="#"/>').text(hid);
+                      (function (hid) {
+                          $a.on("click", function (e) {
+                              e.preventDefault();
+                              showTasks(hid);
+                              return false;
+                          });
+                      })(hid);
+                      $d.append($a);
+                  }
+                  $('#admin-hits').show();
+              }
+          });
       }
 
       function beginRun(callback) {
@@ -50,8 +79,8 @@
       function getStatus() {
 	  $.get('/admin/info/' + nocache(), function(data) {
 	      if (data.authed) {
-		  $('#admin-login-info').text('Logged in as ' + data.full_name + ' (' + data.email + ').');
-		  $('#admin-task-info').html(data.hitinfo.num_total + ' HITs loaded. ' + data.hitinfo.num_complete + ' HITs complete. ');
+		  $('#admin-login-info').text('Logged in as ' + data.full_name + ' (' + data.email + '). Server is running in '+data.environment+' mode.');
+		  $('#admin-task-info').html(data.hitinfo.num_hits + ' HITs ('+ data.hitinfo.num_tasks +' tasks) loaded. ' + data.hitinfo.num_completed_hits + ' HITs ('+ data.hitinfo.num_completed_tasks +' tasks) complete. ');
 		  if (!data.turkinfo || !data.turkbalance) {
 		      $('#admin-turk-info').html('Could not authenticate with MTurk.');
 		  } else {
@@ -62,6 +91,7 @@
 		      mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
 		      mturk_form.find('input[name="hit_title"]:first').val(data.turkinfo.title);
 		      mturk_form.find('textarea[name="hit_description"]:first').val(data.turkinfo.description);
+		      mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
 		      if (data.turkinfo.running) {
 			  $('#admin-turk-info').append('<p>Currently running with HITId ' + data.turkinfo.hitid + '.</p>');
 			  $('#admin-begin-run').hide();
@@ -85,32 +115,8 @@
                     $('#admin-login-info').html('You cannot see this for some unknown reason.');
                   }
 	      }
+	      setTimeout(getStatus, 5000);
 	  });
-          $.get('/admin/hits' + nocache(), function (data) {
-              $('#admin-hits').hide();
-              $('#admin-hit-tasks').hide();
-              if (data.ids !== undefined) {
-                  var ids = data.ids.slice();
-                  ids.sort();
-                  var $d = $('#admin-hits-dest');
-                  $d.empty();
-                  var sep = "";
-                  for (var i = 0, hid; hid = ids[i]; i++) {
-                      $d.append(sep);
-                      sep = ", ";
-                      var $a = $('<a href="#"/>').text(hid);
-                      (function (hid) {
-                          $a.on("click", function (e) {
-                              e.preventDefault();
-                              showTasks(hid);
-                              return false;
-                          });
-                      })(hid);
-                      $d.append($a);
-                  }
-                  $('#admin-hits').show();
-              }
-          });
       }
 
       function showTasks(hid) {
@@ -137,7 +143,8 @@
 			    secret_key : form_elem.find('input[name="secret_key"]:first').val(),
 			    hitpayment : parseFloat(form_elem.find('input[name="hit_payment"]:first').val()),
 			    title : form_elem.find('input[name="hit_title"]').val(),
-			    description : form_elem.find('textarea[name="hit_description"]').val()};
+			    description : form_elem.find('textarea[name="hit_description"]').val(),
+			    bonus : form_elem.find('input[name="hit_bonus"]').val()};
 	  for (var key in mturk_info) {
 	      if (mturk_info.hasOwnProperty(key) && !mturk_info[key]) {
 		  alert('You must specify all fields.');
@@ -166,7 +173,7 @@
                       var $succ = $("#xml-upload-success");
                       $succ.text("Successfully uploaded.")
                       $succ.fadeIn();
-                      getStatus();
+                      //getStatus();
                   } else {
                       var $err = $("#xml-upload-error");
                       $err.text(data.error);
@@ -255,6 +262,13 @@
 	      <div class="input-group">
 		<span class="input-group-addon">$</span>
 		<input type="text" class="form-control" name="hit_payment">
+	      </div>
+	    </div>
+	    <div class="form-group">
+	      <label>Bonus Payment</label>
+	      <div class="input-group">
+		<span class="input-group-addon">$</span>
+		<input type="text" class="form-control" name="hit_bonus">
 	      </div>
 	    </div>
 	    <div class="form-group">
