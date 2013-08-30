@@ -14,6 +14,6 @@ class CTypeController(object) :
         c = CType.from_dict(d)
         self.db.ctypes.insert(c.to_dict())
         return c
-    def filter_bonus_responses(self, module_responses=[]):
+    def filter_bonus_responses(self, module_responses={}):
         # module -> varname -> response_value -> [workerid]
         return {module : self.get_by_name(module).filter_bonus_questions(module_responses[module]) for module in module_responses}

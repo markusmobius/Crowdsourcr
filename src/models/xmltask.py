@@ -27,7 +27,7 @@ class XMLTask(object) :
                 module_out['questions'].append({'varname' : question.find('varname').text,
                                                 'questiontext' : question.find('questiontext').text,
                                                 'helptext' : get_help_text(question),
-                                                'bonus' : question.find('bonus').text if question.find('bonus') else None,
+                                                'bonus' : question.find('bonus').text if question.find('bonus') != None else None,
                                                 'valuetype' : question.find('valuetype').text,
                                                 'options' : self.get_options(question),
                                                 'content' : Question.parse_content_from_xml(question.find('valuetype').text,

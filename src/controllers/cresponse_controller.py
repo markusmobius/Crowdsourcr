@@ -29,12 +29,13 @@ class CResponseController(object):
         d = self.db.cresponses.find({'taskid' : taskid}, {'workerid' : 1, 'response' : 1})
         module_responses = {} # module -> varname -> response -> [workerid]
         for row in d:
-            mod_name = row['response']['name']
-            module_responses.setdefault(mod_name, {})
-            for response in row['response']['responses']:
-                module_responses[mod_name].setdefault(response['varname'], {})
-                module_responses[mod_name][response['varname']].setdefault(response['response'], [])
-                module_responses[mod_name][response['varname']][response['response']].append(row['workerid'])
+            for resp in row['response']:
+                mod_name = resp['name']
+                module_responses.setdefault(mod_name, {})
+                for response in resp['responses']:
+                    module_responses[mod_name].setdefault(response['varname'], {})
+                    module_responses[mod_name][response['varname']].setdefault(response['response'], [])
+                    module_responses[mod_name][response['varname']][response['response']].append(row['workerid'])
         return module_responses
 
             

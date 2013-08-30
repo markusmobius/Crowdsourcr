@@ -27,7 +27,7 @@ class MTurkConnection(object):
         self.running = running
         self.hitpayment = hitpayment
         self.host = 'mechanicalturk.amazonaws.com' if environment == 'production' else 'mechanicalturk.sandbox.amazonaws.com'
-        self.bonus = bonus
+        self.bonus = float(bonus)
         self.mturk_conn = boto.mturk.connection.MTurkConnection(aws_access_key_id=self.access_key,
                                                                 aws_secret_access_key=self.secret_key,
                                                                 host=self.host)
@@ -100,11 +100,14 @@ class MTurkConnection(object):
                 if workerid not in bonus :
                     print "Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid
                 else :
-                    bonus_to_pay = boto.mturk.Price(amount=round(bonus[workerid] * self.bonus, 2))
+                    bonus_amt = min(10, max(0.05, round(bonus[workerid] * self.bonus, 2)))
+                    bonus_to_pay = boto.mturk.price.Price(amount=bonus_amt)
+                    print 'grant bonus to ', workerid, ' in amount ', bonus_to_pay, ' for assignment ',assignmentid
                     self.mturk_conn.grant_bonus(workerid, assignmentid, bonus_to_pay, 'Bonus for completion of news classification task.')
             self.mturk_conn.expire_hit(self.hitid)
         except:
             print "Error caught when trying to end run."
+            raise
         self.running = False
         # Retain HITId to continue making payments even after HIT has finished running.
         # self.hitid = None
@@ -127,7 +130,7 @@ class MTurkConnection(object):
 
 def _assignment_scratchpad():
     """
-    # can only call this on status==Submitted
+    # can[ only call this on status==Submitted
     #        self.mturk_conn.approve_assignment(all_assignments[0].AssignmentId)
     print all_assignments[0].AssignmentStatus
     print all_assignments[0].AssignmentId

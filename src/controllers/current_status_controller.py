@@ -8,7 +8,7 @@ class CurrentStatusController(object):
                                      {'workerid' : workerid,
                                       'hitid' : hitid,
                                       'taskindex' : taskindex},
-                                     {'upsert' : 1})
+                                     True)
     def remove(self, workerid=None):
         self.db.currentstatus.remove({'workerid' : workerid})
     def get_current_status(self, workerid):

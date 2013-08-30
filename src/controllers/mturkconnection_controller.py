@@ -32,10 +32,25 @@ class MTurkConnectionController(object):
         mt_conn = self.get_by_email(email)
         mt_conn.end_run(bonus=bonus)
         self.update(mt_conn)
+
+    def get_all(self, environment="development"):
+        d = self.db.mturkconnections.find()
+        if d :
+            for c in d:
+                c['environment']=environment
+                mtconn = MTurkConnection.deserialize(c)
+                yield mtconn
         
-    def make_payments(self, email=None):
+    def make_payments(self, email=None, environment="development"):
         from controllers import CHITController
-        mt_conn = self.get_by_email(email)
-        submitted_assignments = mt_conn.get_payments_to_make()
-        mt_conn.make_payments(assignment_ids=[a[0] for a in submitted_assignments if CHITController.secret_code_matches(db=self.db,worker_id=a[1], secret_code=a[2])])
+        if email != None:
+            mt_conn = self.get_by_email(email=email,
+                                        environment=environment)
+            submitted_assignments = mt_conn.get_payments_to_make()
+            mt_conn.make_payments(assignment_ids=[a[0] for a in submitted_assignments if CHITController.secret_code_matches(db=self.db,worker_id=a[1], secret_code=a[2])])
+        else:
+            for mt_conn in self.get_all(environment=environment):
+                submitted_assignments = mt_conn.get_payments_to_make()
+                mt_conn.make_payments(assignment_ids=[a[0] for a in submitted_assignments if CHITController.secret_code_matches(db=self.db,worker_id=a[1], secret_code=a[2])])
+
             

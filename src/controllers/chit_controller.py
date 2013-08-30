@@ -11,15 +11,14 @@ class CHITController(object):
     def __init__(self, db):
         self.db = db
         self.db.chits.ensure_index('hitid', unique=True)
-        
+        self.db.chitloads.ensure_index('hitid', unique=True)
     def create(self, d):
         chit = CHIT.deserialize(d)
         self.db.chits.insert(chit.serialize())
         return chit
     def get_chit_by_id(self, hitid):
         d = self.db.chits.find_one({'hitid' : hitid})
-        chit = CHIT.deserialize(d) if d else None
-        return chit
+        return CHIT.deserialize(d) if d else None
     def get_next_chit_id(self, exclusions=[], workerid=None):
         cl = self.db.chitloads.find({'hitid' : {'$exists' : True}}, {'hitid' : 1})
         loaded_chits = [c['hitid'] for c in cl] if cl else []

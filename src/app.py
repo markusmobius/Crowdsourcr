@@ -10,6 +10,7 @@ import uuid
 import base64
 import hashlib
 import Settings
+import controllers
 import os
 import sys
 
@@ -68,6 +69,42 @@ class Application(tornado.web.Application):
             (r'.*()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='404.html'))
         ]
         tornado.web.Application.__init__(self, app_handlers, **settings)
+
+        self.currentstatus_controller = controllers.CurrentStatusController(self.db)
+        self.ctype_controller = controllers.CTypeController(self.db)
+        self.ctask_controller = controllers.CTaskController(self.db)
+        self.admin_controller = controllers.AdminController(self.db)
+        self.chit_controller = controllers.CHITController(self.db)
+        self.cdocument_controller = controllers.CDocumentController(self.db)
+        self.xmltask_controller = controllers.XMLTaskController(self.db)
+        self.cresponse_controller = controllers.CResponseController(self.db)
+        self.mturkconnection_controller = controllers.MTurkConnectionController(self.db)
+
+        self.ensure_automatic_make_payments()
+    
+    @property
+    def logging(self) :
+        return Settings.logging
+
+    def ensure_automatic_make_payments(self) :
+        """Adds an automatic payer to the ioloop."""
+
+        def _ensure() :
+            self.logging.info(u"Ensuring automatic payments")
+            def callback() :
+                self.logging.info("Attempting automatic paighments.")
+                try :
+                    self.mturkconnection_controller.make_payments(environment=self.settings['environment'])
+                    self.logging.info(u"Peiment su\x01\x02e\u00df")
+                except :
+                    self.logging.exception("Error in automatic payer.")
+                    pc.stop()
+            callback_time = 1000 * 10 # 10 seconds
+            pc = tornado.ioloop.PeriodicCallback(callback, callback_time)
+            pc.start()
+        # run this from the main ioloop just in case we have multiple threads
+        tornado.ioloop.IOLoop.instance().add_callback(_ensure)
+
  
 def main():
     tornado.options.parse_command_line()
@@ -75,7 +112,6 @@ def main():
     http_server.listen(options.port)
     Settings.logging.info("Started news_crowdsourcer in %s mode." % options.environment)
     tornado.ioloop.IOLoop.instance().start()
- 
 
 def clear_db(db):
     db.ctasks.drop()

@@ -9,6 +9,7 @@
 	  <varname>age</varname>
 	  <questiontext>What is your age?</questiontext>
 	  <valuetype>numeric</valuetype>
+	  <bonus>threshold:50</bonus>
 	</question>
 	<question>
 	  <helptext>We want to better understand the strenghts and weaknesses of our survey in order to improve it for future workers. Your answer to this question will not influence your payment.</helptext>

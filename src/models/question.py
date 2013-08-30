@@ -15,9 +15,9 @@ class Question(object) :
             else :
                 try :
                     split_bonus = bonus.split(':')
-                    bthreth = int(split_bonus[1])
+                    bthresh = int(split_bonus[1])
                     if bthresh > 100 or bthresh < 0 or split_bonus[0] != 'threshold':
-                        raise Exception
+                        raise Exception('bthresh')
                     else :
                         return bonus
                 except:
@@ -40,12 +40,12 @@ class Question(object) :
                 'content' : self.content,
                 'bonus' : self.bonus}
     def get_bonus(self):
-        if not bonus:
+        if not self.bonus:
             return None
-        elif bonus == 'linear':
+        elif self.bonus == 'linear':
             return { 'type' : 'linear' }
         else:
-            split_bonus = bonus.split(':')
+            split_bonus = self.bonus.split(':')
             return { 'type' : 'threshold',
                      'threshold' : int(split_bonus[1]) }
 
