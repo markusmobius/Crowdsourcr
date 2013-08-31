@@ -40,7 +40,7 @@
 	      window.location.href = '/admin/download/';
 	  });
 
-	  getStatus();
+	  getStatus(true);
 	  getHITs();
       }
 
@@ -76,7 +76,7 @@
 	  $.post('/admin/recruit/begin', {}, callback);
       }
 
-      function getStatus() {
+      function getStatus(updateTurkInfo) {
 	  $.get('/admin/info/' + nocache(), function(data) {
 	      if (data.authed) {
 		  $('#admin-login-info').text('Logged in as ' + data.full_name + ' (' + data.email + '). Server is running in '+data.environment+' mode.');
@@ -85,13 +85,15 @@
 		      $('#admin-turk-info').html('Could not authenticate with MTurk.');
 		  } else {
 		      $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
-		      var mturk_form = $('#admin-mturk-cred-form');
-		      mturk_form.find('input[name="access_key"]:first').val(data.turkinfo.access_key);
-		      mturk_form.find('input[name="secret_key"]:first').val(data.turkinfo.secret_key);		  
-		      mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
-		      mturk_form.find('input[name="hit_title"]:first').val(data.turkinfo.title);
-		      mturk_form.find('textarea[name="hit_description"]:first').val(data.turkinfo.description);
-		      mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
+                      if (updateTurkInfo) {
+		        var mturk_form = $('#admin-mturk-cred-form');
+		        mturk_form.find('input[name="access_key"]:first').val(data.turkinfo.access_key);
+		        mturk_form.find('input[name="secret_key"]:first').val(data.turkinfo.secret_key);		  
+		        mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
+		        mturk_form.find('input[name="hit_title"]:first').val(data.turkinfo.title);
+		        mturk_form.find('textarea[name="hit_description"]:first').val(data.turkinfo.description);
+		        mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
+                      }
 		      if (data.turkinfo.running) {
 			  $('#admin-turk-info').append('<p>Currently running with HITId ' + data.turkinfo.hitid + '.</p>');
 			  $('#admin-begin-run').hide();
