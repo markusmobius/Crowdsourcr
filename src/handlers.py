@@ -229,7 +229,8 @@ class RecruitingEndHandler(BaseHandler):
         # scale by maximum
         worker_bonus_percent = {a : worker_bonus_percent[a] / max_bonus_percent for a in worker_bonus_percent}
         self.mturkconnection_controller.end_run(email=admin_email,
-                                                bonus=worker_bonus_percent)
+                                                bonus=worker_bonus_percent,
+                                                environment=self.settings['environment'])
         self.finish()
 
 class RecruitingInfoHandler(BaseHandler):
