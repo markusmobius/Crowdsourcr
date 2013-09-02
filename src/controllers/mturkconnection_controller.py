@@ -29,8 +29,8 @@ class MTurkConnectionController(object):
             self.update(mt_conn)
 
     def end_run(self, email=None, bonus={}, environment="development") :
-        mt_conn = self.get_by_email(email)
-        mt_conn.end_run(bonus=bonus, environment=environment)
+        mt_conn = self.get_by_email(email=email, environment=environment)
+        mt_conn.end_run(bonus=bonus)
         self.update(mt_conn)
 
     def get_all(self, environment="development"):

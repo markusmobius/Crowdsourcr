@@ -27,6 +27,11 @@ class CHITController(object):
                                      { 'exclusions' : {'$nin' : exclusions}},
                                      { 'hitid' : {'$nin' : loaded_chits} } ] },
                                    {'hitid' : 1})
+        if not d:
+            d = self.db.chits.find_one({'$and' : 
+                                        [{ 'num_completed_hits' : {'$lt' : 1} },
+                                         { 'exclusions' : {'$nin' : exclusions}} ] },
+                                       {'hitid' : 1})
         if d and workerid :
             self.db.chitloads.insert({'workerid' : workerid,
                                       'time' : datetime.datetime.utcnow(),

@@ -107,7 +107,6 @@ class MTurkConnection(object):
             self.mturk_conn.expire_hit(self.hitid)
         except:
             print "Error caught when trying to end run."
-            raise
         self.running = False
         # Retain HITId to continue making payments even after HIT has finished running.
         # self.hitid = None

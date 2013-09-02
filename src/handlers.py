@@ -220,8 +220,9 @@ class RecruitingEndHandler(BaseHandler):
                             agreed = max(0, num_responses - 1)
                             if bonus_info['type'] == 'linear' :
                                 worker_bonus_info[workerid]['earned'] += agreed / num_responses
-                            elif bonus_info['type'] == 'threshold' and 100.0 * agreed / num_responses >= bonus_info['threshold'] :
-                                worker_bonus_info[workerid]['earned'] += 1.0
+                            elif bonus_info['type'] == 'threshold':
+                                if 100.0 * agreed / num_responses >= bonus_info['threshold'] :
+                                    worker_bonus_info[workerid]['earned'] += 1.0
                             else :
                                 raise Exception('Error: unsupported bonus type %s.' % bonus_info['type'])
         worker_bonus_percent = { a : worker_bonus_info[a]['earned'] / worker_bonus_info[a]['possible'] for a in worker_bonus_info}
