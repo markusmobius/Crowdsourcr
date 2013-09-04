@@ -245,6 +245,7 @@ class RecruitingInfoHandler(BaseHandler):
         self.finish()
 
 class AdminInfoHandler(BaseHandler):
+    @tornado.web.asynchronous
     def get(self):
         admin_email = self.get_secure_cookie('admin_email')
         if not admin_email:
@@ -257,18 +258,23 @@ class AdminInfoHandler(BaseHandler):
             turk_info = False 
             turk_balance = False
             hit_info = self.chit_controller.get_agg_hit_info()
-            hit_info = self.cresponse_controller.append_completed_task_info(**hit_info)
+            hit_info = self.cresponse_controller.append_completed_task_info(**hit_info)   
             if turk_conn:
+                def _callback(balance) :
+                    turk_balance = str(((balance or [''])[0]))
+                    self._send_json(hit_info, turk_info, turk_balance)
                 turk_info = turk_conn.serialize()
-                turk_balance = str((turk_conn.get_balance() or [''])[0])
-            
-            self.return_json({'authed' : True,
-                              'environment' : self.settings['environment'],
-                              'email' : self.get_secure_cookie('admin_email'),
-                              'full_name' : self.get_secure_cookie('admin_name'),
-                              'hitinfo' : hit_info,
-                              'turkinfo' : turk_info,
-                              'turkbalance' : turk_balance})
+                self.application.asynchronizer.register_callback(turk_conn.get_balance, _callback)
+            else :
+                self._send_json(hit_info, turk_info, turk_balance)
+    def _send_json(self, hit_info, turk_info, turk_balance) :
+        self.return_json({'authed' : True,
+                          'environment' : self.settings['environment'],
+                          'email' : self.get_secure_cookie('admin_email'),
+                          'full_name' : self.get_secure_cookie('admin_name'),
+                          'hitinfo' : hit_info,
+                          'turkinfo' : turk_info,
+                          'turkbalance' : turk_balance})
 
 class AdminHitInfoHandler(BaseHandler):
     def get(self, id=None) :

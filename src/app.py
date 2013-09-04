@@ -11,6 +11,7 @@ import base64
 import hashlib
 import Settings
 import controllers
+import asynchronizer
 import os
 import sys
 
@@ -28,6 +29,10 @@ class Application(tornado.web.Application):
         self.db = pymongo.Connection()['news_crowdsourcing']
         if drop == "REALLYREALLY" :
             clear_db(self.db)
+
+        self.asynchronizer = asynchronizer.Asynchronizer(callback_transformer=asynchronizer.in_ioloop)
+        self.asynchronizer.run()
+
         settings = {
             "template_path":Settings.TEMPLATE_PATH,
             "static_path":Settings.STATIC_PATH,
