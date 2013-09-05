@@ -354,6 +354,10 @@ class CHITViewHandler(BaseHandler):
                                                                    taskindex=0)
                     self.return_json({'reload_for_first_task':True})
 
+class CHITReturnHandler(BaseHandler):
+    def post(self):
+        workerid = self.get_secure_cookie('workerid')
+        self.finish()
 
 class CResponseHandler(BaseHandler):
     def post(self):
