@@ -115,10 +115,16 @@ class Application(tornado.web.Application):
  
 def main():
     tornado.options.parse_command_line()
-    http_server = tornado.httpserver.HTTPServer(Application(environment=options.environment, drop=options.drop))
+    print options.port
+    application = Application(environment=options.environment, drop=options.drop)
+    http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(options.port)
     Settings.logging.info("Started news_crowdsourcer in %s mode." % options.environment)
-    tornado.ioloop.IOLoop.instance().start()
+    try :
+        tornado.ioloop.IOLoop.instance().start()
+    except :
+        Settings.logging.exception("Main ioloop exception")
+        application.asynchronizer.kill()
 
 def clear_db(db):
     db.ctasks.drop()

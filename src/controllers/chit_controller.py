@@ -18,20 +18,32 @@ class CHITController(object):
     def get_chit_by_id(self, hitid):
         d = self.db.chits.find_one({'hitid' : hitid})
         return CHIT.deserialize(d) if d else None
-    def get_next_chit_id(self, exclusions=[], workerid=None, outstanding_hits=[], stalest_hit=None):
+    def has_available_hits(self) :
+        d = self.db.chits.find_one({'num_completed_hits' : {'$lt' : 1}})
+        return True if d else False
+    def get_next_chit_id(self, exclusions=[], workerid=None, outstanding_hits=[], stale_hits=[]):
         #cl = self.db.chitloads.find({'hitid' : {'$exists' : True}}, {'hitid' : 1})
         #loaded_chits = [c['hitid'] for c in cl] if cl else []
+        ct = datetime.datetime.utcnow()
+        min_seconds = 30.0
+        print outstanding_hits
         d = self.db.chits.find_one({'$and' : 
                                     [{ 'num_completed_hits' : {'$lt' : 1} },
                                      { 'exclusions' : {'$nin' : exclusions}},
                                      { 'hitid' : {'$nin' : outstanding_hits} } ] },
                                    {'hitid' : 1})
         if not d:
-            d = self.db.chits.find_one({'$and' : 
-                                        [{ 'num_completed_hits' : {'$lt' : 1} },
-                                         { 'exclusions' : {'$nin' : exclusions}},
-                                         { 'hitid' : stalest_hit }]},
-                                       {'hitid' : 1})
+            for sh in stale_hits :
+                if (ct - sh['lastping']).total_seconds() > min_seconds : 
+                    d = self.db.chits.find_one({'$and' : 
+                                                [{ 'num_completed_hits' : {'$lt' : 1} },
+                                                 { 'exclusions' : {'$nin' : exclusions}},
+                                                 { 'hitid' : sh['hitid']} ]},
+                                               {'hitid' : 1})
+                    if d :
+                        break
+                
+                
                 
         if d and workerid :
             self.db.chitloads.insert({'workerid' : workerid,

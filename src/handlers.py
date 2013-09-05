@@ -346,17 +346,13 @@ class CHITViewHandler(BaseHandler):
                 completed_hits = self.cresponse_controller.get_hits_for_worker(workerid)
                 outstanding_hits = self.currentstatus_controller.outstanding_hits()
                 sh = self.db.workerpings.find().sort([('lastping',1)])
-                ct = datetime.datetime.utcnow()
-                min_seconds = 30.0
                 stale_hits = [s for s in sh if self.chit_controller.get_chit_by_id(s['hitid'])]
-                stalest_hit = min(stale_hits, key=lambda x : x['lastping']) if len(stale_hits) > 0 else None
-                if stalest_hit and (ct - stalest_hit['lastping']).total_seconds() < min_seconds :
-                    stalest_hit = None
-                stalest_hit = stalest_hit['hitid'] if stalest_hit else None
-                nexthit = self.chit_controller.get_next_chit_id(exclusions=completed_hits, workerid=workerid, outstanding_hits=outstanding_hits, stalest_hit=stalest_hit)
+                nexthit = self.chit_controller.get_next_chit_id(exclusions=completed_hits, workerid=workerid, outstanding_hits=outstanding_hits, stale_hits=stale_hits)
                 if nexthit == None :
-                    self.clear_cookie('workerid')
-                    self.return_json({'no_hits' : True})
+                    self.logging.info('no next hit')
+                    #self.clear_cookie('workerid')
+                    self.return_json({'no_hits' : True,
+                                      'unfinished_hits' : self.chit_controller.has_available_hits()}) 
                 else :
                     self.currentstatus_controller.create_or_update(workerid=workerid,
                                                                    hitid=nexthit,
@@ -383,6 +379,7 @@ class CHITReturnHandler(BaseHandler):
             self.currentstatus_controller.remove(workerid)
         redir_subdomain = 'www' if self.settings['environment'] == 'production' else 'workersandbox'
         redir_url = 'https://%s.mturk.com/mturk/myhits' % redir_subdomain
+        self.clear_cookie('workerid')
         self.redirect(redir_url)
 
 class CResponseHandler(BaseHandler):
