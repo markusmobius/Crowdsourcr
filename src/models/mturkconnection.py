@@ -115,8 +115,6 @@ class MTurkConnection(object):
             return []
         else:
             all_assignments = self.mturk_conn.get_assignments(self.hitid)
-            unfiltered_assignments = [(a.WorkerId, a.AssignmentStatus) for a in all_assignments]
-            print 'unfass: ', unfiltered_assigments
             return [[a.AssignmentId, a.WorkerId, a.answers[0][0].fields[0]] for a in all_assignments if a.AssignmentStatus == 'Submitted']
 
     def make_payments(self, assignment_ids=[]) :

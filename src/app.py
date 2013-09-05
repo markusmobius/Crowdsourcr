@@ -72,6 +72,7 @@ class Application(tornado.web.Application):
             (r'/HIT/submit/?', handlers.CResponseHandler),
             (r'/HIT/return/?', handlers.CHITReturnHandler),
             (r'/worker/login/?', handlers.WorkerLoginHandler),
+            (r'/worker/ping/?', handlers.WorkerPingHandler),
             (r'.*()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='404.html'))
         ]
         tornado.web.Application.__init__(self, app_handlers, **settings)

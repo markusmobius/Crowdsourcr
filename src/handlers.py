@@ -344,7 +344,16 @@ class CHITViewHandler(BaseHandler):
                                       "num_tasks" : len(chit.tasks)})
             else:
                 completed_hits = self.cresponse_controller.get_hits_for_worker(workerid)
-                nexthit = self.chit_controller.get_next_chit_id(exclusions=completed_hits, workerid=workerid)
+                outstanding_hits = self.currentstatus_controller.outstanding_hits()
+                sh = self.db.workerpings.find().sort([('lastping',1)])
+                ct = datetime.datetime.utcnow()
+                min_seconds = 30.0
+                stale_hits = [s for s in sh if self.chit_controller.get_chit_by_id(s['hitid'])]
+                stalest_hit = min(stale_hits, key=lambda x : x['lastping']) if len(stale_hits) > 0 else None
+                if stalest_hit and (ct - stalest_hit['lastping']).total_seconds() < min_seconds :
+                    stalest_hit = None
+                stalest_hit = stalest_hit['hitid'] if stalest_hit else None
+                nexthit = self.chit_controller.get_next_chit_id(exclusions=completed_hits, workerid=workerid, outstanding_hits=outstanding_hits, stalest_hit=stalest_hit)
                 if nexthit == None :
                     self.clear_cookie('workerid')
                     self.return_json({'no_hits' : True})
@@ -354,10 +363,27 @@ class CHITViewHandler(BaseHandler):
                                                                    taskindex=0)
                     self.return_json({'reload_for_first_task':True})
 
-class CHITReturnHandler(BaseHandler):
-    def post(self):
+class WorkerPingHandler(BaseHandler) :
+    def post(self) :
         workerid = self.get_secure_cookie('workerid')
+        existing_status = self.currentstatus_controller.get_current_status(workerid)
+        if existing_status :
+            self.db.workerpings.update({'hitid' : existing_status['hitid']},
+                                       {'hitid' : existing_status['hitid'],
+                                        'lastping' : datetime.datetime.utcnow()},
+                                       True)
         self.finish()
+
+# https://workersandbox.mturk.com/mturk/continue?hitId=2CQU98JHSTLB3ZGMPO0IRBJEK6HQEE
+class CHITReturnHandler(BaseHandler):
+    def get(self):
+        workerid = self.get_secure_cookie('workerid')
+        mthitid = self.mturkconnection_controller.get_hit_id()
+        if workerid :
+            self.currentstatus_controller.remove(workerid)
+        redir_subdomain = 'www' if self.settings['environment'] == 'production' else 'workersandbox'
+        redir_url = 'https://%s.mturk.com/mturk/myhits' % redir_subdomain
+        self.redirect(redir_url)
 
 class CResponseHandler(BaseHandler):
     def post(self):

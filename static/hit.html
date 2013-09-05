@@ -36,6 +36,12 @@
         }
       }
 
+      function ping() {
+        $.post('/worker/ping', {}, function(data) {
+          setTimeout(ping, 5000);
+        });
+      }
+
       var currentTypeGroup = null;
 
       function showWithData(data) {
@@ -105,13 +111,14 @@
 		  $('.login-content').hide();
 		  $('.turk-verify-content').show().find('.secret-code').html(data.verify_code);
 	      } else {
-                  $('.hit-progress-indicator').text("You are on task " + (+data.task_num + 1) + " of " + data.num_tasks  + ".");
+                  $('#hit-progress').text("You are on task " + (+data.task_num + 1) + " of " + data.num_tasks  + ".");
                   showWithData(data.task);
 	      }
 	  });
       }
 
       function onLoad() {
+	  ping();
 	  $('#next-task-button').click(function(evt) {
 	      evt.preventDefault();
               if (currentTypeGroup.validate()) {
@@ -274,11 +281,15 @@
         position:absolute;
         right:2em;
         bottom:0;
+        padding: 5px !important;
         background:#ccc;
         padding: 1px 6px 0 6px;
         border-style: solid;
         border-width: 1px 1px 0 1px;
         border-color: #fff;
+      }
+      .hit-progress-indicator > div {
+        display: inline;
       }
       div.radio {
         margin-left: 1px;
@@ -336,7 +347,14 @@
 	<div id="hit-modules-scroll" class="splitscreen-content" style="">
 	  <ul id="hit-modules"></ul><br>
 	  <button id="next-task-button" class="btn btn-success">Continue to next task</button>
-	  <div class="hit-progress-indicator">Progress</div>
+	  <div class="hit-progress-indicator">
+	    <div id="hit-progress">Progress</div>
+	    <a href="/HIT/return">
+	      <button id="return-hit" class="btn btn-danger">
+		Return HIT
+	      </button>
+	    </a>
+	  </div>
 	</div>
       </div>
     </div>

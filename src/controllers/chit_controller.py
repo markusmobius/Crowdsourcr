@@ -11,7 +11,6 @@ class CHITController(object):
     def __init__(self, db):
         self.db = db
         self.db.chits.ensure_index('hitid', unique=True)
-        self.db.chitloads.ensure_index('hitid', unique=True)
     def create(self, d):
         chit = CHIT.deserialize(d)
         self.db.chits.insert(chit.serialize())
@@ -19,19 +18,21 @@ class CHITController(object):
     def get_chit_by_id(self, hitid):
         d = self.db.chits.find_one({'hitid' : hitid})
         return CHIT.deserialize(d) if d else None
-    def get_next_chit_id(self, exclusions=[], workerid=None):
-        cl = self.db.chitloads.find({'hitid' : {'$exists' : True}}, {'hitid' : 1})
-        loaded_chits = [c['hitid'] for c in cl] if cl else []
+    def get_next_chit_id(self, exclusions=[], workerid=None, outstanding_hits=[], stalest_hit=None):
+        #cl = self.db.chitloads.find({'hitid' : {'$exists' : True}}, {'hitid' : 1})
+        #loaded_chits = [c['hitid'] for c in cl] if cl else []
         d = self.db.chits.find_one({'$and' : 
                                     [{ 'num_completed_hits' : {'$lt' : 1} },
                                      { 'exclusions' : {'$nin' : exclusions}},
-                                     { 'hitid' : {'$nin' : loaded_chits} } ] },
+                                     { 'hitid' : {'$nin' : outstanding_hits} } ] },
                                    {'hitid' : 1})
         if not d:
             d = self.db.chits.find_one({'$and' : 
                                         [{ 'num_completed_hits' : {'$lt' : 1} },
-                                         { 'exclusions' : {'$nin' : exclusions}} ] },
+                                         { 'exclusions' : {'$nin' : exclusions}},
+                                         { 'hitid' : stalest_hit }]},
                                        {'hitid' : 1})
+                
         if d and workerid :
             self.db.chitloads.insert({'workerid' : workerid,
                                       'time' : datetime.datetime.utcnow(),
