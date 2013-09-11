@@ -1,4 +1,6 @@
 
+# TODO: use this registry to validate questions in question model.
+# TODO: find out why hasattr is returning false
 
 class BonusTypeRegistry(type) :
     def __init__(cls, name, bases, dct) :
@@ -68,7 +70,7 @@ def calculate_raw_bonus_info(task_response_info) :
                     bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
                                                              agreed=agreed, 
                                                              total=total_responses)
-                    bonus_exp = 'On question %s_%s, for response %s: %s' % (module, varname, response, bonus_exp)
+                    bonus_exp = 'On task %s, question %s_%s, for response %s: %s' % (task, module, varname, response, bonus_exp)
                     for workerid in workerids :
                         worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
                                                                 'possible' : 0.0,
@@ -81,6 +83,8 @@ def calculate_raw_bonus_info(task_response_info) :
 def normalize_bonus_info(worker_bonus_info) :
     worker_bonus_percent = { a : 
                             {'pct' : worker_bonus_info[a]['earned'] / worker_bonus_info[a]['possible'],
+                             'earn' : worker_bonus_info[a]['earned'],
+                             'poss' : worker_bonus_info[a]['possible'],
                              'exp' : worker_bonus_info[a]['exp']}
                              for a in worker_bonus_info}
     max_bonus_percent = 1.0
@@ -91,7 +95,11 @@ def normalize_bonus_info(worker_bonus_info) :
     # scale by maximum
     worker_bonus_percent = {a.upper().strip() : 
                             { 'pct' : worker_bonus_percent[a]['pct'] / max_bonus_percent,
-                              'exp' : worker_bonus_percent[a]['exp'] }
+                              'earn' : worker_bonus_percent[a]['earn'],
+                              'poss' : worker_bonus_percent[a]['poss'],
+                              'exp' : worker_bonus_percent[a]['exp'],
+                              'rawpct' : worker_bonus_percent[a]['pct'],
+                              'best' : max_bonus_percent}
                             for a in worker_bonus_percent}
     return worker_bonus_percent
 

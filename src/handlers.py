@@ -217,7 +217,11 @@ class RecruitingEndHandler(BaseHandler):
         for wid, info in worker_bonus_info.iteritems() :
             self.db.bonus_info.insert({'workerid' : wid,
                                        'percent' : info['pct'],
-                                       'explanation' : info['exp']})
+                                       'explanation' : info['exp'],
+                                       'possible' : info['poss'],
+                                       'earned' : info['earn'],
+                                       'rawpct' : info['rawpct'],
+                                       'best' : info['best']})
         worker_bonus_percent = { wid : info['pct']
                                  for wid, info in worker_bonus_info.iteritems() }
         self.mturkconnection_controller.end_run(email=admin_email,
@@ -233,7 +237,11 @@ class BonusInfoHandler(BaseHandler) :
             bi = self.db.bonus_info.find()
             resp = [{'workerid' : d['workerid'],
                      'percent' : d['percent'],
-                     'explanation' : d['explanation']}
+                     'explanation' : d['explanation'],
+                     'possible' : d['possible'],
+                     'earned' : d['earned'],
+                     'raw percent' : d['rawpct'],
+                     'best percent' : d['best']}
                     for d in bi]
             self.return_json(resp)
         else :
