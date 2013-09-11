@@ -15,10 +15,8 @@ class BonusType(object) :
         pass
     @classmethod
     def calculate_bonus(cls, bonus_info, agreed, total) :
-        # hasattr return false here --- unclear why
-        # TODO: create proper exception here
-        #if not hasattr(cls.btype_subclasses, bonus_info['type']) :
-        #raise Exception('Error: unsupported bonus type %s. All subclasses: %s' % (bonus_info['type'], str(cls.btype_subclasses)))
+        if not cls.btype_subclasses.get(bonus_info['type'], None) :
+            raise Exception('Error: unsupported bonus type %s. All subclasses: %s' % (bonus_info['type'], str(cls.btype_subclasses)))
         return cls.btype_subclasses[bonus_info['type']].calculate_bonus(bonus_info=bonus_info,
                                                                         agreed=agreed,
                                                                         total=total)
@@ -68,8 +66,8 @@ def calculate_raw_bonus_info(task_response_info) :
                     # answer
                     agreed = 1.0 * len(workerids)
                     bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
-                                                             agreed=agreed, 
-                                                             total=total_responses)
+                                                                        agreed=agreed, 
+                                                                        total=total_responses)
                     bonus_exp = 'On task %s, question %s_%s, for response %s: %s' % (task, module, varname, response, bonus_exp)
                     for workerid in workerids :
                         worker_bonus_info.setdefault(workerid, {'earned' : 0.0,

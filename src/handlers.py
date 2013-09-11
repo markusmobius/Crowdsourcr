@@ -12,6 +12,7 @@ import Settings
 import models
 import controllers
 import json
+import helpers
  
 from tornado.options import define, options
  
@@ -200,7 +201,6 @@ class RecruitingBeginHandler(BaseHandler):
 
 class RecruitingEndHandler(BaseHandler):
     def post(self):
-        import helpers.bonus_helper
         admin_email = self.get_secure_cookie('admin_email')
         worker_bonus_info = {}
         # all_responses_by_task returns 
@@ -212,7 +212,7 @@ class RecruitingEndHandler(BaseHandler):
                                   self.cresponse_controller.all_responses_by_task(
                                       task))
                               for task in self.ctask_controller.get_task_ids()}
-        worker_bonus_info =  helpers.bonus_helper.calculate_worker_bonus_info(task_response_info)
+        worker_bonus_info =  helpers.calculate_worker_bonus_info(task_response_info)
         self.db.bonus_info.drop()
         for wid, info in worker_bonus_info.iteritems() :
             self.db.bonus_info.insert({'workerid' : wid,
@@ -235,14 +235,23 @@ class BonusInfoHandler(BaseHandler) :
         admin_email = self.get_secure_cookie('admin_email')
         if admin_email and self.admin_controller.get_by_email(admin_email) :
             bi = self.db.bonus_info.find()
-            resp = [{'workerid' : d['workerid'],
-                     'percent' : d['percent'],
+            pb = self.db.paid_bonus.find()
+            resp = {d['workerid'] :
+                    {'percent' : d['percent'],
                      'explanation' : d['explanation'],
                      'possible' : d['possible'],
                      'earned' : d['earned'],
                      'raw percent' : d['rawpct'],
-                     'best percent' : d['best']}
-                    for d in bi]
+                     'best percent' : d['best'],
+                     'paid on mturk' : False,
+                     'payment info' : {}}
+                    for d in bi}
+            for d in pb :
+                wrk_info = resp.setdefault(d['workerid'], {})
+                wrk_info['paid on mturk'] = True
+                wrk_info['payment info'] = {'percent' : d['percent'],
+                                            'amount' : d['amount'],
+                                            'assignmentid' : d['assignmentid']}
             self.return_json(resp)
         else :
             self.return_json([])
@@ -422,7 +431,8 @@ class CSVDownloadHandler(BaseHandler):
     def get(self):
         self.set_header ('Content-Type', 'text/csv')
         self.set_header ('Content-Disposition', 'attachment; filename=data.csv')
-        for row in self.cresponse_controller.write_response_to_csv():
+        completed_workers = self.chit_controller.get_workers_with_completed_hits()
+        for row in self.cresponse_controller.write_response_to_csv(completed_workers=completed_workers):
             self.write("%s\n" % row)
         self.finish()
 

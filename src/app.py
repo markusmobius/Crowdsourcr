@@ -136,6 +136,8 @@ def clear_db(db):
     db.chitloads.drop()
     db.workerpings.drop()
     db.currentstatus.drop()
+    db.paid_bonus.drop()
+    db.bonus_info.drop()
 
 if __name__ == "__main__":
     main()

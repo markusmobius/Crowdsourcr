@@ -12,6 +12,8 @@ class XMLTaskController(object):
         self.db.chitloads.drop()
         self.db.currentstatus.drop()
         self.db.workerpings.drop()
+        self.db.paid_bonus.drop()
+        self.db.bonus_info.drop()
         return models.XMLTask(xml_path)
 
 """

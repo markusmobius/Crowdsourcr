@@ -19,13 +19,14 @@ class CResponseController(object):
     def get_hits_for_worker(self, workerid):
         d = self.db.cresponses.find({'workerid' : workerid}, {'hitid' : 1})
         return [r['hitid'] for r in d]
-    def write_response_to_csv(self) :
+    def write_response_to_csv(self, completed_workers=[]) :
         return ("%s\t%s\t%s\t%s\t%s" % (d['hitid'],
-                                   d['taskid'],
-                                   d['workerid'],
-                                   str(d['submitted']),
-                                   tornado.escape.json_encode(d['response']))
-                for d in self.db.cresponses.find())
+                                        d['taskid'],
+                                        d['workerid'],
+                                        str(d['submitted']),
+                                        tornado.escape.json_encode(d['response']))
+                for d in self.db.cresponses.find()
+                if d['workerid'] in completed_workers)
     def all_responses_by_task(self, taskid=None):
         d = self.db.cresponses.find({'taskid' : taskid}, {'workerid' : 1, 'response' : 1})
         module_responses = {} # module -> varname -> response -> [workerid]

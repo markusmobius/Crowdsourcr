@@ -93,21 +93,44 @@ class MTurkConnection(object):
         self.running = True
         self.hitid = hitinfo[0].HITId
         return True
-    def end_run(self, bonus={}):
+    def end_run(self, bonus={}, already_paid=[]):
+        paid_bonus = []
         try:
-            worker_assignments = { a.WorkerId : a.AssignmentId for a in self.mturk_conn.get_assignments(self.hitid, page_size=100) }
+            worker_assignments = {}
+            page_num = 1
+            while True :
+                asg = self.mturk_conn.get_assignments(self.hitid, 
+                                                      page_number=page_num,
+                                                      page_size=100)
+                if len(asg) == 0 :
+                    break
+                for a in asg :
+                    if a.WorkerId not in already_paid :
+                        worker_assignments[a.WorkerId] = a.AssignmentId
+                page_num += 1
+
+                
             for workerid, assignmentid in worker_assignments.iteritems() :
                 if workerid not in bonus :
                     print "Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid
                 else :
                     bonus_amt = min(10, max(0.05, round(bonus[workerid] * self.bonus, 2)))
                     bonus_to_pay = boto.mturk.price.Price(amount=bonus_amt)
-                    print 'grant bonus to ', workerid, ' in amount ', bonus_to_pay, ' for assignment ',assignmentid
-                    self.mturk_conn.grant_bonus(workerid, assignmentid, bonus_to_pay, 'Bonus for completion of news classification task.')
+                    self.mturk_conn.grant_bonus(worker_id=workerid,
+                                                assignment_id=assignmentid,
+                                                bonus_price=bonus_to_pay,
+                                                reason='Bonus for completion of news classification task.')
+                    paid_bonus.append({'workerid' : workerid,
+                                       'percent' : bonus[workerid],
+                                       'amount' : bonus_amt,
+                                       'assignmentid' : assignmentid})
+
             self.mturk_conn.expire_hit(self.hitid)
         except:
             print "Error caught when trying to end run."
+            raise
         self.running = False
+        return paid_bonus
         # Retain HITId to continue making payments even after HIT has finished running.
         # self.hitid = None
     def get_payments_to_make(self):
@@ -121,15 +144,16 @@ class MTurkConnection(object):
                     tmp_asg = self.mturk_conn.get_assignments(self.hitid,
                                                               page_number=page_num,
                                                               page_size=100)
-                    if len(temp_asg) == 0:
+                    if len(tmp_asg) == 0:
                         break
                     all_assignments += [[a.AssignmentId,
                                          a.WorkerId,
                                          a.answers[0][0].fields[0].strip().lower()]
                                         for a in tmp_asg 
                                         if a.AssignmentStatus == 'Submitted']
+                    page_num += 1
                 except : 
-                    break
+                    raise
             
             return all_assignments
 

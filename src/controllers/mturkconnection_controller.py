@@ -32,7 +32,11 @@ class MTurkConnectionController(object):
 
     def end_run(self, email=None, bonus={}, environment="development") :
         mt_conn = self.get_by_email(email=email, environment=environment)
-        mt_conn.end_run(bonus=bonus)
+        ap_sel = self.db.paid_bonus.find()
+        already_paid = [a['workerid'] for a in ap_sel]
+        paid_bonus = mt_conn.end_run(bonus=bonus, already_paid=already_paid)
+        for pb_info in paid_bonus :
+            self.db.paid_bonus.insert(pb_info)
         self.update(mt_conn)
 
     def get_all(self, environment="development"):
