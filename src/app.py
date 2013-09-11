@@ -62,6 +62,7 @@ class Application(tornado.web.Application):
             (r'/admin/remove/?', handlers.AdminRemoveHandler),
             (r'/admin/info/?', handlers.AdminInfoHandler),
             (r'/admin/hits/?', handlers.AdminHitInfoHandler),
+            (r'/admin/bonusinfo/?', handlers.BonusInfoHandler),
             (r'/admin/hits/(.+)', handlers.AdminHitInfoHandler),
             (r'/admin/tasks/(.+)', handlers.AdminTaskInfoHandler),
             (r'/superadmin/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='superadmin.html')),

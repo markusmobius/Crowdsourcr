@@ -200,39 +200,44 @@ class RecruitingBeginHandler(BaseHandler):
 
 class RecruitingEndHandler(BaseHandler):
     def post(self):
+        import helpers.bonus_helper
         admin_email = self.get_secure_cookie('admin_email')
         worker_bonus_info = {}
-        for task in self.ctask_controller.get_task_ids():
-            all_responses = self.cresponse_controller.all_responses_by_task(task) # module -> varname -> response_value -> [workerid]
-            # pare down to only applicable ones and add __bonus__ key to response_values
-            filtered_responses = self.ctype_controller.filter_bonus_responses(all_responses)
-            for module, varnames in filtered_responses.iteritems() :
-                for varname, responses in varnames.iteritems() :
-                    bonus_info = responses['__bonus__']
-                    total_responses = 1.0 * sum([len(c) for c in responses if c != '__bonus__'])
-                    for response, workerids in responses.iteritems() :
-                        if response == '__bonus__' : continue
-                        num_responses = 1.0 * len(workerids)
-                        for workerid in workerids :
-                            worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
-                                                                    'possible' : 0.000001})
-                            worker_bonus_info[workerid]['possible'] += 1.0
-                            agreed = max(0, num_responses - 1)
-                            if bonus_info['type'] == 'linear' :
-                                worker_bonus_info[workerid]['earned'] += agreed / num_responses
-                            elif bonus_info['type'] == 'threshold':
-                                if 100.0 * agreed / num_responses >= bonus_info['threshold'] :
-                                    worker_bonus_info[workerid]['earned'] += 1.0
-                            else :
-                                raise Exception('Error: unsupported bonus type %s.' % bonus_info['type'])
-        worker_bonus_percent = { a : worker_bonus_info[a]['earned'] / worker_bonus_info[a]['possible'] for a in worker_bonus_info}
-        max_bonus_percent = worker_bonus_percent[max(worker_bonus_percent.iterkeys(), key=(lambda key: worker_bonus_percent[key]))] if len(worker_bonus_percent) > 0 else 1.0
-        # scale by maximum
-        worker_bonus_percent = {a.upper().strip() : worker_bonus_percent[a] / max_bonus_percent for a in worker_bonus_percent}
+        # all_responses_by_task returns 
+        # module -> varname -> response_value -> [workerid]
+        # then filter_bonus_responses limits to applicable responses
+        # and adds __bonus__ key
+        task_response_info = {task : 
+                              self.ctype_controller.filter_bonus_responses(
+                                  self.cresponse_controller.all_responses_by_task(
+                                      task))
+                              for task in self.ctask_controller.get_task_ids()}
+        worker_bonus_info =  helpers.bonus_helper.calculate_worker_bonus_info(task_response_info)
+        self.db.bonus_info.drop()
+        for wid, info in worker_bonus_info.iteritems() :
+            self.db.bonus_info.insert({'workerid' : wid,
+                                       'percent' : info['pct'],
+                                       'explanation' : info['exp']})
+        worker_bonus_percent = { wid : info['pct']
+                                 for wid, info in worker_bonus_info.iteritems() }
         self.mturkconnection_controller.end_run(email=admin_email,
                                                 bonus=worker_bonus_percent,
                                                 environment=self.settings['environment'])
         self.finish()
+
+class BonusInfoHandler(BaseHandler) :
+    ''' Quick hack put together to serve bonus info. '''
+    def get(self) :
+        admin_email = self.get_secure_cookie('admin_email')
+        if admin_email and self.admin_controller.get_by_email(admin_email) :
+            bi = self.db.bonus_info.find()
+            resp = [{'workerid' : d['workerid'],
+                     'percent' : d['percent'],
+                     'explanation' : d['explanation']}
+                    for d in bi]
+            self.return_json(resp)
+        else :
+            self.return_json([])
 
 class RecruitingInfoHandler(BaseHandler):
     def post(self):
@@ -240,7 +245,7 @@ class RecruitingInfoHandler(BaseHandler):
         if admin_email:
             recruiting_info = json.loads(self.get_argument('data', '{}'))
             recruiting_info['email'] = admin_email
-            recruiting_info['environment']=self.settings['environment']
+            recruiting_info['environment'] = self.settings['environment']
             mtconn = self.mturkconnection_controller.create(recruiting_info)
         self.finish()
 
@@ -300,7 +305,7 @@ class AdminTaskInfoHandler(BaseHandler):
 
 class WorkerLoginHandler(BaseHandler):
     def post(self):
-        self.set_secure_cookie('workerid', self.get_argument('workerid', ''))
+        self.set_secure_cookie('workerid', self.get_argument('workerid', '').strip().upper())
         self.finish()
 
 class CHITViewHandler(BaseHandler):
@@ -311,7 +316,7 @@ class CHITViewHandler(BaseHandler):
             forced = True
             hitid = self.get_argument('hitid', None)
             workerid = self.get_argument('workerid', None)
-            self.set_secure_cookie('workerid', workerid)
+            self.set_secure_cookie('workerid', workerid).strip().upper()
             self.currentstatus_controller.create_or_update(workerid=workerid,
                                                            hitid=hitid,
                                                            taskindex=0)

@@ -114,11 +114,24 @@ class MTurkConnection(object):
         if not self.hitid or not self.running:
             return []
         else:
-            all_assignments = self.mturk_conn.get_assignments(self.hitid,
-                                                              page_size=100,
-                                                              sort_direction='Descending')
-            #TODO: request next page if multiple returned
-            return [[a.AssignmentId, a.WorkerId, a.answers[0][0].fields[0]] for a in all_assignments if a.AssignmentStatus == 'Submitted']
+            all_assignments = []
+            page_num = 1
+            while True:
+                try:
+                    tmp_asg = self.mturk_conn.get_assignments(self.hitid,
+                                                              page_number=page_num,
+                                                              page_size=100)
+                    if len(temp_asg) == 0:
+                        break
+                    all_assignments += [[a.AssignmentId,
+                                         a.WorkerId,
+                                         a.answers[0][0].fields[0].strip().lower()]
+                                        for a in tmp_asg 
+                                        if a.AssignmentStatus == 'Submitted']
+                except : 
+                    break
+            
+            return all_assignments
 
     def make_payments(self, assignment_ids=[]) :
         for assignmentid in assignment_ids:

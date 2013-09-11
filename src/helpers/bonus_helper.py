@@ -1,0 +1,97 @@
+
+
+class BonusTypeRegistry(type) :
+    def __init__(cls, name, bases, dct) :
+        if hasattr(cls, "bonusType") :
+            BonusType.btype_subclasses[cls.bonusType] = cls
+        super(BonusTypeRegistry, cls).__init__(name, bases, dct)
+
+class BonusType(object) :
+    __metaclass__ = BonusTypeRegistry
+    btype_subclasses = {}
+    def __init__(self) :
+        pass
+    @classmethod
+    def calculate_bonus(cls, bonus_info, agreed, total) :
+        # hasattr return false here --- unclear why
+        # TODO: create proper exception here
+        #if not hasattr(cls.btype_subclasses, bonus_info['type']) :
+        #raise Exception('Error: unsupported bonus type %s. All subclasses: %s' % (bonus_info['type'], str(cls.btype_subclasses)))
+        return cls.btype_subclasses[bonus_info['type']].calculate_bonus(bonus_info=bonus_info,
+                                                                        agreed=agreed,
+                                                                        total=total)
+
+class LinearBonusType(BonusType) :
+    bonusType = 'linear'
+    @staticmethod
+    def calculate_bonus(bonus_info, agreed, total) :
+        consenters = min(0.0, agreed - 1.0)
+        amt = consenters / total
+        exp = '%d points for agreeing with %d of %d workers on a question with linear payment' % (amt, consenters, total)
+        return (amt, exp)
+
+class ThreholdBonusType(BonusType) :
+    bonusType = 'threshold'
+    @staticmethod
+    def calculate_bonus(bonus_info, agreed, total) :
+        amt = 1.0 if 100.0 * agreed / total >= bonus_info['threshold'] else 0.0
+        exp = '%d points for agreeing with %d of %d workers on a question with threshold payment set at %d' % (amt, agreed, total, bonus_info['threshold'])
+        return (amt, exp)
+
+        
+def calculate_worker_bonus_info(task_response_info) :
+    raw_bonus = calculate_raw_bonus_info(task_response_info)
+    return normalize_bonus_info(raw_bonus)
+
+def calculate_raw_bonus_info(task_response_info) :
+    '''Gets responses in structure task -> module -> varname ->
+    response_value -> [workerids] from RecruitingEndHandler and in
+    turn CResponseController.all_responses_by_task(task).  '''
+    worker_bonus_info = {}
+    for task, filtered_responses in task_response_info.iteritems() :
+        for module, varnames in filtered_responses.iteritems() :
+            for varname, responses in varnames.iteritems() :
+                bonus_info = responses['__bonus__']
+                # responses is a dictionary mapping the response
+                # for 'varname' to a list of worker ids who 
+                # submitted that response
+                total_responses = 1.0 * sum([len(responses[c]) 
+                                             for c in responses 
+                                             if c != '__bonus__'])
+                for response, workerids in responses.iteritems() :
+                    if response == '__bonus__' : continue
+                    # total_responses measures the total number of workers
+                    # who answered this question, while agreed measures
+                    # the total number of workers who submit each partcular
+                    # answer
+                    agreed = 1.0 * len(workerids)
+                    bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
+                                                             agreed=agreed, 
+                                                             total=total_responses)
+                    bonus_exp = 'On question %s_%s, for response %s: %s' % (module, varname, response, bonus_exp)
+                    for workerid in workerids :
+                        worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
+                                                                'possible' : 0.0,
+                                                                'exp' : []})
+                        worker_bonus_info[workerid]['possible'] += 1.0
+                        worker_bonus_info[workerid]['earned'] += bonus_amount
+                        worker_bonus_info[workerid]['exp'].append(bonus_exp)
+    return worker_bonus_info
+
+def normalize_bonus_info(worker_bonus_info) :
+    worker_bonus_percent = { a : 
+                            {'pct' : worker_bonus_info[a]['earned'] / worker_bonus_info[a]['possible'],
+                             'exp' : worker_bonus_info[a]['exp']}
+                             for a in worker_bonus_info}
+    max_bonus_percent = 1.0
+    if len(worker_bonus_percent) > 0 :
+        best_worker = max(worker_bonus_percent.iterkeys(), 
+                          key=(lambda key: worker_bonus_percent[key]['pct']))
+        max_bonus_percent = worker_bonus_percent[best_worker]['pct']
+    # scale by maximum
+    worker_bonus_percent = {a.upper().strip() : 
+                            { 'pct' : worker_bonus_percent[a]['pct'] / max_bonus_percent,
+                              'exp' : worker_bonus_percent[a]['exp'] }
+                            for a in worker_bonus_percent}
+    return worker_bonus_percent
+
