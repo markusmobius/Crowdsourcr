@@ -95,7 +95,7 @@ class MTurkConnection(object):
         return True
     def end_run(self, bonus={}):
         try:
-            worker_assignments = { a.WorkerId : a.AssignmentId for a in self.mturk_conn.get_assignments(self.hitid) }
+            worker_assignments = { a.WorkerId : a.AssignmentId for a in self.mturk_conn.get_assignments(self.hitid, page_size=100) }
             for workerid, assignmentid in worker_assignments.iteritems() :
                 if workerid not in bonus :
                     print "Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid
@@ -114,7 +114,10 @@ class MTurkConnection(object):
         if not self.hitid or not self.running:
             return []
         else:
-            all_assignments = self.mturk_conn.get_assignments(self.hitid)
+            all_assignments = self.mturk_conn.get_assignments(self.hitid,
+                                                              page_size=100,
+                                                              sort_direction='Descending')
+            #TODO: request next page if multiple returned
             return [[a.AssignmentId, a.WorkerId, a.answers[0][0].fields[0]] for a in all_assignments if a.AssignmentStatus == 'Submitted']
 
     def make_payments(self, assignment_ids=[]) :

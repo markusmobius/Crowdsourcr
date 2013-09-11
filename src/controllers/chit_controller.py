@@ -74,11 +74,14 @@ class CHITController(object):
     # utility method called by MTurkConnecitonController.make_payments
     @classmethod
     def secret_code_matches(cls, db=None, worker_id=None, secret_code=None):
-        hit_info = [{'worker_id' : worker_id,
-                    'turk_verify_code' : secret_code}]
+        hit_info = {'worker_id' : worker_id,
+                    'turk_verify_code' : secret_code}
+        lower_hit_info = {'worker_id' : worker_id.lower(),
+                          'turk_verify_code' : secret_code}
+        either_hit_info = [hit_info, lower_hit_info]
         #ugly hack. TODO: improve storage struture for easier searching
         d = db.chits.find_one({'$and' : 
                                [{'num_completed_hits' : {"$gte" : 1}},
-                                {'completed_hits' : hit_info}]})
+                                {'completed_hits' : {'$in' : either_hit_info}}]})
         return True if d else False
  

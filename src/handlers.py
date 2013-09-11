@@ -228,7 +228,7 @@ class RecruitingEndHandler(BaseHandler):
         worker_bonus_percent = { a : worker_bonus_info[a]['earned'] / worker_bonus_info[a]['possible'] for a in worker_bonus_info}
         max_bonus_percent = worker_bonus_percent[max(worker_bonus_percent.iterkeys(), key=(lambda key: worker_bonus_percent[key]))] if len(worker_bonus_percent) > 0 else 1.0
         # scale by maximum
-        worker_bonus_percent = {a : worker_bonus_percent[a] / max_bonus_percent for a in worker_bonus_percent}
+        worker_bonus_percent = {a.upper().strip() : worker_bonus_percent[a] / max_bonus_percent for a in worker_bonus_percent}
         self.mturkconnection_controller.end_run(email=admin_email,
                                                 bonus=worker_bonus_percent,
                                                 environment=self.settings['environment'])
