@@ -1,6 +1,6 @@
 
+
 # TODO: use this registry to validate questions in question model.
-# TODO: find out why hasattr is returning false
 
 class BonusTypeRegistry(type) :
     def __init__(cls, name, bases, dct) :

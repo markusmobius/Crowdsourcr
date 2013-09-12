@@ -27,8 +27,11 @@ class CResponseController(object):
                                         tornado.escape.json_encode(d['response']))
                 for d in self.db.cresponses.find()
                 if d['workerid'] in completed_workers)
-    def all_responses_by_task(self, taskid=None):
-        d = self.db.cresponses.find({'taskid' : taskid}, {'workerid' : 1, 'response' : 1})
+    def all_responses_by_task(self, taskid=None, workerids=[]):
+        d = self.db.cresponses.find({'taskid' : taskid,
+                                     'workerid' : {'$in' : workerids}}, 
+                                    {'workerid' : 1, 
+                                     'response' : 1})
         module_responses = {} # module -> varname -> response -> [workerid]
         for row in d:
             for resp in row['response']:

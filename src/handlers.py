@@ -201,33 +201,36 @@ class RecruitingBeginHandler(BaseHandler):
 
 class RecruitingEndHandler(BaseHandler):
     def post(self):
+        #TODO: validate expermenter
         admin_email = self.get_secure_cookie('admin_email')
-        worker_bonus_info = {}
-        # all_responses_by_task returns 
-        # module -> varname -> response_value -> [workerid]
-        # then filter_bonus_responses limits to applicable responses
-        # and adds __bonus__ key
-        task_response_info = {task : 
-                              self.ctype_controller.filter_bonus_responses(
-                                  self.cresponse_controller.all_responses_by_task(
-                                      task))
-                              for task in self.ctask_controller.get_task_ids()}
-        worker_bonus_info =  helpers.calculate_worker_bonus_info(task_response_info)
-        self.db.bonus_info.drop()
-        for wid, info in worker_bonus_info.iteritems() :
-            self.db.bonus_info.insert({'workerid' : wid,
-                                       'percent' : info['pct'],
-                                       'explanation' : info['exp'],
-                                       'possible' : info['poss'],
-                                       'earned' : info['earn'],
-                                       'rawpct' : info['rawpct'],
-                                       'best' : info['best']})
-        worker_bonus_percent = { wid : info['pct']
-                                 for wid, info in worker_bonus_info.iteritems() }
-        self.mturkconnection_controller.end_run(email=admin_email,
-                                                bonus=worker_bonus_percent,
-                                                environment=self.settings['environment'])
-        self.finish()
+        if admin_email and self.mturkconnection_controller.get_by_email(admin_email) :
+            completed_workers = self.chit_controller.get_workers_with_completed_hits()
+            worker_bonus_info = {}
+            # all_responses_by_task returns 
+            # module -> varname -> response_value -> [workerid]
+            # then filter_bonus_responses limits to applicable responses
+            # and adds __bonus__ key
+            task_response_info = {task : 
+                                  self.ctype_controller.filter_bonus_responses(
+                                      self.cresponse_controller.all_responses_by_task(taskid=task,
+                                                                                      workerids=completed_workers))
+                                  for task in self.ctask_controller.get_task_ids()}
+            worker_bonus_info =  helpers.calculate_worker_bonus_info(task_response_info)
+            self.db.bonus_info.drop()
+            for wid, info in worker_bonus_info.iteritems() :
+                self.db.bonus_info.insert({'workerid' : wid,
+                                           'percent' : info['pct'],
+                                           'explanation' : info['exp'],
+                                           'possible' : info['poss'],
+                                           'earned' : info['earn'],
+                                           'rawpct' : info['rawpct'],
+                                           'best' : info['best']})
+            worker_bonus_percent = { wid : info['pct']
+                                     for wid, info in worker_bonus_info.iteritems() }
+            self.mturkconnection_controller.end_run(email=admin_email,
+                                                    bonus=worker_bonus_percent,
+                                                    environment=self.settings['environment'])
+            self.finish()
 
 class BonusInfoHandler(BaseHandler) :
     ''' Quick hack put together to serve bonus info. '''
