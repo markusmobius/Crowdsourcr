@@ -412,14 +412,15 @@ class CResponseHandler(BaseHandler):
         worker_id = self.get_secure_cookie('workerid')
         existing_status = self.currentstatus_controller.get_current_status(worker_id)
         if not existing_status:
-            self.return_json({'error':True})
+            return self.return_json({'error':True, 'explanation':'no_cookies'}) if not worker_id else self.return_json({'error':True, 'explanation':'not_logged_in'})
         else:
-            task_index = existing_status['taskindex']
             hitid = existing_status['hitid']
-            self.logging.info("%s submitted response for task_index %d on HIT %s" % (worker_id, task_index, hitid))
             chit = self.chit_controller.get_chit_by_id(hitid)
-            taskid = chit.tasks[task_index]
+            taskindex = existing_status['taskindex']
+            taskid = chit.tasks[taskindex]
+            task = self.ctask_controller.get_task_by_id(taskid)
             responses = json.loads(self.get_argument('data', '{}'))
+            self.logging.info("%s submitted response for task_index %d on HIT %s" % (worker_id, taskindex, hitid))
             self.cresponse_controller.create({'submitted' : datetime.datetime.utcnow(),
                                               'response' : responses,
                                               'workerid' : worker_id,
