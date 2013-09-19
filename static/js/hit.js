@@ -33,7 +33,7 @@ function ping() {
 
 var currentTypeGroup = null;
 
-function showWithData(data) {
+function showWithData(task, modules) {
     $('.content-main').show();
     $('.login-content').hide();
     var iframe = $('<iframe src="about:blank" frameborder="0" border="0" cellspacing="0"/>');
@@ -42,14 +42,15 @@ function showWithData(data) {
         iframe.height = $(iframe).contents().find("body").prop("scrollHeight") + "px";
     }
     _.defer(function () {
-        iframe.contents()[0].write(data.content);
+        iframe.contents()[0].write(task.content);
     });
     currentTypeGroup = new CTypeGroup();
     $('#hit-modules').empty();
-    for (var i = 0; i < data.modules.length; i++){
+    for (var i = 0; i < task.modules.length; i++){
         (function (i) {
             var dest = $('<div/>').appendTo($('#hit-modules'));
-            getModule(data.modules[i], function (mod) { registerModule(i, mod, dest); });
+            registerModule(i, modules[task.modules[i]], dest);
+            //getModule(task.modules[i], function (mod) { registerModule(i, mod, dest); });
         })(i);
     }
 }
@@ -59,17 +60,17 @@ var maxWaitingTime = 45 * 1000;
 
 function requestNextTask(response) {
     // Response is from the server indicating whether validation succeeded.
-    if (response.error) {
-	switch (response.explanation) {
-	    case 'no_cookies' :
-	    alert('Your cookies were cleared and you are no longer authenticated. Please reload this page and login with your worker id again.');
-	    break;
-	    case 'not_logged_in' :
-	    alert('You are not logged in. Please reload this page and login with your worker id again.');
-	    break;
-	    
-	};
-	return;
+    if (response && response.error) {
+	      switch (response.explanation) {
+	      case 'no_cookies' :
+	          alert('Your cookies were cleared and you are no longer authenticated. Please reload this page and login with your worker id again.');
+	          break;
+	      case 'not_logged_in' :
+	          alert('You are not logged in. Please reload this page and login with your worker id again.');
+	          break;
+	          
+	      };
+	      return;
     }
 
 
@@ -78,13 +79,15 @@ function requestNextTask(response) {
 
 
     if (hitLoadingTime === undefined) {
-	hitLoadingTime = Date.now();
+	      hitLoadingTime = Date.now();
     }
     if (getAdminTask() !== undefined) {
         $('#next-task-button').attr('disabled', true);
+        $('#return-hit').attr('disabled', true);
+        $('#hit-progress').text("Single task view");
         $.get('/admin/tasks/' + getAdminTask(), function (data) {
             $('.loading-holder').hide();
-            showWithData(data);
+            showWithData(data.task, data.modules);
         });
         return;
     }
@@ -96,42 +99,42 @@ function requestNextTask(response) {
         getData['workerid'] = $('#worker-login-form').find('input:first').val();
     }
     $.post('/HIT/view/', getData, function(data) {
-	$('.loading-holder').hide();
+	      $('.loading-holder').hide();
 
-	if (data.no_hits) {
-	    $('.content-main').hide();
-	    $('.login-content').hide();
-	    $('.turk-verify-content').hide();
-	    if (data.unfinished_hits && (Date.now() - hitLoadingTime) < 45000) {
-		$('.loading-holder').show();
-		setTimeout(requestNextTask, 5000);
-	    } else {
-		$('.turk-no-hits').show();
-	    }
-	    return;
-	}
+	      if (data.no_hits) {
+	          $('.content-main').hide();
+	          $('.login-content').hide();
+	          $('.turk-verify-content').hide();
+	          if (data.unfinished_hits && (Date.now() - hitLoadingTime) < 45000) {
+		            $('.loading-holder').show();
+		            setTimeout(requestNextTask, 5000);
+	          } else {
+		            $('.turk-no-hits').show();
+	          }
+	          return;
+	      }
 
-	if (data.needs_login) {
-	    if (data.reforce) {
+	      if (data.needs_login) {
+	          if (data.reforce) {
                 haveUsedForcedHit = false;
             }
-	    $('.login-content').show();
-	    return;
-	}
-	
-	$('.content-main').show();
-	$('.login-content').hide();
+	          $('.login-content').show();
+	          return;
+	      }
+	      
+	      $('.content-main').show();
+	      $('.login-content').hide();
 
-	if (data.reload_for_first_task) {
-	    requestNextTask();
-	} else if (data.completed_hit) {
-	    $('.content-main').hide();
-	    $('.login-content').hide();
-	    $('.turk-verify-content').show().find('.secret-code').html(data.verify_code);
-	} else {
+	      if (data.reload_for_first_task) {
+	          requestNextTask();
+	      } else if (data.completed_hit) {
+	          $('.content-main').hide();
+	          $('.login-content').hide();
+	          $('.turk-verify-content').show().find('.secret-code').html(data.verify_code);
+	      } else {
             $('#hit-progress').text("You are on task " + (+data.task_num + 1) + " of " + data.num_tasks  + ".");
-            showWithData(data.task);
-	}
+            showWithData(data.task, data.modules);
+	      }
     });
 }
 
@@ -139,16 +142,16 @@ function onLoad() {
     ping();
 
     $('#return-hit').click(function(e) {
-	e.preventDefault();
-	if (window.confirm('Are you sure you want to return this HIT? You will lose all of your progress and this HIT will be assigned to another worker.')) {
-	    window.location.href = '/HIT/return';
-	}
+	      e.preventDefault();
+	      if (window.confirm('Are you sure you want to return this HIT? You will lose all of your progress and this HIT will be assigned to another worker.')) {
+	          window.location.href = '/HIT/return';
+	      }
     });
 
     $('#next-task-button').click(function(evt) {
-	evt.preventDefault();
+	      evt.preventDefault();
         if (currentTypeGroup.validate()) {
-	    submitTask(requestNextTask);
+	          submitTask(requestNextTask);
         } else {
             var invalidQ = $(".question-invalid");
             if (invalidQ) {
@@ -158,15 +161,15 @@ function onLoad() {
     });
 
     $('#worker-login-submit').click(function(evt) {
-	evt.preventDefault();
-	$.post('/worker/login/', {'workerid' : $('#worker-login-form').find('input:first').val()}, requestNextTask);
+	      evt.preventDefault();
+	      $.post('/worker/login/', {'workerid' : $('#worker-login-form').find('input:first').val()}, requestNextTask);
     });
 
     $('body').on('click', function (e) {
         var target = $(e.target);
         if (!target.hasClass('popover') && !target.parent().hasClass('popover') && !target.hasClass('help')) {
             $('.help').each(function() {
-		$(this).popover('hide');
+		            $(this).popover('hide');
             });
         }
     });

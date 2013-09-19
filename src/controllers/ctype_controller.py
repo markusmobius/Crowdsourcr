@@ -10,6 +10,8 @@ class CTypeController(object) :
     def get_by_name(self, name) :
         d = self.db.ctypes.find_one({'name' : name})
         return CType.from_dict(d)
+    def get_by_names(self, names) :
+        return {name : self.get_by_name(name) for name in names}
     def create(self, d) :
         c = CType.from_dict(d)
         self.db.ctypes.insert(c.to_dict())

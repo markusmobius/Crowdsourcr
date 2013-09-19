@@ -319,7 +319,11 @@ class AdminTaskInfoHandler(BaseHandler):
         admin_email = self.get_secure_cookie('admin_email')
         if admin_email and self.admin_controller.get_by_email(admin_email):
             task = self.ctask_controller.get_task_by_id(tid)
-            self.return_json(task.serialize())
+            modules = self.ctype_controller.get_by_names(task.modules)
+            self.return_json({
+                "task" : task.serialize(),
+                "modules" : {name : module.to_dict() for name, module in modules.iteritems()}
+            })
         else :
             self.return_json(False)
 
@@ -332,11 +336,11 @@ class CHITViewHandler(BaseHandler):
     def post(self):
         forced = False
         workerid = self.get_secure_cookie('workerid')
-        if self.get_argument('force', False) :
+        if self.get_argument('force', False) : # for letting admin see a particular hit
             forced = True
             hitid = self.get_argument('hitid', None)
             workerid = self.get_argument('workerid', None)
-            self.set_secure_cookie('workerid', workerid).strip().upper()
+            self.set_secure_cookie('workerid', workerid)
             self.currentstatus_controller.create_or_update(workerid=workerid,
                                                            hitid=hitid,
                                                            taskindex=0)
@@ -361,10 +365,12 @@ class CHITViewHandler(BaseHandler):
                                       'verify_code' : completed_chit_info['turk_verify_code']})
                 else:
                     task = self.ctask_controller.get_task_by_id(chit.tasks[taskindex])
+                    modules = self.ctype_controller.get_by_names(task.modules)
                     self.currentstatus_controller.create_or_update(workerid=workerid,
                                                                    hitid=hitid,
                                                                    taskindex = taskindex)
                     self.return_json({"task" : task.serialize(),
+                                      "modules" : {name : module.to_dict() for name, module in modules.iteritems()},
                                       "task_num" : taskindex,
                                       "num_tasks" : len(chit.tasks)})
             else:
@@ -428,7 +434,7 @@ class CResponseHandler(BaseHandler):
                                               'taskid' : taskid})
             self.currentstatus_controller.create_or_update(workerid=worker_id,
                                                            hitid=hitid,
-                                                           taskindex=task_index+1)
+                                                           taskindex=taskindex+1)
             self.finish()
 
 class CSVDownloadHandler(BaseHandler):
