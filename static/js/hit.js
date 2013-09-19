@@ -27,6 +27,10 @@ function getForcedHit() {
 
 function ping() {
     $.post('/worker/ping', {}, function(data) {
+        $("#ping-error").hide();
+        setTimeout(ping, 5000);
+    }).fail(function () {
+        $("#ping-error").show();
         setTimeout(ping, 5000);
     });
 }
