@@ -24,20 +24,19 @@ var CTypeGroup = Model.extend({
 	      });
     },
     serialize : function () {
-	      var all_module_responses = [];
-	      for (var i = 0; i < this.types.length; i++) {
-	          all_module_responses.push(this.types[i].serialize());
-	      }
-	      return all_module_responses;
+        return _.invoke(this.types, 'serialize');
     },
     validate : function () {
-	      for (var i = 0; i < this.types.length; i++) {
-	          if (!this.types[i].validate()) {
-		            this.showType(this.types[i]);
-		            return false;
-	          }
-	      }
-	      return true;
+        function isInvalid(type) {
+            return !type.validate();
+        }
+        var type = _.find(this.types, isInvalid);
+        if (type) {
+            this.showType(type);
+            return false;
+        } else {
+            return true;
+        }
     }
 });
 
@@ -113,33 +112,27 @@ var QuestionList = Model.extend({
     renderDisplay : function(el) {
         this.el = $(el);
 	      this.el.empty();
-	      for (var i = 0; i < this.questions.length; i++) {
+        _.each(this.questions, function (q) {
 	          var question_holder = $(document.createElement('li'));	    
-	          var question = new Question(question_holder, this.questions[i]);
+	          var question = new Question(question_holder, q);
 	          question.renderDisplay();
 	          this.el.append(question_holder);
 	          this.holders.push(question_holder);
 	          this.renderedquestions.push(question);
-	      }	
+	      }, this);
     },
     serialize : function() {
-	      var all_question_responses = [];
-	      for (var i = 0; i < this.renderedquestions.length; i++) {
-	          all_question_responses.push(this.renderedquestions[i].serialize());
-	      }
-	      return all_question_responses;
+        return _.invoke(this.renderedquestions, 'serialize');
     },
     numQuestions : function () {
 	      return this.renderedquestions.length;
     },
     numCompleted : function () {
-	      var c = 0;
-	      for (var i = 0; i < this.renderedquestions.length; i++) {
-	          if (this.renderedquestions[i].validate()) {
-		            c += 1;
-	          }
-	      }
-	      return c;
+        return _.chain(this.renderedquestions)
+                .invoke('validate')
+                .filter(_.identity) // keep true ones
+                .size()
+                .value();
     },
     validate : function () {
 	      for (var i = 0; i < this.renderedquestions.length; i++) {
@@ -167,7 +160,8 @@ var Question = Model.extend({
 	          break;
 	      }
 
-	      if (new_question === undefined) throw "Error: could not find type "+question.valuetype;
+	      if (new_question === undefined)
+          throw "Error: could not find type " + question.valuetype;
 
 	      new_question.valuetype = question.valuetype;
 	      new_question.questiontext = question.questiontext;
@@ -289,20 +283,20 @@ var CategoricalQuestion = Question.extend({
 	      this.renderHelpText();
     },
     isNested : function() {
-	      var self = this;
-	      return _.some(this.content, function(c) { return _.contains(c.text, self.nesting_delimiter); });
+	      return _.some(this.content, function(c) {
+          return _.contains(c.text, this.nesting_delimiter);
+        }, this);
     },
     constructNesting : function() {
 	      this.nest = {};
-	      var self = this;
 	      var nest = {};
 	      _.each(this.content, function(c) {
-	          var n_pointer = self.nest;
+	          var n_pointer = this.nest;
 	          _.each(c.text.split(/\s*\|\s*/), function(ordered_token) {
 		            n_pointer = n_pointer[ordered_token] || (n_pointer[ordered_token] = {});
 	          });
 	          n_pointer['__val__'] = c.value;
-	      });
+	      }, this);
     },
     expandNest : function(el, top_el) {
 	      var el_num = parseInt(el.attr('nesting-level'), 10);
