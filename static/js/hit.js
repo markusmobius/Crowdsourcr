@@ -68,10 +68,12 @@ function requestNextTask(response) {
     if (response && response.error) {
 	      switch (response.explanation) {
 	      case 'no_cookies' :
-	          alert('Your cookies were cleared and you are no longer authenticated. Please reload this page and login with your worker id again.');
+            $("#next-task-button").attr('disabled', true);
+            $("#other-error").show().text('Your cookies were cleared and you are no longer authenticated. Please reload this page and login with your worker id again.');
 	          break;
 	      case 'not_logged_in' :
-	          alert('You are not logged in. Please reload this page and login with your worker id again.');
+            $("#next-task-button").attr('disabled', true);
+            $("#other-error").show().text('You are not logged in. Please reload this page and login with your worker id again.');
 	          break;
 	      case 'invalid_response' :
             $("#validation-error").show();

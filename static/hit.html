@@ -154,7 +154,7 @@
       -box-sizing: border-box;
       border-style:solid;border-width:0 0 0 4px; border-color: #ccc;
       }
-      #ping-error {
+      #ping-error, #other-error {
       margin: 1em auto 2em auto;
       background: #FEDF00;
       font-weight: bold;
@@ -210,6 +210,7 @@
 	        <ul id="hit-modules"></ul><br>
 	        <button id="next-task-button" class="btn btn-success">Continue to next task</button>
           <div id="validation-error" style="display:none;">Your response was missing data.  Please refresh this page and complete the task again.  We apologize for the inconvenience.</div>
+          <div id="other-error" style="display:none;"></div>
           <div id="unknown-error" style="display:none;">Something went wrong submitting your responses.  Please try again.</div>
 	        <div class="hit-progress-indicator">
 	          <div id="hit-progress">Progress</div>&nbsp;&nbsp;
