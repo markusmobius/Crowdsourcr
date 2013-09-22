@@ -43,5 +43,19 @@ class CResponseController(object):
                     module_responses[mod_name][response['varname']][response['response']].append(row['workerid'])
         return module_responses
 
-            
-        
+    def validate(self, taskid, response, task_controller, module_controller) :
+        task = task_controller.get_task_by_id(taskid)
+
+        received_modules = set(m['name'] for m in response)
+        required_modules = set(task.modules)
+        if received_modules != required_modules :
+            return False
+
+        for m in response :
+            module = module_controller.get_by_name(m['name'])
+            received_varnames = set(r['varname'] for r in m['responses']
+                                    if r.get('response', False))
+            required_varnames = set(q.varname for q in module.questions)
+            if received_varnames != required_varnames :
+                return False
+        return True

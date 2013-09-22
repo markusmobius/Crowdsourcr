@@ -164,6 +164,17 @@
       border: 3px solid #CE2029;
       border-radius: 5px;
       }
+
+      #validation-error, #unknown-error {
+      margin: 2em auto 2em auto;
+      background: #FEDF00;
+      font-weight: bold;
+      text-align: center;
+      padding: 1em;
+      width: 90%;
+      border: 3px solid #CE2029;
+      border-radius: 5px;
+      }
     </style>
   </head>
   <body>
@@ -198,6 +209,8 @@
           <div id="ping-error" style="display:none;">You have lost contact with the server.  Please check your Internet connection.</div>
 	        <ul id="hit-modules"></ul><br>
 	        <button id="next-task-button" class="btn btn-success">Continue to next task</button>
+          <div id="validation-error" style="display:none;">Your response was missing data.  Please refresh this page and complete the task again.  We apologize for the inconvenience.</div>
+          <div id="unknown-error" style="display:none;">Something went wrong submitting your responses.  Please try again.</div>
 	        <div class="hit-progress-indicator">
 	          <div id="hit-progress">Progress</div>&nbsp;&nbsp;
 	          <button id="return-hit" class="btn btn-danger">Return HIT</button>

@@ -64,6 +64,7 @@ var maxWaitingTime = 45 * 1000;
 
 function requestNextTask(response) {
     // Response is from the server indicating whether validation succeeded.
+    $("#next-task-button").attr('disabled', false);
     if (response && response.error) {
 	      switch (response.explanation) {
 	      case 'no_cookies' :
@@ -72,7 +73,12 @@ function requestNextTask(response) {
 	      case 'not_logged_in' :
 	          alert('You are not logged in. Please reload this page and login with your worker id again.');
 	          break;
-	          
+	      case 'invalid_response' :
+            $("#validation-error").show();
+            break;
+        default :
+            $('#unknown-error').show();
+            break;
 	      };
 	      return;
     }
@@ -155,6 +161,8 @@ function onLoad() {
 
     $('#next-task-button').click(function(evt) {
 	      evt.preventDefault();
+        $("#validation-error").hide();
+        $("#unknown-error").hide();
         if (currentTypeGroup.validate()) {
 	          submitTask(requestNextTask);
         } else {
@@ -183,7 +191,11 @@ function onLoad() {
 }
 
 function submitTask(callback) {
-    $.post('/HIT/submit/', {data : JSON.stringify(serializeModules())}, callback);
+    $("#next-task-button").attr('disabled', true);
+    $.post('/HIT/submit/', {data : JSON.stringify(serializeModules())}, callback)
+     .fail(function () {
+        $('#unknown-error').show();
+     });
 }
 
 function serializeModules() {

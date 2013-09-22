@@ -418,17 +418,30 @@ class CResponseHandler(BaseHandler):
         worker_id = self.get_secure_cookie('workerid')
         existing_status = self.currentstatus_controller.get_current_status(worker_id)
         if not existing_status:
-            return self.return_json({'error':True, 'explanation':'no_cookies'}) if not worker_id else self.return_json({'error':True, 'explanation':'not_logged_in'})
+            if not worker_id :
+                return self.return_json({'error' : True,
+                                         'explanation' : 'no_cookies'})
+            else :
+                return self.return_json({'error' : True,
+                                         'explanation' : 'not_logged_in'})
         else:
+            response = json.loads(self.get_argument('data', '{}'))
+
             hitid = existing_status['hitid']
             chit = self.chit_controller.get_chit_by_id(hitid)
             taskindex = existing_status['taskindex']
             taskid = chit.tasks[taskindex]
-            task = self.ctask_controller.get_task_by_id(taskid)
-            responses = json.loads(self.get_argument('data', '{}'))
+            #task = self.ctask_controller.get_task_by_id(taskid)
+            valid = self.cresponse_controller.validate(taskid, response,
+                                                       self.ctask_controller,
+                                                       self.ctype_controller)
+            if not valid :
+                return self.return_json({'error' : True,
+                                         'explanation' : 'invalid_response'})
+
             self.logging.info("%s submitted response for task_index %d on HIT %s" % (worker_id, taskindex, hitid))
             self.cresponse_controller.create({'submitted' : datetime.datetime.utcnow(),
-                                              'response' : responses,
+                                              'response' : response,
                                               'workerid' : worker_id,
                                               'hitid' : chit.hitid,
                                               'taskid' : taskid})
