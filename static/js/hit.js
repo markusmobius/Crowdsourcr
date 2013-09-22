@@ -30,9 +30,19 @@ function ping() {
         $("#ping-error").hide();
         setTimeout(ping, 5000);
     }).fail(function () {
-        $("#ping-error").show();
+        if (!$("#ping-error").is(":visible")) {
+          $("#ping-error").show();
+          scrollToTop($("#hit-modules-scroll"));
+        }
         setTimeout(ping, 5000);
     });
+}
+
+function scrollToTop($div) {
+  $div.animate({scrollTop : 0}, 500);
+}
+function scrollToBottom($div) {
+  $div.animate({scrollTop : $div[0].scrollHeight}, 500);
 }
 
 var currentTypeGroup = null;
@@ -42,20 +52,14 @@ function showWithData(task, modules) {
     $('.login-content').hide();
     var iframe = $('<iframe src="about:blank" frameborder="0" border="0" cellspacing="0"/>');
     $('#hit-content').empty().append(iframe);
-    function resizeIframe(iframe) {
-        iframe.height = $(iframe).contents().find("body").prop("scrollHeight") + "px";
-    }
     _.defer(function () {
         iframe.contents()[0].write(task.content);
     });
     currentTypeGroup = new CTypeGroup();
     $('#hit-modules').empty();
     for (var i = 0; i < task.modules.length; i++){
-        (function (i) {
-            var dest = $('<div/>').appendTo($('#hit-modules'));
-            registerModule(i, modules[task.modules[i]], dest);
-            //getModule(task.modules[i], function (mod) { registerModule(i, mod, dest); });
-        })(i);
+        var dest = $('<div/>').appendTo($('#hit-modules'));
+        registerModule(i, modules[task.modules[i]], dest);
     }
 }
 
@@ -70,25 +74,24 @@ function requestNextTask(response) {
 	      case 'no_cookies' :
             $("#next-task-button").attr('disabled', true);
             $("#other-error").show().text('Your cookies were cleared and you are no longer authenticated. Please reload this page and login with your worker id again.');
+            scrollToTop($("#hit-modules-scroll"));
 	          break;
 	      case 'not_logged_in' :
             $("#next-task-button").attr('disabled', true);
             $("#other-error").show().text('You are not logged in. Please reload this page and login with your worker id again.');
+            scrollToTop($("#hit-modules-scroll"));
 	          break;
 	      case 'invalid_response' :
             $("#validation-error").show();
+            scrollToBottom($("#hit-modules-scroll"));
             break;
         default :
             $('#unknown-error').show();
+            scrollToBottom($("#hit-modules-scroll"));
             break;
 	      };
 	      return;
     }
-
-
-
-
-
 
     if (hitLoadingTime === undefined) {
 	      hitLoadingTime = Date.now();
@@ -197,6 +200,7 @@ function submitTask(callback) {
     $.post('/HIT/submit/', {data : JSON.stringify(serializeModules())}, callback)
      .fail(function () {
         $('#unknown-error').show();
+        scrollToBottom($("#hit-modules-scroll"));
         $("#next-task-button").attr('disabled', false);
      });
 }
@@ -213,8 +217,4 @@ function registerModule(i, data, dest) {
     if (i == 0) {
         currentTypeGroup.showType(module);
     }
-}
-
-function getModule(module, callback) {
-    $.get('/types/view/'+module, callback);
 }
