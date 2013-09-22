@@ -197,6 +197,7 @@ function submitTask(callback) {
     $.post('/HIT/submit/', {data : JSON.stringify(serializeModules())}, callback)
      .fail(function () {
         $('#unknown-error').show();
+        $("#next-task-button").attr('disabled', false);
      });
 }
 
