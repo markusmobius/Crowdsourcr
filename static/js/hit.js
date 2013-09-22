@@ -123,6 +123,7 @@ function requestNextTask(response) {
                 haveUsedForcedHit = false;
             }
 	          $('.login-content').show();
+            $('.login-content').find('input').focus();
 	          return;
 	      }
 	      
