@@ -15,7 +15,7 @@
       }
       function onReady() {
 	  $('textarea').each(function() { $(this).textareaAutoExpand(); });
-	  $('#xml-upload-form').find('button:first').click(function(evt) {
+	  $('#upload-btn').click(function(evt) {
 	      evt.preventDefault();
 	      uploadXML();
 	  });
@@ -87,6 +87,8 @@
 		  $('#admin-task-info').html(data.hitinfo.num_hits + ' HITs ('+ data.hitinfo.num_tasks +' tasks) loaded. ' + data.hitinfo.num_completed_hits + ' HITs ('+ data.hitinfo.num_completed_tasks +' tasks) complete. ');
 		  if (!data.turkinfo || !data.turkbalance) {
 		      $('#admin-turk-info').html('Could not authenticate with MTurk.');
+                      $('#upload-btn').attr("disabled", true);
+                      $('#upload-btn-title').attr("title", "Requires authentication with MTurk.");
 		  } else {
 		      $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
                       if (updateTurkInfo) {
@@ -102,10 +104,18 @@
 			  $('#admin-turk-info').append('<p>Currently running with HITId ' + data.turkinfo.hitid + '.</p>');
 			  $('#admin-begin-run').hide();
 			  $('#admin-end-run').show();
+                          $('#upload-btn').attr("disabled", true);
+                          $('#upload-btn-title').attr("title", "An experiment is running.");
+                          $('#download-bonusinfo-btn').attr("disabled", true);
+                          $('#download-bonusinfo-btn-title').attr("title", "Stop the experiment to ensure MTurk workers are paid their bonuses.");
 		      } else {
 			  $('#admin-turk-info').append('<p> Not currently running. </p>');
 			  $('#admin-end-run').hide();
 			  $('#admin-begin-run').show();
+                          $('#upload-btn').attr("disabled", false);
+                          $('#upload-btn-title').attr("title", "");
+                          $('#download-bonusinfo-btn').attr("disabled", false);
+                          $('#download-bonusinfo-btn-title').attr("title", "");
 		      }
 
 		  }
@@ -161,6 +171,7 @@
       }
       
       function uploadXML() {
+          $('#upload-btn').attr("disabled", true);
           $("#xml-upload-error").hide();
           $("#xml-upload-success").hide();
 	  var data = new FormData();
@@ -174,6 +185,7 @@
 	      processData: false,
 	      type: 'POST',
 	      success: function(data){
+                  $('#upload-btn').attr("disabled", false);
                   $("#xml-upload-message").hide();
                   if (data.success !== undefined) {
                       var $succ = $("#xml-upload-success");
@@ -186,7 +198,10 @@
                       $err.fadeIn();
                   }
 		  getHITs();
-	      }
+	      },
+              error: function () {
+                  $('#upload-btn').attr("disabled", false);
+              }
 	  });
       }
     </script>
@@ -212,6 +227,9 @@
         padding-left: 1em;
         color: #444;
         font-style: italic;
+        display: inline-block;
+      }
+      div.titleholder {
         display: inline-block;
       }
     </style>
@@ -243,9 +261,13 @@
 	      <label> Select XML File </label>
 	      <input id="xml-upload-file" type="file" name="file"/><br>
 	    </div>
-	    <button class="btn btn-success">Upload XML</button>
+	    <div id="upload-btn-title" class="titleholder">
+	      <button id="upload-btn" class="btn btn-success">Upload XML</button>
+	    </div>
 	    <button id="download-data-btn" class="btn btn-default">Download current data</button>
-	    <button id="download-bonusinfo-btn" class="btn btn-default">Download bonus info</button>
+	    <div id="download-bonusinfo-btn-title" class="titleholder">
+	      <button id="download-bonusinfo-btn" class="btn btn-default">Download bonus info</button>
+	    </div>
 	    <div id="xml-upload-error" style="display:none"></div>
 	    <div id="xml-upload-message" style="display:none"></div>
 	    <div id="xml-upload-success" style="display:none"></div>
