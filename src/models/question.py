@@ -48,6 +48,9 @@ class Question(object) :
             split_bonus = self.bonus.split(':')
             return { 'type' : 'threshold',
                      'threshold' : int(split_bonus[1]) }
+    def validate(self, response) :
+        """Takes a question response as transmitted via JSON and validates it for this question."""
+        return True
 
     # Parses XML to get question 'content' (returns list).
     # Currently only used for categorical questions.
@@ -72,21 +75,28 @@ class CategoricalQuestion(AbstractQuestion):
         return [{'text' : category.find('text').text,
                  'value' : category.find('value').text}
                 for category in question_content.find('categories').iter('category')]
+    def validate(self, response) :
+        return response.get('response', False)
 
 class NumericQuestion(AbstractQuestion):
     typeName = 'numeric'
     @staticmethod
     def parse_content_from_xml(question_content=None):
         return []
+    def validate(self, response) :
+        try :
+            v = float(response.get('response', False))
+            return True
+        except ValueError :
+            return False
     
 class TextQuestion(AbstractQuestion) :
     typeName = 'text'
     @staticmethod
     def parse_content_from_xml(question_content=None):
         return []
-
-
-
+    def validate(self, response) :
+        return response.get('response', False)
 
 
 """

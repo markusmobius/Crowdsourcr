@@ -22,3 +22,17 @@ class CType(object) :
             filtered_info[varname]['__bonus__'] = bonus_questions[varname]
         return filtered_info
                 
+    def validate(self, response) :
+        """Validates a response for this module as given by JSON from the client."""
+        questions = {q.varname : q for q in self.questions}
+        valids = set()
+        for r in response['responses'] :
+            if r.get('varname', None) not in questions :
+                return False
+            if not questions[r['varname']].validate(r) :
+                return False
+            valids.add(r['varname'])
+        if valids != set(questions.iterkeys()) :
+            return False
+        return True
+

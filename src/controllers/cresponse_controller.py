@@ -53,9 +53,6 @@ class CResponseController(object):
 
         for m in response :
             module = module_controller.get_by_name(m['name'])
-            received_varnames = set(r['varname'] for r in m['responses']
-                                    if r.get('response', False))
-            required_varnames = set(q.varname for q in module.questions)
-            if received_varnames != required_varnames :
+            if not module.validate(m) :
                 return False
         return True
