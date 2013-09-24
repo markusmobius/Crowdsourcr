@@ -39,6 +39,10 @@
 	      evt.preventDefault();
 	      window.location.href = '/admin/download/';
 	  });
+	  $('#download-bonusinfo-btn').click(function(evt) {
+	      evt.preventDefault();
+	      window.location.href = '/admin/bonusinfo/';
+	  });
 
 	  getStatus(true);
 	  getHITs();
@@ -241,6 +245,7 @@
 	    </div>
 	    <button class="btn btn-success">Upload XML</button>
 	    <button id="download-data-btn" class="btn btn-default">Download current data</button>
+	    <button id="download-bonusinfo-btn" class="btn btn-default">Download bonus info</button>
 	    <div id="xml-upload-error" style="display:none"></div>
 	    <div id="xml-upload-message" style="display:none"></div>
 	    <div id="xml-upload-success" style="display:none"></div>

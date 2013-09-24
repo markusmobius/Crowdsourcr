@@ -235,6 +235,8 @@ class RecruitingEndHandler(BaseHandler):
 class BonusInfoHandler(BaseHandler) :
     ''' Quick hack put together to serve bonus info. '''
     def get(self) :
+        self.set_header ('Content-Type', 'text/json')
+        self.set_header ('Content-Disposition', 'attachment; filename=bonusinfo.json')
         admin_email = self.get_secure_cookie('admin_email')
         if admin_email and self.admin_controller.get_by_email(admin_email) :
             bi = self.db.bonus_info.find()
