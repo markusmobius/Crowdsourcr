@@ -15,7 +15,7 @@ class MTurkConnection(object):
                  running=False, 
                  hitid=None, 
                  title="News Classification Task", 
-                 description="You will be reading news articles and answering questions about them.",
+                 description="Classify a set of news articles as part of an academic research study.",
                  environment="development",
                  bonus=0.0,
                  **kwargs):
@@ -84,8 +84,8 @@ class MTurkConnection(object):
 
         hitinfo = self.mturk_conn.create_hit(questions=question_form,
                                              max_assignments=max_assignments,
-                                             title="News article classification.", 
-                                             description="Classify a set of news articles as part of an academic research study.", 
+                                             title=self.title,
+                                             description=self.description,
                                              duration=duration,
                                              keywords="news, classification, research, academic",
                                              reward=self.hitpayment,
