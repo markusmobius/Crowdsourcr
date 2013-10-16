@@ -7,6 +7,8 @@ ROOT_PATH = os.path.join(DIRNAME, '..')
 STATIC_PATH = os.path.join(DIRNAME, '..', 'static')
 TEMPLATE_PATH = os.path.join(DIRNAME, '..', 'template')
 TMP_PATH = os.path.join(DIRNAME, '..', 'tmp')
+LOG_PATH = os.path.join(DIRNAME, '..', 'log')
+PIDFILE_PATH = os.path.join(DIRNAME, '..', 'pid', '%d.pid')
 
 try :
     os.makedirs(TMP_PATH)

@@ -14,19 +14,23 @@ import controllers
 import asynchronizer
 import os
 import sys
+import daemon
+import pid
+import traceback
 
 from tornado.options import define, options
  
 define('port', default=8080, help="run on the given port", type=int)
 define('environment', default="development", help="server environment", type=str)
 define('drop', default="", help="pass REALLYREALLY to drop the db", type=str)
+define('db_name', default='news_crowdsourcing', help='name of mongodb database to use', type=str)
 
 def random256() :
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
  
 class Application(tornado.web.Application):
-    def __init__(self, environment, drop):
-        self.db = pymongo.Connection()['news_crowdsourcing']
+    def __init__(self, environment, db_name, drop):
+        self.db = pymongo.Connection()[db_name]
         if drop == "REALLYREALLY" :
             clear_db(self.db)
 
@@ -123,7 +127,9 @@ def main():
     daemon_context = daemon.DaemonContext(stdout=log, stderr=log, working_directory='.')
     with daemon_context :
         pid.write(pidfile_path)
-        application = Application(options.db_name)
+        application = Application(environment=options.environment,
+                                  db_name=options.db_name,
+                                  drop=options.drop)
         http_server = tornado.httpserver.HTTPServer(application)
         http_server.listen(options.port)
         Settings.logging.info("Started news_crowdsourcer in %s mode." % options.environment)

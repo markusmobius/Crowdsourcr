@@ -20,10 +20,10 @@ def check(path):
         if pid is not None:
             logging.info("Killing PID %s", pid)
             os.kill(pid, 9)
-        except OSError, (code, text):
-            # re-raise if the error wasn't "No such process"
-            if code != errno.ESRCH:
-                raise
+    except OSError, (code, text):
+        # re-raise if the error wasn't "No such process"
+        if code != errno.ESRCH:
+            raise
                 
 def write(path):
     try:
