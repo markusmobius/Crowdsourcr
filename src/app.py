@@ -24,12 +24,13 @@ define('port', default=8080, help="run on the given port", type=int)
 define('environment', default="development", help="server environment", type=str)
 define('drop', default="", help="pass REALLYREALLY to drop the db", type=str)
 define('db_name', default='news_crowdsourcing', help='name of mongodb database to use', type=str)
+define('make_payments', default=False, help='determine whether this process should make turk payments', type=bool)
 
 def random256() :
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
  
 class Application(tornado.web.Application):
-    def __init__(self, environment, db_name, drop):
+    def __init__(self, environment, db_name, drop, make_payments):
         self.db = pymongo.Connection()[db_name]
         if drop == "REALLYREALLY" :
             clear_db(self.db)
@@ -92,7 +93,8 @@ class Application(tornado.web.Application):
         self.cresponse_controller = controllers.CResponseController(self.db)
         self.mturkconnection_controller = controllers.MTurkConnectionController(self.db)
 
-        self.ensure_automatic_make_payments()
+        if make_payments :
+            self.ensure_automatic_make_payments()
     
     @property
     def logging(self) :
@@ -129,7 +131,8 @@ def main():
         pid.write(pidfile_path)
         application = Application(environment=options.environment,
                                   db_name=options.db_name,
-                                  drop=options.drop)
+                                  drop=options.drop,
+                                  make_payments=options.make_payments)
         http_server = tornado.httpserver.HTTPServer(application)
         http_server.listen(options.port)
         Settings.logging.info("Started news_crowdsourcer in %s mode." % options.environment)
