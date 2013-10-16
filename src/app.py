@@ -116,16 +116,26 @@ class Application(tornado.web.Application):
  
 def main():
     tornado.options.parse_command_line()
-    print options.port
-    application = Application(environment=options.environment, drop=options.drop)
-    http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(options.port)
-    Settings.logging.info("Started news_crowdsourcer in %s mode." % options.environment)
-    try :
-        tornado.ioloop.IOLoop.instance().start()
-    except :
-        Settings.logging.exception("Main ioloop exception")
-        application.asynchronizer.kill()
+    log_file = 'tornado.%s.log' % options.port
+    log = open(os.path.join(Settings.LOG_PATH, log_file), 'a+')
+    pidfile_path = Settings.PIDFILE_PATH % options.port
+    pid.check(pidfile_path)
+    daemon_context = daemon.DaemonContext(stdout=log, stderr=log, working_directory='.')
+    with daemon_context :
+        pid.write(pidfile_path)
+        application = Application(options.db_name)
+        http_server = tornado.httpserver.HTTPServer(application)
+        http_server.listen(options.port)
+        Settings.logging.info("Started news_crowdsourcer in %s mode." % options.environment)
+        try :
+            tornado.ioloop.IOLoop.instance().start()
+        except Exception, err :
+            Settings.logging.exception("Main ioloop exception, removing pid")
+            pid.remove(pidfile_path)
+            Settings.logging.exception("Exited from: %s" % err)
+            Settings.logging.exception(traceback.format_exc())
+            Settings.logging.info(" * * * EXITING * * * ")
+
 
 def clear_db(db):
     db.ctasks.drop()
