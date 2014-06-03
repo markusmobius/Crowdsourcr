@@ -1,7 +1,7 @@
 import os
 import errno
 
-DEBUG = True
+DEBUG = False # sets tornado debug mode. don't use when using command line arguments
 DIRNAME = os.path.dirname(__file__)
 ROOT_PATH = os.path.join(DIRNAME, '..')
 STATIC_PATH = os.path.join(DIRNAME, '..', 'static')
