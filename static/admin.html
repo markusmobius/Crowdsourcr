@@ -105,7 +105,8 @@
                               mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
                           }
                           if (data.turkinfo.running) {
-                              $('#admin-turk-info').append('<p>Currently running with HITId ' + data.turkinfo.hitid + '.</p>');
+                              var amazonLink = "https://requester.mturk.com/mturk/manageHIT?HITId=" + data.turkinfo.hitid;
+                              $('#admin-turk-info').append('<p>Currently running with HITId <a href="' + amazonLink + '" target="_blank">' + data.turkinfo.hitid + '</a>.</p>');
                               $('#admin-begin-run').hide();
                               $('#admin-end-run').show();
                               $('#upload-btn').attr("disabled", true);
