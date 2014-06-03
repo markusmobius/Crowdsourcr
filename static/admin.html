@@ -14,49 +14,49 @@
           return "?nocache=" + new Date().getTime();
       }
       function onReady() {
-	  $('textarea').each(function() { $(this).textareaAutoExpand(); });
-	  $('#upload-btn').click(function(evt) {
-	      evt.preventDefault();
-	      uploadXML();
-	  });
-
-	  $('#begin-recruiting-button').click(function(evt) {
-	      evt.preventDefault();
-	      beginRecruiting();//getStatus);
-	  });
-
-	  $('#admin-begin-run').find('button:first').click(function(evt) {
-	      evt.preventDefault();
-	      beginRun();//getStatus);
-	  });
-
-	  $('#admin-end-run').find('button:first').click(function(evt) {
-	      evt.preventDefault();
-	      $.post('/admin/recruit/end/', {});//, getStatus);
-	  });
-
-	  $('#download-data-btn').click(function(evt) {
-	      evt.preventDefault();
-	      window.location.href = '/admin/download/';
-	  });
-	  $('#download-bonusinfo-btn').click(function(evt) {
-	      evt.preventDefault();
-	      window.location.href = '/admin/bonusinfo/';
-	  });
-
-	  getStatus(true);
-	  getHITs();
+          $('textarea').each(function() { $(this).textareaAutoExpand(); });
+          $('#upload-btn').click(function(evt) {
+              evt.preventDefault();
+              uploadXML();
+          });
+          
+          $('#begin-recruiting-button').click(function(evt) {
+              evt.preventDefault();
+              beginRecruiting();//getStatus);
+          });
+          
+          $('#admin-begin-run').find('button:first').click(function(evt) {
+              evt.preventDefault();
+              beginRun();//getStatus);
+          });
+          
+          $('#admin-end-run').find('button:first').click(function(evt) {
+              evt.preventDefault();
+              $.post('/admin/recruit/end/', {});//, getStatus);
+          });
+          
+          $('#download-data-btn').click(function(evt) {
+              evt.preventDefault();
+              window.location.href = '/admin/download/';
+          });
+          $('#download-bonusinfo-btn').click(function(evt) {
+              evt.preventDefault();
+              window.location.href = '/admin/bonusinfo/';
+          });
+          
+          getStatus(true);
+          getHITs();
       }
-
+      
       function getHITs() {
-	  $.get('/admin/hits' + nocache(), function (data) {
-	      $('#admin-hits').hide();
-	      $('#admin-hit-tasks').hide();
-	      if (data.ids !== undefined) {
-		  var ids = data.ids.slice();
-		  ids.sort();
-		  var $d = $('#admin-hits-dest');
-		  $d.empty();
+          $.get('/admin/hits' + nocache(), function (data) {
+              $('#admin-hits').hide();
+              $('#admin-hit-tasks').hide();
+              if (data.ids !== undefined) {
+                  var ids = data.ids.slice();
+                  ids.sort();
+                  var $d = $('#admin-hits-dest');
+                  $d.empty();
                   var sep = "";
                   for (var i = 0, hid; hid = ids[i]; i++) {
                       $d.append(sep);
@@ -75,69 +75,69 @@
               }
           });
       }
-
+      
       function beginRun(callback) {
-	  $.post('/admin/recruit/begin', {}, callback);
+          $.post('/admin/recruit/begin', {}, callback);
       }
-
+      
       function getStatus(updateTurkInfo) {
-	  $.get('/admin/info/' + nocache(), function(data) {
-	      if (data.authed) {
-            $('#admin-login-info').text('Logged in as ' + data.full_name + ' (' + data.email + ').');
-            $('#admin-server-info').text('Server is running in '+data.environment+' mode.');
-            $('#admin-superadmin').toggle(data.superadmin);
-		  $('#admin-task-info').html(data.hitinfo.num_hits + ' HITs ('+ data.hitinfo.num_tasks +' tasks) loaded. ' + data.hitinfo.num_completed_hits + ' HITs ('+ data.hitinfo.num_completed_tasks +' tasks) complete. ');
-		  if (!data.turkinfo || !data.turkbalance) {
-		      $('#admin-turk-info').html('Could not authenticate with MTurk.');
+          $.get('/admin/info/' + nocache(), function(data) {
+              if (data.authed) {
+                  $('#admin-login-info').text('Logged in as ' + data.full_name + ' (' + data.email + ').');
+                  $('#admin-server-info').text('Server is running in '+data.environment+' mode.');
+                  $('#admin-superadmin').toggle(data.superadmin);
+                  $('#admin-task-info').html(data.hitinfo.num_hits + ' HITs ('+ data.hitinfo.num_tasks +' tasks) loaded. ' + data.hitinfo.num_completed_hits + ' HITs ('+ data.hitinfo.num_completed_tasks +' tasks) complete. ');
+                  if (!data.turkinfo || !data.turkbalance) {
+                      $('#admin-turk-info').html('Could not authenticate with MTurk.');
                       $('#upload-btn').attr("disabled", true);
                       $('#upload-btn-title').attr("title", "Requires authentication with MTurk.");
-		  } else {
-		      $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
-          if (updateTurkInfo) {
-              var mturk_form = $('#admin-mturk-cred-form');
-              mturk_form.find('input[name="access_key"]:first').val(data.turkinfo.access_key);
-              mturk_form.find('input[name="secret_key"]:first').val(data.turkinfo.secret_key);
-              mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
-              mturk_form.find('input[name="hit_title"]:first').val(data.turkinfo.title);
-              var textarea = mturk_form.find('textarea[name="hit_description"]:first').val(data.turkinfo.description);
-              window.setTimeout(function () { textarea.trigger("scroll"); }, 0);
-              mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
-          }
-		      if (data.turkinfo.running) {
-			  $('#admin-turk-info').append('<p>Currently running with HITId ' + data.turkinfo.hitid + '.</p>');
-			  $('#admin-begin-run').hide();
-			  $('#admin-end-run').show();
+                  } else {
+                      $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
+                      if (updateTurkInfo) {
+                          var mturk_form = $('#admin-mturk-cred-form');
+                          mturk_form.find('input[name="access_key"]:first').val(data.turkinfo.access_key);
+                          mturk_form.find('input[name="secret_key"]:first').val(data.turkinfo.secret_key);
+                          mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
+                          mturk_form.find('input[name="hit_title"]:first').val(data.turkinfo.title);
+                          var textarea = mturk_form.find('textarea[name="hit_description"]:first').val(data.turkinfo.description);
+                          window.setTimeout(function () { textarea.trigger("scroll"); }, 0);
+                          mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
+                      }
+                      if (data.turkinfo.running) {
+                          $('#admin-turk-info').append('<p>Currently running with HITId ' + data.turkinfo.hitid + '.</p>');
+                          $('#admin-begin-run').hide();
+                          $('#admin-end-run').show();
                           $('#upload-btn').attr("disabled", true);
                           $('#upload-btn-title').attr("title", "An experiment is running.");
                           $('#download-bonusinfo-btn').attr("disabled", true);
                           $('#download-bonusinfo-btn-title').attr("title", "Stop the experiment to ensure MTurk workers are paid their bonuses.");
-		      } else {
-			  $('#admin-turk-info').append('<p> Not currently running. </p>');
-			  $('#admin-end-run').hide();
-			  $('#admin-begin-run').show();
+                      } else {
+                          $('#admin-turk-info').append('<p> Not currently running. </p>');
+                          $('#admin-end-run').hide();
+                          $('#admin-begin-run').show();
                           $('#upload-btn').attr("disabled", false);
                           $('#upload-btn-title').attr("title", "");
                           $('#download-bonusinfo-btn').attr("disabled", false);
                           $('#download-bonusinfo-btn-title').attr("title", "");
-		      }
-
-		  }
-		  $('#admin-xml-upload').show();
-		  $('#admin-mturk-cred').show();
-	      } else {
-                  if (data.reason === 'not_admin') {
-                    $('#admin-login-info').html('You are not an admin.  Talk to a superadmin to add you to the admins.');
-                  } else if (data.reason === 'no_login') {
-                    // Not authenticated. Just redirect to the login page.
-                    window.location = "/admin/login";
-                  } else {
-                    $('#admin-login-info').html('You cannot see this for some unknown reason.');
+                      }
+                      
                   }
-	      }
-	      setTimeout(getStatus, 5000);
-	  });
+                  $('#admin-xml-upload').show();
+                  $('#admin-mturk-cred').show();
+              } else {
+                  if (data.reason === 'not_admin') {
+                      $('#admin-login-info').html('You are not an admin.  Talk to a superadmin to add you to the admins.');
+                  } else if (data.reason === 'no_login') {
+                      // Not authenticated. Just redirect to the login page.
+                      window.location = "/admin/login";
+                  } else {
+                      $('#admin-login-info').html('You cannot see this for some unknown reason.');
+                  }
+              }
+              setTimeout(getStatus, 5000);
+          });
       }
-
+      
       function showTasks(hid) {
           var $h = $('#admin-hit-tasks');
           $h.hide().empty();
@@ -155,39 +155,39 @@
               $h.slideDown();
           });
       }
-
+      
       function beginRecruiting(callback) {
-	  var form_elem = $('#admin-mturk-cred-form');
-	  var mturk_info = {access_key : form_elem.find('input[name="access_key"]:first').val(),
-			    secret_key : form_elem.find('input[name="secret_key"]:first').val(),
-			    hitpayment : parseFloat(form_elem.find('input[name="hit_payment"]:first').val()),
-			    title : form_elem.find('input[name="hit_title"]').val(),
-			    description : form_elem.find('textarea[name="hit_description"]').val(),
-			    bonus : form_elem.find('input[name="hit_bonus"]').val()};
-	  for (var key in mturk_info) {
-	      if (mturk_info.hasOwnProperty(key) && !mturk_info[key]) {
-		  alert('You must specify all fields.');
-		  return;
-	      }
-	  }
-	  $.post('/admin/recruit/', {data : JSON.stringify(mturk_info)}, callback);
+          var form_elem = $('#admin-mturk-cred-form');
+          var mturk_info = {access_key : form_elem.find('input[name="access_key"]:first').val(),
+                            secret_key : form_elem.find('input[name="secret_key"]:first').val(),
+                            hitpayment : parseFloat(form_elem.find('input[name="hit_payment"]:first').val()),
+                            title : form_elem.find('input[name="hit_title"]').val(),
+                            description : form_elem.find('textarea[name="hit_description"]').val(),
+                            bonus : form_elem.find('input[name="hit_bonus"]').val()};
+          for (var key in mturk_info) {
+              if (mturk_info.hasOwnProperty(key) && !mturk_info[key]) {
+                  alert('You must specify all fields.');
+                  return;
+              }
+          }
+          $.post('/admin/recruit/', {data : JSON.stringify(mturk_info)}, callback);
       }
       
       function uploadXML() {
           $('#upload-btn').attr("disabled", true);
           $("#xml-upload-error").hide();
           $("#xml-upload-success").hide();
-	  var data = new FormData();
-	  data.append('file', $('#xml-upload-file')[0].files[0]);
+          var data = new FormData();
+          data.append('file', $('#xml-upload-file')[0].files[0]);
           $("#xml-upload-message").text("Uploading...").fadeIn();
-	  $.ajax({
-	      url: '/admin/xmlupload/',
-	      data: data,
-	      cache: false,
-	      contentType: false,
-	      processData: false,
-	      type: 'POST',
-	      success: function(data){
+          $.ajax({
+              url: '/admin/xmlupload/',
+              data: data,
+              cache: false,
+              contentType: false,
+              processData: false,
+              type: 'POST',
+              success: function(data){
                   $('#upload-btn').attr("disabled", false);
                   $("#xml-upload-message").hide();
                   if (data.success !== undefined) {
@@ -200,12 +200,12 @@
                       $err.text(data.error);
                       $err.fadeIn();
                   }
-		  getHITs();
-	      },
+                  getHITs();
+              },
               error: function () {
                   $('#upload-btn').attr("disabled", false);
               }
-	  });
+          });
       }
     </script>
     <style>
