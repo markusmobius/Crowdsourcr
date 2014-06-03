@@ -4,19 +4,16 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
-import handlers
 import pymongo
 import uuid
 import base64
 import hashlib
-import Settings
-import controllers
-import asynchronizer
 import os
 import sys
-import daemon
-import pid
 import traceback
+
+import Settings
+import asynchronizer
 
 from tornado.options import define, options
  
@@ -24,7 +21,14 @@ define('port', default=8080, help="run on the given port", type=int)
 define('environment', default="development", help="server environment", type=str)
 define('drop', default="", help="pass REALLYREALLY to drop the db", type=str)
 define('db_name', default='news_crowdsourcing', help='name of mongodb database to use', type=str)
-define('make_payments', default=False, help='determine whether this process should make turk payments', type=bool)
+define('make_payments', default=False, help='set whether this process should make turk payments', type=bool)
+define('daemonize', default=False, help="set whether this process should run as a daemon (linux/unix-only)", type=bool)
+
+sys.path.insert(0, Settings.CONFIG_PATH)
+import app_config
+
+import controllers
+import handlers
 
 def random256() :
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
@@ -34,6 +38,8 @@ class Application(tornado.web.Application):
         self.db = pymongo.Connection()[db_name]
         if drop == "REALLYREALLY" :
             clear_db(self.db)
+            print "Cleared."
+            sys.exit(0)
 
         self.asynchronizer = asynchronizer.Asynchronizer(callback_transformer=asynchronizer.in_ioloop)
         self.asynchronizer.run()
@@ -44,7 +50,7 @@ class Application(tornado.web.Application):
             "debug":Settings.DEBUG,
             "cookie_secret": Settings.COOKIE_SECRET,
             "root_path": Settings.ROOT_PATH,
-            "login_url": "/auth/login/",
+            "login_url": "/admin/login/",
             "environment" : environment
         }
 
@@ -119,32 +125,51 @@ class Application(tornado.web.Application):
         # run this from the main ioloop just in case we have multiple threads
         tornado.ioloop.IOLoop.instance().add_callback(_ensure)
 
- 
-def main():
-    tornado.options.parse_command_line()
+def start() :
+    application = Application(environment=options.environment,
+                              db_name=options.db_name,
+                              drop=options.drop,
+                              make_payments=options.make_payments)
+    http_server = tornado.httpserver.HTTPServer(application)
+    try :
+        http_server.listen(options.port)
+    except :
+        traceback.print_exc()
+        os._exit(1) # since it otherwise hangs
+    Settings.logging.info("Started news_crowdsourcer in %s mode." % options.environment)
+    ioloop = tornado.ioloop.IOLoop.instance()
+    try :
+        ioloop.start()
+    except :
+        ioloop.add_callback(lambda : ioloop.stop())
+        
+
+def start_as_daemon() :
+    import daemon
+    import pid
     log_file = 'tornado.%s.log' % options.port
     log = open(os.path.join(Settings.LOG_PATH, log_file), 'a+')
-    pidfile_path = Settings.PIDFILE_PATH % options.port
+    pidfile_path = os.path.join(Settings.PIDFILE_PATH, '%d.pid' % options.port)
     pid.check(pidfile_path)
-    daemon_context = daemon.DaemonContext(stdout=log, stderr=log, working_directory='.')
-    with daemon_context :
+    with daemon.DaemonContext(stdout=log, stderr=log, working_directory='.') :
         pid.write(pidfile_path)
-        application = Application(environment=options.environment,
-                                  db_name=options.db_name,
-                                  drop=options.drop,
-                                  make_payments=options.make_payments)
-        http_server = tornado.httpserver.HTTPServer(application)
-        http_server.listen(options.port)
-        Settings.logging.info("Started news_crowdsourcer in %s mode." % options.environment)
         try :
-            tornado.ioloop.IOLoop.instance().start()
-        except Exception, err :
+            start()
+        except Exception as err :
             Settings.logging.exception("Main ioloop exception, removing pid")
-            pid.remove(pidfile_path)
             Settings.logging.exception("Exited from: %s" % err)
             Settings.logging.exception(traceback.format_exc())
-            Settings.logging.info(" * * * EXITING * * * ")
+            Settings.logging.info(" * * * EXITING DUE TO ERROR * * * ")
+        else :
+            Settings.logging.info(" * * * EXITING NORMALLY * * * ")
+        pid.remove(pidfile_path)
 
+def main():
+    tornado.options.parse_command_line()
+    if options.daemonize :
+        start_as_daemon()
+    else :
+        start()
 
 def clear_db(db):
     db.ctasks.drop()
