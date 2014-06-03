@@ -93,15 +93,16 @@
                       $('#upload-btn-title').attr("title", "Requires authentication with MTurk.");
 		  } else {
 		      $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
-                      if (updateTurkInfo) {
-		        var mturk_form = $('#admin-mturk-cred-form');
-		        mturk_form.find('input[name="access_key"]:first').val(data.turkinfo.access_key);
-		        mturk_form.find('input[name="secret_key"]:first').val(data.turkinfo.secret_key);		  
-		        mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
-		        mturk_form.find('input[name="hit_title"]:first').val(data.turkinfo.title);
-		        mturk_form.find('textarea[name="hit_description"]:first').val(data.turkinfo.description);
-		        mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
-                      }
+          if (updateTurkInfo) {
+              var mturk_form = $('#admin-mturk-cred-form');
+              mturk_form.find('input[name="access_key"]:first').val(data.turkinfo.access_key);
+              mturk_form.find('input[name="secret_key"]:first').val(data.turkinfo.secret_key);
+              mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
+              mturk_form.find('input[name="hit_title"]:first').val(data.turkinfo.title);
+              var textarea = mturk_form.find('textarea[name="hit_description"]:first').val(data.turkinfo.description);
+              window.setTimeout(function () { textarea.trigger("scroll"); }, 0);
+              mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
+          }
 		      if (data.turkinfo.running) {
 			  $('#admin-turk-info').append('<p>Currently running with HITId ' + data.turkinfo.hitid + '.</p>');
 			  $('#admin-begin-run').hide();
