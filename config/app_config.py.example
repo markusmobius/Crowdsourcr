@@ -1,0 +1,13 @@
+# Set the superadmins who are able to manipulate normal admins at
+# http://*/superadmin/
+
+superadmins = [
+    "ralph.waldo.emerson@gmail.com"
+]
+
+# Get these from https://console.developers.google.com under APIs & auth / Credentials.
+# Redirect URIs should be "http://$YOUR_DOMAIN/admin/login/"
+google = {
+    "client_id" : "this-is-your-id.apps.googleusercontent.com",
+    "client_secret" : "thisIsYourClientSecret"
+}

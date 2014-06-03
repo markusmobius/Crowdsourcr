@@ -13,11 +13,13 @@ import models
 import controllers
 import json
 import helpers
+import urllib
+import app_config
  
 from tornado.options import define, options
  
 class BaseHandler(tornado.web.RequestHandler):
-    __superusers__ = ['samgrondahl@gmail.com', 'kmill31415@gmail.com']
+    __superusers__ = app_config.superadmins
     @property
     def logging(self) :
         return self.application.logging
@@ -67,32 +69,6 @@ class MainHandler(BaseHandler):
     def get(self):
         self.render("index.html")
 
-# Doesn't appear to be used (instead using GoogleLoginHandler)
-class AuthLoginHandler(BaseHandler):
-    def get(self):
-        try:
-            errormessage = self.get_argument("error")
-        except:
-            errormessage = ""
-        self.render("login.html", errormessage = errormessage)
- 
-    def check_permission(self, password, username):
-        if username == "admin" and password == "admin":
-            return True
-        return False
- 
-    def post(self):
-        username = self.get_argument("username", "")
-        password = self.get_argument("password", "")
-        auth = self.check_permission(password, username)
-        if auth:
-            self.set_current_user(username)
-    def set_current_user(self, user):
-        if user:
-            self.set_secure_cookie("user", tornado.escape.json_encode(user))
-        else:
-            self.clear_cookie("user")
- 
 class CTypeViewHandler(BaseHandler):
     def get(self, type_name):
         ctype_info = self.ctype_controller.get_by_name(type_name).to_dict()
@@ -133,30 +109,69 @@ class AdminAllHandler(BaseHandler) :
         else:
             self.write("error")
 
-class GoogleLoginHandler(BaseHandler,
-                         tornado.auth.GoogleMixin):
-   @tornado.web.asynchronous
-   @tornado.gen.coroutine
-   def get(self):
-       if self.admin_controller.get_by_email(self.get_secure_cookie('admin_email', '')):
-           self.redirect('/admin/')
-       elif self.get_argument("openid.mode", None):
-           try:
-               user = yield self.get_authenticated_user()
-               # {'first_name': u'Sam', 'claimed_id': u'https://www.google.com/accounts/o8/id?id=AItOawkwMPsQnRxJcwHuqpxj5CaCSZ9mhkKMkPQ', 'name': u'Sam Grondahl', 'locale': u'en', 'last_name': u'Grondahl', 'email': u'samgrondahl@gmail.com'}
-               full_name = " ".join(u for u in [user['first_name'], user['last_name']]
-                                    if u != None)
-               self.set_secure_cookie('admin_email', user['email'])
-               self.set_secure_cookie('admin_name', full_name)
-               self.redirect('/admin/')
-           except tornado.auth.AuthError as e:
-               self.write('you did not auth!')
-           except Exception as e:
-               print type(e)
-               print 'Unexpected error: ' + e
-       else:
-           self.clear_cookie('admin_email')
-           yield self.authenticate_redirect()
+class GoogleLoginHandler(BaseHandler):
+    @tornado.web.asynchronous
+    def get(self) :
+        if self.admin_controller.get_by_email(self.get_secure_cookie('admin_email', '')) :
+            self.redirect('/admin/')
+            return
+
+        import urlparse
+        self.redirect_uri = urlparse.urljoin(self.request.full_url(),
+                                             self.application.settings['login_url'])
+
+        if self.get_argument("state", None) == self.get_secure_cookie("oauth_state") != None :
+            self._on_auth()
+            return
+
+        state = self.random256()
+        self.set_secure_cookie("oauth_state", state)
+        args = {
+            "response_type" : "code",
+            "client_id" : app_config.google['client_id'],
+            "redirect_uri" : self.redirect_uri,
+            "scope" : "openid email",
+            "approval_prompt" : "auto",
+            "state" : state
+            }
+        url = "https://accounts.google.com/o/oauth2/auth"
+        self.redirect(url + "?" + urllib.urlencode(args))
+    def _on_auth(self) :
+        if self.get_argument("error", None) :
+            raise tornado.web.HTTPError(500, self.get_argument("error"))
+        code = self.get_argument("code")
+        args = {
+            "code" : code,
+            "client_id" : app_config.google['client_id'],
+            "client_secret" : app_config.google['client_secret'],
+            "redirect_uri" : self.redirect_uri,
+            "grant_type" : "authorization_code"
+            }
+        tornado.httpclient.AsyncHTTPClient().fetch("https://accounts.google.com/o/oauth2/token",
+                                                   self._on_token, method="POST", body=urllib.urlencode(args))
+    def _on_token(self, response) :
+        if response.error :
+            raise tornado.web.HTTPError(500, "Getting tokens failed")
+        data = json.loads(response.body)
+        self.access_data = data
+        headers = tornado.httputil.HTTPHeaders({
+                "Authorization" : "Bearer " + data['access_token']
+                })
+        tornado.httpclient.AsyncHTTPClient().fetch("https://www.googleapis.com/userinfo/v2/me",
+                                                   headers=headers, callback=self._on_userinfo)
+    def _on_userinfo(self, response) :
+        if response.error :
+            raise tornado.web.HTTPError(500, "Getting user info failed")
+        data = json.loads(response.body)
+
+        self.set_secure_cookie('admin_email', data['email'])
+        self.set_secure_cookie('admin_name', data['name'])
+        self.redirect('/admin/')
+
+    def random256(self) :
+        import base64
+        return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
+
 
 class XMLUploadHandler(BaseHandler):
     def post(self):
@@ -299,6 +314,7 @@ class AdminInfoHandler(BaseHandler):
                           'environment' : self.settings['environment'],
                           'email' : self.get_secure_cookie('admin_email'),
                           'full_name' : self.get_secure_cookie('admin_name'),
+                          'superadmin' : self.is_super_admin(),
                           'hitinfo' : hit_info,
                           'turkinfo' : turk_info,
                           'turkbalance' : turk_balance})

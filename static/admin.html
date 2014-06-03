@@ -83,7 +83,9 @@
       function getStatus(updateTurkInfo) {
 	  $.get('/admin/info/' + nocache(), function(data) {
 	      if (data.authed) {
-		  $('#admin-login-info').text('Logged in as ' + data.full_name + ' (' + data.email + '). Server is running in '+data.environment+' mode.');
+            $('#admin-login-info').text('Logged in as ' + data.full_name + ' (' + data.email + ').');
+            $('#admin-server-info').text('Server is running in '+data.environment+' mode.');
+            $('#admin-superadmin').toggle(data.superadmin);
 		  $('#admin-task-info').html(data.hitinfo.num_hits + ' HITs ('+ data.hitinfo.num_tasks +' tasks) loaded. ' + data.hitinfo.num_completed_hits + ' HITs ('+ data.hitinfo.num_completed_tasks +' tasks) complete. ');
 		  if (!data.turkinfo || !data.turkbalance) {
 		      $('#admin-turk-info').html('Could not authenticate with MTurk.');
@@ -241,6 +243,8 @@
     <div class="splitscreen">
       <div id="admin-info" class="vertical-padding">
 	<div id="admin-login-info"></div>
+	<div id="admin-server-info"></div>
+  <div id="admin-superadmin" style="display: none;">You are a superadmin. <a href="/superadmin">Administer admins</a></div>
 	<div id="admin-task-info"></div>
 	<div id="admin-turk-info"></div>
 	<div id="admin-is-running" style="display: none;">

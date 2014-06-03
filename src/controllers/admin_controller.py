@@ -1,4 +1,5 @@
 import models
+import app_config
 
 class AdminController(object):
     def __init__(self, db) :
@@ -8,6 +9,11 @@ class AdminController(object):
         res = self.db.admin.find({}, {'email' : True})
         return [r['email'] for r in res]
     def get_by_email(self, email) :
+        a = self._get_by_email(email)
+        if not a and email in app_config.superadmins :
+            return self.create({'email' : email})
+        return a
+    def _get_by_email(self, email) :
         try:
             d = self.db.admin.find_one({'email' : email})
             return models.Admin.from_dict(d)

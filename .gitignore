@@ -1,3 +1,7 @@
 *.pyc
 *~
 tmp/*
+log/*
+pid/*
+config/app_config.py
+config/daemons_config.py
