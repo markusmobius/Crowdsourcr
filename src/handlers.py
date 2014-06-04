@@ -5,6 +5,8 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 import datetime
+import calendar
+import email.utils
 import os
 import uuid
 import pymongo
@@ -14,6 +16,8 @@ import controllers
 import json
 import helpers
 import urllib
+import csv
+import StringIO
 import app_config
  
 from tornado.options import define, options
@@ -53,6 +57,9 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def mturkconnection_controller(self):
         return self.application.mturkconnection_controller
+    @property
+    def event_controller(self):
+        return self.application.event_controller
     @property
     def main_hit_url(self) :
         return "http://" + self.request.host + "/HIT"
@@ -182,6 +189,8 @@ class XMLUploadHandler(BaseHandler):
             with open(os.path.join(Settings.TMP_PATH, uuid.uuid4().hex + '.upload'), 'wb') as temp:
                 temp.write(self.request.files['file'][0]['body'])
                 temp.flush()
+                uploadedFilename = self.request.files['file'][0]['filename']
+                self.event_controller.add_event("Uploaded: " + uploadedFilename)
                 xmltask = self.xmltask_controller.xml_upload(temp.name)
                 for module in xmltask.get_modules():
                     self.ctype_controller.create(module)
@@ -208,6 +217,7 @@ class RecruitingBeginHandler(BaseHandler):
         admin_email = self.get_secure_cookie('admin_email')
         max_assignments = self.chit_controller.get_agg_hit_info()['num_hits']
         if admin_email:
+            self.event_controller.add_event(admin_email + " began run")
             self.mturkconnection_controller.begin_run(email=admin_email, 
                                                       max_assignments=max_assignments,
                                                       url=self.main_hit_url,
@@ -218,7 +228,11 @@ class RecruitingEndHandler(BaseHandler):
     def post(self):
         #TODO: validate expermenter
         admin_email = self.get_secure_cookie('admin_email')
-        if admin_email and self.mturkconnection_controller.get_by_email(admin_email) :
+        if not admin_email :
+            return
+        tkconn = self.mturkconnection_controller.get_by_email(admin_email)
+        if tkconn :
+            self.event_controller.add_event(admin_email + " ending run " + tkconn.hitid)
             completed_workers = self.chit_controller.get_workers_with_completed_hits()
             worker_bonus_info = {}
             # all_responses_by_task returns 
@@ -245,6 +259,7 @@ class RecruitingEndHandler(BaseHandler):
             self.mturkconnection_controller.end_run(email=admin_email,
                                                     bonus=worker_bonus_percent,
                                                     environment=self.settings['environment'])
+            self.event_controller.add_event("Run ended")
             self.finish()
 
 class BonusInfoHandler(BaseHandler) :
@@ -310,12 +325,20 @@ class AdminInfoHandler(BaseHandler):
             else :
                 self._send_json(hit_info, turk_info, turk_balance)
     def _send_json(self, hit_info, turk_info, turk_balance) :
+        completed_hits = self.cresponse_controller.get_completed_hits()
+        outstanding_hits = self.currentstatus_controller.outstanding_hits()
         self.return_json({'authed' : True,
                           'environment' : self.settings['environment'],
                           'email' : self.get_secure_cookie('admin_email'),
                           'full_name' : self.get_secure_cookie('admin_name'),
                           'superadmin' : self.is_super_admin(),
                           'hitinfo' : hit_info,
+                          'hitstatus' : {'outstanding' : outstanding_hits,
+                                         'completed' : completed_hits},
+                          'events' : [{'date' : email.utils.formatdate(calendar.timegm(e['date'].utctimetuple()),
+                                                                       usegmt=True),
+                                       'event' : e['event']}
+                                      for e in self.event_controller.get_events()],
                           'turkinfo' : turk_info,
                           'turkbalance' : turk_balance})
 
@@ -472,8 +495,12 @@ class CSVDownloadHandler(BaseHandler):
     def get(self):
         self.set_header ('Content-Type', 'text/csv')
         self.set_header ('Content-Disposition', 'attachment; filename=data.csv')
-        completed_workers = self.chit_controller.get_workers_with_completed_hits()
-        for row in self.cresponse_controller.write_response_to_csv(completed_workers=completed_workers):
-            self.write("%s\n" % row)
-        self.finish()
 
+        completed_workers = self.chit_controller.get_workers_with_completed_hits()
+
+        output = StringIO.StringIO()
+        csvwriter = csv.writer(output, delimiter='\t')
+
+        self.cresponse_controller.write_response_to_csv(csvwriter, completed_workers=completed_workers)
+
+        self.finish(output.getvalue())

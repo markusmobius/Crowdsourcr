@@ -26,6 +26,7 @@ define('daemonize', default=False, help="set whether this process should run as 
 
 sys.path.insert(0, Settings.CONFIG_PATH)
 import app_config
+sys.path.pop(0)
 
 import controllers
 import handlers
@@ -98,6 +99,7 @@ class Application(tornado.web.Application):
         self.xmltask_controller = controllers.XMLTaskController(self.db)
         self.cresponse_controller = controllers.CResponseController(self.db)
         self.mturkconnection_controller = controllers.MTurkConnectionController(self.db)
+        self.event_controller = controllers.EventController(self.db)
 
         if make_payments :
             self.ensure_automatic_make_payments()
@@ -182,6 +184,7 @@ def clear_db(db):
     db.currentstatus.drop()
     db.paid_bonus.drop()
     db.bonus_info.drop()
+    db.events.drop()
 
 if __name__ == "__main__":
     main()
