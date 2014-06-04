@@ -325,7 +325,7 @@ class AdminInfoHandler(BaseHandler):
             else :
                 self._send_json(hit_info, turk_info, turk_balance)
     def _send_json(self, hit_info, turk_info, turk_balance) :
-        completed_hits = self.cresponse_controller.get_completed_hits()
+        completed_hits = self.chit_controller.get_completed_hits()
         outstanding_hits = self.currentstatus_controller.outstanding_hits()
         self.return_json({'authed' : True,
                           'environment' : self.settings['environment'],

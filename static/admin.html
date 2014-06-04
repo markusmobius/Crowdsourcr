@@ -26,17 +26,20 @@
           
           $('#begin-recruiting-button').click(function(evt) {
               evt.preventDefault();
-              beginRecruiting();//getStatus);
+              beginRecruiting();
           });
           
           $('#admin-begin-run').find('button:first').click(function(evt) {
               evt.preventDefault();
-              beginRun();//getStatus);
+              beginRun();
           });
           
           $('#admin-end-run').find('button:first').click(function(evt) {
               evt.preventDefault();
-              $.post('/admin/recruit/end/', {});//, getStatus);
+              $('#admin-end-run').attr("disabled", true);
+              $.post('/admin/recruit/end/', {}).always(function () {
+                  $('#admin-end-run').attr("disabled", false);
+              });
           });
           
           $('#download-data-btn').click(function(evt) {
@@ -81,7 +84,11 @@
       }
       
       function beginRun(callback) {
-          $.post('/admin/recruit/begin', {}, callback);
+          $('#admin-begin-run').attr("disabled", true);
+          $.post('/admin/recruit/begin', {}, callback)
+              .always(function () {
+                  $('#admin-begin-run').attr("disabled", false);
+              });
       }
       
       function getStatus(updateTurkInfo) {
@@ -310,7 +317,7 @@
       }
 
       #admin-events-dest {
-          max-height: 100px;
+          height: 100px;
           overflow: auto;
           border: 1px solid #ccc;
           margin-bottom: 0.5em;

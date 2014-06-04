@@ -70,6 +70,9 @@ class CHITController(object):
                              {'$push' : {'completed_hits' : hit_info},
                               '$inc' : {'num_completed_hits' : 1}})
         return hit_info
+    def get_completed_hits(self) :
+        d = self.db.chits.find({'num_completed_hits' : {'$gte' : 1}}, {'hitid' : 1})
+        return [r['hitid'] for r in d]
     def get_workers_with_completed_hits(self) :
         d = self.db.chits.find({'num_completed_hits' : {'$gte' : 1}}, {'completed_hits' : 1})
         return [r['completed_hits'][0]['worker_id'] for r in d]
