@@ -10,17 +10,22 @@ class MTurkConnectionController(object):
         self.update(mtconn)
         return mtconn
     def update(self, mtconn):
-        self.db.mturkconnections.update({'email' : mtconn.email}, 
+        # self.db.mturkconnections.update({'email' : mtconn.email}, 
+        #                                 {'$set' : mtconn.serialize()},
+        #                                 upsert=True )
+        self.db.mturkconnections.update({}, 
                                         {'$set' : mtconn.serialize()},
                                         upsert=True )
     def get_hit_id(self) :
         d = self.db.mturkconnections.find_one({})
         return d['hitid'] if d else None
     def get_by_email(self, email=None, environment="development"):
-        d = self.db.mturkconnections.find_one({'email' : email})
+        #d = self.db.mturkconnections.find_one({'email' : email})
+        d = self.db.mturkconnections.find_one({})
         if not d:
             return None
         else:
+            d['email'] = email
             d['environment']=environment
             return MTurkConnection.deserialize(d)
 
