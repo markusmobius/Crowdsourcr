@@ -3,6 +3,7 @@ import os
 import logging
 import fcntl
 import errno
+import signal
 
 def check(path):
     # try to read the pid from the pidfile
@@ -19,7 +20,7 @@ def check(path):
     try:
         if pid is not None:
             logging.info("Killing PID %s", pid)
-            os.kill(pid, 9)
+            os.kill(pid, signal.SIGKILL)
     except OSError, (code, text):
         # re-raise if the error wasn't "No such process"
         if code != errno.ESRCH:

@@ -120,7 +120,7 @@ class Application(tornado.web.Application):
                     self.logging.info(u"Peiment su\x01\x02e\u00df")
                 except :
                     self.logging.exception("Error in automatic payer.")
-                    pc.stop()
+                    #pc.stop()
             callback_time = 1000 * 10 # 10 seconds
             pc = tornado.ioloop.PeriodicCallback(callback, callback_time)
             pc.start()
