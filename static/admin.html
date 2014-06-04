@@ -9,7 +9,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/autoexpand.js"></script>
     <script type="text/javascript">
+
+      var seenEvents = {};
+
       $(onReady);
+
       function nocache() {
           return "?nocache=" + new Date().getTime();
       }
@@ -61,7 +65,7 @@
                   for (var i = 0, hid; hid = ids[i]; i++) {
                       $d.append(sep);
                       sep = ", ";
-                      var $a = $('<a href="#"/>').text(hid);
+                      var $a = $('<a href="#"/>').text(hid).attr('hit-id', hid);
                       (function (hid) {
                           $a.on("click", function (e) {
                               e.preventDefault();
@@ -102,6 +106,7 @@
                               mturk_form.find('input[name="hit_title"]:first').val(data.turkinfo.title);
                               var textarea = mturk_form.find('textarea[name="hit_description"]:first').val(data.turkinfo.description);
                               window.setTimeout(function () { textarea.trigger("scroll"); }, 0);
+                              mturk_form.find('input[name="hit_keywords"]:first').val(data.turkinfo.keywords);
                               mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
                           }
                           if (data.turkinfo.running) {
@@ -114,7 +119,8 @@
                               $('#download-bonusinfo-btn').attr("disabled", true);
                               $('#download-bonusinfo-btn-title').attr("title", "Stop the experiment to ensure MTurk workers are paid their bonuses.");
                           } else {
-                              $('#admin-turk-info').append('<p> Not currently running. </p>');
+                              var amazonLink = "https://requester.mturk.com/mturk/manageHITs";
+                              $('#admin-turk-info').append('<p> Not currently running. <a href="' + amazonLink + '" target="_blank">Manage HITs</a></p>');
                               $('#admin-end-run').hide();
                               $('#admin-begin-run').show();
                               $('#upload-btn').attr("disabled", false);
@@ -135,6 +141,62 @@
                       } else {
                           $('#admin-login-info').html('You cannot see this for some unknown reason.');
                       }
+                  }
+
+                  var resolvedStatuses = {};
+                  var outstanding = data.hitstatus.outstanding || [];
+                  for (var i = 0; i < outstanding.length; i++) {
+                      resolvedStatuses[outstanding[i]] = 'outstanding';
+                  }
+                  var completed = data.hitstatus.completed || [];
+                  for (var i = 0; i < completed.length; i++) {
+                      resolvedStatuses[completed[i]] = 'completed';
+                  }
+                  $('[hit-id]').each(function () {
+                      var hid = $(this).attr('hit-id');
+                      var status = "unseen";
+                      if (Object.prototype.hasOwnProperty.call(resolvedStatuses, hid)) {
+                          status = resolvedStatuses[hid];
+                      }
+                      var fontweight = 'normal';
+                      var fontstyle = 'normal';
+                      var color = 'orange';
+                      switch (status) {
+                      case "outstanding" :
+                          fontweight = "bold";
+                          color = 'red';
+                          break;
+                      case "completed" :
+                          fontstyle = 'italic';
+                          color = 'green';
+                          break;
+                      case "unseen" :
+                          // fallthrough
+                      default :
+                          break;
+                      }
+                      $(this).css({
+                          'font-weight' : fontweight,
+                          'font-style' : fontstyle,
+                          'color' : color
+                      });
+                  });
+                  var $aed = $('#admin-events-dest');
+                  var events = data.events || [];
+                  var newEvents = false;
+                  for (var i = 0; i < events.length; i++) {
+                      if (!seenEvents.hasOwnProperty(events[i].date)) {
+                          seenEvents[events[i].date] = true;
+                          newEvents = true;
+                          var date = new Date(events[i].date);
+                          var $el = $('<div class="event">');
+                          $el.append($('<div class="event-date">').text(''+date));
+                          $el.append($('<div class="event-text">').text(events[i].event));
+                          $aed.append($el);
+                      }
+                  }
+                  if (newEvents) {
+                      $aed.scrollTop($aed[0].scrollHeight);
                   }
               } finally {
                   setTimeout(getStatus, 5000);
@@ -170,6 +232,7 @@
                             hitpayment : parseFloat(form_elem.find('input[name="hit_payment"]:first').val()),
                             title : form_elem.find('input[name="hit_title"]').val(),
                             description : form_elem.find('textarea[name="hit_description"]').val(),
+                            keywords : form_elem.find('input[name="hit_keywords"]').val(),
                             bonus : form_elem.find('input[name="hit_bonus"]').val()};
           for (var key in mturk_info) {
               if (mturk_info.hasOwnProperty(key) && !mturk_info[key]) {
@@ -245,6 +308,27 @@
       .error {
           color: #e33;
       }
+
+      #admin-events-dest {
+          max-height: 100px;
+          overflow: auto;
+          border: 1px solid #ccc;
+          margin-bottom: 0.5em;
+          padding: 0.5em;
+      }
+      .event {
+          margin-bottom: 0.5em;
+      }
+      .event + .event {
+          margin-top: 1em;
+      }
+      .event-text {
+      }
+      .event-date {
+          font-weight: bold;
+          font-size: 70%;
+          white-space: nowrap;
+      }
     </style>
   </head>
   <body>
@@ -318,12 +402,16 @@
 	    </div>
 	    <div class="form-group">
 	      <label>HIT Title</label>
-	      <input type="text" class="form-control" name="hit_title" placeholder="News Classification Task">
+	      <input type="text" class="form-control" name="hit_title" placeholder="A short title">
 	    </div>
 	    <div class="form-group">
 	      <label>HIT Description</label>
-	      <textarea class="form-control" name="hit_description" placeholder="You will be reading news articles and answering questions about them."></textarea>
+	      <textarea class="form-control" name="hit_description" placeholder="A short description"></textarea>
 	    </div>
+      <div class="form-group">
+        <label>HIT Keywords</label>
+        <input type="text" class="form-control" name="hit_keywords" placeholder="Comma-separated keywords"></input>
+      </div>
 	    <button id="begin-recruiting-button" type="submit" class="btn btn-success">Update Turk Info</button>
 	  </fieldset>
 	</form>
@@ -331,12 +419,16 @@
     </div>
     <div class="splitscreen">
       <div class="vertical-padding">
-	<div id="admin-hits" style="display:none;">
-	  <legend>Uploaded HITs</legend>
-	  <div id="admin-hits-dest"></div>
-	  <div id="admin-hit-tasks" style="padding-top: 2em;">
-	  </div>
-	</div>
+        <div id="admin-events">
+          <legend>Events</legend>
+          <div id="admin-events-dest"></div>
+        </div>
+	      <div id="admin-hits" style="display:none;">
+	        <legend>Uploaded HITs</legend>
+	        <div id="admin-hits-dest"></div>
+	        <div id="admin-hit-tasks" style="padding-top: 2em;">
+	        </div>
+	      </div>
       </div>
     </div>
  </body>

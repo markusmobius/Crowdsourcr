@@ -16,11 +16,13 @@ class MTurkConnection(object):
                  hitid=None, 
                  title="News Classification Task", 
                  description="Classify a set of news articles as part of an academic research study.",
+                 keywords="news, classification, research, academic",
                  environment="development",
                  bonus=0.0,
                  **kwargs):
         self.title = title
         self.description = description
+        self.keywords = keywords
         self.access_key = access_key
         self.secret_key = secret_key
         self.email = email
@@ -53,6 +55,7 @@ class MTurkConnection(object):
                  'hitid' : self.hitid,
                  'title' : self.title,
                  'description' : self.description,
+                 'keywords' : self.keywords,
                  'bonus' : self.bonus}
     @classmethod
     def deserialize(cls, d):
@@ -87,7 +90,7 @@ class MTurkConnection(object):
                                              title=self.title,
                                              description=self.description,
                                              duration=duration,
-                                             keywords="news, classification, research, academic",
+                                             keywords=self.keywords,
                                              reward=self.hitpayment,
                                              qualifications=qualifications)
         self.running = True

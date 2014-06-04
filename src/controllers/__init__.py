@@ -18,3 +18,4 @@ from xmltask_controller import XMLTaskController
 from chit_controller import CHITController
 from cdocument_controller import CDocumentController
 from current_status_controller import CurrentStatusController
+from event_controller import EventController
