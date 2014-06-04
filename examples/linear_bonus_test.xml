@@ -1,0 +1,150 @@
+<!-- Choosing an option -->
+
+<!-- You will choose an option from a list.  You will earn a bonus
+     based on how many other people choose the same option.  We are
+     testing our server, so we apologize in advance if anything goes
+     wrong.  We will not reject your responses. -->
+
+<xml>
+  <modules>
+    <module>
+      <header>Choosing a thing</header>
+      <name>choosing</name>
+      <questions>
+        <question>
+          <varname>choice</varname>
+          <bonus>linear</bonus>
+          <questiontext>Which of the following are people most likely to choose?</questiontext>
+          <helptext>You will get a bonus based on how many other people choose the same thing.</helptext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>This one</text>
+                <value>1</value>
+              </category>
+              <category>
+                <text>This one</text>
+                <value>2</value>
+              </category>
+              <category>
+                <text>This one</text>
+                <value>3</value>
+              </category>
+              <category>
+                <text>This one</text>
+                <value>4</value>
+              </category>
+              <category>
+                <text>This one</text>
+                <value>5</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+      </questions>
+    </module>
+  </modules>
+
+  <tasks>
+    <task>
+      <content>choosing.html</content>
+      <taskid>choosing</taskid>
+      <modules>choosing</modules>
+    </task>
+  </tasks>
+
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>3</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>4</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>5</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>6</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>7</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>8</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>9</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>10</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>11</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>12</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>13</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>14</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>15</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>16</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>17</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>18</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>19</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+    <hit>
+      <hitid>20</hitid>
+      <tasks>choosing</tasks>
+    </hit>
+
+  </hits>
+
+  <documents>
+    <document>
+      <name>choosing.html</name>
+      <content><![CDATA[
+      <h1>Instructions</h1>
+      <p>You will be rewarded with a bonus based on how many other people agree with you over which option people are most likely to choose.</p>
+      ]]></content>
+    </document>
+  </documents>
+</xml>
