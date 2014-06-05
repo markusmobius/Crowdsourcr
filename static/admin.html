@@ -36,9 +36,9 @@
           
           $('#admin-end-run').find('button:first').click(function(evt) {
               evt.preventDefault();
-              $('#admin-end-run').attr("disabled", true);
+              $('#admin-end-run').find("button:first").attr("disabled", true);
               $.post('/admin/recruit/end/', {}).always(function () {
-                  $('#admin-end-run').attr("disabled", false);
+                  $('#admin-end-run').find("button:first").attr("disabled", false);
               });
           });
           
@@ -84,10 +84,10 @@
       }
       
       function beginRun(callback) {
-          $('#admin-begin-run').attr("disabled", true);
+          $('#admin-begin-run').find("button:first").attr("disabled", true);
           $.post('/admin/recruit/begin', {}, callback)
               .always(function () {
-                  $('#admin-begin-run').attr("disabled", false);
+                  $('#admin-begin-run').find("button:first").attr("disabled", false);
               });
       }
       
