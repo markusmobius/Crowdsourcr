@@ -10,6 +10,7 @@ TMP_PATH = os.path.join(DIRNAME, '..', 'tmp')
 LOG_PATH = os.path.join(DIRNAME, '..', 'log')
 PIDFILE_PATH = os.path.join(DIRNAME, '..', 'pid')
 CONFIG_PATH = os.path.join(DIRNAME, '..', 'config')
+DOC_PATH = os.path.join(DIRNAME, '..', 'doc')
 
 try :
     os.makedirs(TMP_PATH)

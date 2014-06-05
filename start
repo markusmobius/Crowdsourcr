@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-cd src
-python app.py --port=8081 --environment=production --make_payments=True
-python app.py --port=8082 --environment=production --make_payments=False
-python app.py --port=8083 --environment=production --make_payments=False
-python app.py --port=8084 --environment=production --make_payments=False
