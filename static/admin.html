@@ -101,8 +101,8 @@
                       $('#admin-task-info').html(data.hitinfo.num_hits + ' HITs ('+ data.hitinfo.num_tasks +' tasks) loaded. ' + data.hitinfo.num_completed_hits + ' HITs ('+ data.hitinfo.num_completed_tasks +' tasks) complete. ');
                       if (!data.turkinfo || !data.turkbalance) {
                           $('#admin-turk-info').html('Could not authenticate with MTurk.');
-                          $('#upload-btn').attr("disabled", true);
-                          $('#upload-btn-title').attr("title", "Requires authentication with MTurk.");
+                          $('#upload-btn').attr("disabled", false);
+                          $('#upload-btn-title').attr("title", "");
                       } else {
                           $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
                           if (updateTurkInfo) {

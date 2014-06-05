@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 cd src
-python daemon_helper.py "$@"
+python2.7 daemon_helper.py "$@"
 exit $!

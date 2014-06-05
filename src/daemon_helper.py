@@ -40,7 +40,7 @@ def start() :
     make_payments = True
     for port in config.ports :
         print "** Starting on port %s **" % port
-        command = ["python", "app.py",
+        command = ["python2.7", "app.py",
                    "--db_name=%s" % config.db_name,
                    "--environment=%s" % config.environment,
                    "--port=%s" % port,
@@ -69,7 +69,7 @@ def drop() :
         print "Not dropping."
         return
     print "** Dropping %s **" % config.db_name
-    command = ["python", "app.py",
+    command = ["python2.7", "app.py",
                "--drop=REALLYREALLY",
                "--db_name=%s" % config.db_name,
                "--make_payments=False"]

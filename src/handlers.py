@@ -338,7 +338,7 @@ class AdminInfoHandler(BaseHandler):
                           'events' : [{'date' : email.utils.formatdate(calendar.timegm(e['date'].utctimetuple()),
                                                                        usegmt=True),
                                        'event' : e['event']}
-                                      for e in self.event_controller.get_events()],
+                                      for e in self.event_controller.get_events()[-8:],
                           'turkinfo' : turk_info,
                           'turkbalance' : turk_balance})
 
@@ -400,8 +400,8 @@ class CHITViewHandler(BaseHandler):
                 hitid = existing_status['hitid']
                 if taskindex >= len(chit.tasks):
                     self.clear_cookie('workerid')
-                    self.currentstatus_controller.remove(workerid)
                     completed_chit_info = self.chit_controller.add_completed_hit(chit=chit, worker_id=workerid)
+                    self.currentstatus_controller.remove(workerid)
                     self.return_json({'completed_hit':True,
                                       'verify_code' : completed_chit_info['turk_verify_code']})
                 else:
@@ -504,3 +504,27 @@ class CSVDownloadHandler(BaseHandler):
         self.cresponse_controller.write_response_to_csv(csvwriter, completed_workers=completed_workers)
 
         self.finish(output.getvalue())
+
+class DocumentationHandler(BaseHandler) :
+    """Serves reStructuredText files from the /doc directory.  If
+    there is no such file, redirects into /static."""
+    def get(self, path) :
+        base_doc_path = os.path.realpath(Settings.DOC_PATH)
+        full_path = os.path.realpath(os.path.join(base_doc_path, *path.split("/")))
+        
+        if os.path.commonprefix([base_doc_path, full_path]) != base_doc_path :
+            raise tornado.web.HTTPError(403)
+
+        if os.path.isdir(full_path) :
+            full_path = os.path.join(full_path, "index.rst")
+
+        if not os.path.isfile(full_path) :
+            self.redirect("/static/" + path)
+            raise tornado.web.HTTPError(404)
+
+        import docutils.core
+        with open(full_path, "r") as fin :
+            result = docutils.core.publish_string(fin.read(), writer_name="html")
+
+        self.set_header('Content-Type', 'text/html')
+        self.finish(result)
