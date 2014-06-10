@@ -338,7 +338,7 @@ class AdminInfoHandler(BaseHandler):
                           'events' : [{'date' : email.utils.formatdate(calendar.timegm(e['date'].utctimetuple()),
                                                                        usegmt=True),
                                        'event' : e['event']}
-                                      for e in self.event_controller.get_events()[-8:],
+                                      for e in self.event_controller.get_events()[-8:]],
                           'turkinfo' : turk_info,
                           'turkbalance' : turk_balance})
 

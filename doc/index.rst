@@ -72,7 +72,7 @@ At this point, it should be possible to start Crowdsourcer by entering
 the `src` directory and running
 ::
 
- python --port=80 --environment=production
+ python app.py --port=80 --environment=production
 
 and then going to ``http://YOUR.DOMAIN/admin``.  You will probably
 need to allow access to port 80 using the following command:
@@ -83,16 +83,18 @@ need to allow access to port 80 using the following command:
 and then instead run
 ::
 
- python --port=8080 --environment=production
+ python app.py --port=8080 --environment=production
 
 On Linux, we support starting Crowdsourcer as a daemon.  For this to
 work, copy ``config/daemons_config.py.example`` to
 ``config/daemons_config.py`` and add an entry to the daemons list
 describing on which port(s) you want Crowdsourcer to run (or just use
-the ``default`` configuration already provided).  Crowdsourcer can be
-started with ``./daemons start CONFIGNAME`` or stopped with
-``./daemons stop CONFIGNAME``.  You can get help for these commands
-with ``./daemons help``.
+the ``default`` configuration already provided).  Make sure that the
+Python package ``python-daemon``, as described in
+``requirements.txt``, is installed, as this is a requirement for
+daemonization. Crowdsourcer can be started with ``./daemons start
+CONFIGNAME`` or stopped with ``./daemons stop CONFIGNAME``.  You can
+get help for these commands with ``./daemons help``.
 
 While this is already sufficient for using Crowdsourcer, we recommend
 using nginx_ for serving static content and load balancing across
@@ -223,7 +225,7 @@ At this point, it should be possible to start Crowdsourcer by entering
 the `src` directory and running
 ::
 
- python --port=80 --environment=production
+ python app.py --port=80 --environment=production
 
 and then going to ``http://YOUR.DOMAIN/admin``.
 

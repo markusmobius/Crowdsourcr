@@ -5,8 +5,10 @@ superadmins = [
     "ralph.waldo.emerson@gmail.com"
 ]
 
-# Get these from https://console.developers.google.com under APIs & auth / Credentials.
-# Redirect URIs should be "http://$YOUR_DOMAIN/admin/login/"
+# Get these from https://console.developers.google.com under APIs &
+# auth / Credentials.  Redirect URLs should be
+# "http://$YOUR_DOMAIN/admin/login/" (note the final forward slash).
+# See the documentation for more information.
 google = {
     "client_id" : "this-is-your-id.apps.googleusercontent.com",
     "client_secret" : "thisIsYourClientSecret"
