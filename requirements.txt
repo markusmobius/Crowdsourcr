@@ -7,3 +7,6 @@ boto==2.29.1
 
 # Only if on linux
 #python-daemon==1.6
+
+# only if you want to be able to serve the docs at http://$SERVER/docs
+#docutils

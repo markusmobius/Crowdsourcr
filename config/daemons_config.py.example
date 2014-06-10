@@ -30,7 +30,7 @@ configurations = {
     'default_production' : CrowdsourcerDaemon(environment='production'),
 
     'default_8080' : CrowdsourcerDaemon(ports=[8080]),
-    'default_8080' : CrowdsourcerDaemon(ports=[8080], environment='production'),
+    'default_8080_production' : CrowdsourcerDaemon(ports=[8080], environment='production'),
     
     # Defines a production daemon of two processes.  Only one does payments.
     'a' : CrowdsourcerDaemon(ports=[8101, 8102],
