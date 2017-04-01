@@ -52,7 +52,8 @@ just run
 
   sudo pip install -r requirements.txt
 
-Make sure MongoDB_ is installed. If it is not, follow the instructions at
+Make sure MongoDB_ is installed and running. If it is not, follow the
+instructions at 
 `<http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/>`_.
 
 To set up Crowdsourcer itself, copy ``config/app_config.py.example``
