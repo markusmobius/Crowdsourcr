@@ -298,14 +298,13 @@ does not matter what it is called.  Once this is created, go to
 "Credentials."  There should be a button which says
 "Create Credentials". Click it, then select "OAuth Client ID". You will
 be prompted to first set up your OAuth consent screen. Enter the minimal
-amount of information that will let you pass to the next screen plus the
-"Homepage URL". Note carefully the trailing slash in the "Homepage URL"
-and the ``http`` rather than ``https``.. On the next screen select
-"Web application", choose a name and click "Create".  Enter
-information similar to that in the following image, replacing the
-domain appropriately.  Note carefully the trailing slash in the
-"Authorized Redirect URI" and the ``http`` rather than ``https``.
-Authentication will not work if either of these are missing.
+amount of information that will let you pass to the next screen. On
+the next screen select "Web application", choose a name and click
+"Create".  Enter information similar to that in the following image,
+replacing the domain appropriately.  Note carefully the trailing
+slash in the "Authorized Redirect URI" and the ``http`` rather
+than ``https``. Authentication will not work if either of these
+are missing.
 
 .. figure:: /static/doc_img/crowdsourcer_google_oauth.png
    :alt: Example configuration for an OAuth client id for Crowdsourcer.
