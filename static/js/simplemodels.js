@@ -103,7 +103,7 @@ var CType = Model.extend({
 });
 
 var checkSingleCondition = function (vals, condition) {
-    if (condition == null) { return false;}
+    if (condition == null) { return true;}
     var d = condition.split('!=');
     if (d.length == 2) {
         var key = d[0].trim();
@@ -122,7 +122,7 @@ var checkSingleCondition = function (vals, condition) {
             }
         }
     }
-    return false;
+    return true;
 };
 var checkConditions = function (renderedquestions, holders) {
     //collect question values
@@ -133,10 +133,10 @@ var checkConditions = function (renderedquestions, holders) {
     for (var i = 0; i < renderedquestions.length; i++) {
         //console.log(renderedquestions[i]);
         if (checkSingleCondition(vals, renderedquestions[i].condition)) {
-            holders[i].hide();
+            holders[i].show();
         }
         else {
-            holders[i].show();
+            holders[i].hide();
         }
     }
 }
@@ -186,7 +186,7 @@ var QuestionList = Model.extend({
             vals[this.renderedquestions[i].varname] = this.renderedquestions[i].response();
         }
         for (var i = 0; i < this.renderedquestions.length; i++) {
-            if (!checkSingleCondition(vals, this.renderedquestions[i].condition) && !this.renderedquestions[i].validate()){
+            if (checkSingleCondition(vals, this.renderedquestions[i].condition) && !this.renderedquestions[i].validate()){
 		            this.holders[i].addClass("question-invalid");
 		            return false;
 	        }
