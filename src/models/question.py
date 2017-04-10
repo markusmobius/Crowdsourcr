@@ -8,7 +8,7 @@ class QTypeRegistry(type) :
 class Question(object) :
     __metaclass__ = QTypeRegistry
     qtype_subclasses = {}
-    def __init__(self, varname=None, questiontext=None, helptext=None, options=None, valuetype=None, bonus=None):
+    def __init__(self, varname=None, condition=None, questiontext=None, helptext=None, options=None, valuetype=None, bonus=None, bonusmultiplier=None):
         def validate_bonus(bonus) :
             if bonus == None or bonus == 'linear':
                 return bonus
@@ -27,6 +27,8 @@ class Question(object) :
         self.helptext = helptext
         self.options = options
         self.bonus = validate_bonus(bonus)
+        self.bonusmultiplier = bonusmultiplier
+        self.condition = condition
         self.valuetype = valuetype
     @classmethod
     def deserialize(cls, d) :
@@ -34,6 +36,8 @@ class Question(object) :
     def serialize(self) :
         return {'valuetype' : self.valuetype,
                 'varname' : self.varname,
+				'condition' : self.condition,
+				'bonusmultiplier' : self.bonusmultiplier,
                 'questiontext' : self.questiontext,
                 'helptext' : self.helptext,
                 'options' : self.options,
@@ -96,6 +100,10 @@ class TextQuestion(AbstractQuestion) :
     def parse_content_from_xml(question_content=None):
         return []
     def validate(self, response) :
+        print "Hello";
+        print self;
+        print "Hello";
+        return True;
         return response.get('response', False)
 
 
