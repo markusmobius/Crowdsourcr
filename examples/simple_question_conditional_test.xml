@@ -1,0 +1,70 @@
+<xml>
+  <modules>
+    <module>
+      <header>Spelling</header>
+      <name>spelling</name>
+      <questions>
+        <question>
+          <varname>spelling</varname>		 
+          <questiontext>Please indicate which spelling is correct:</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>Rhythm</text>
+                <value>0</value>
+              </category>
+              <category>
+                <text>Rythm</text>
+                <value>1</value>
+              </category>
+              <category>
+                <text>Other spelling</text>
+                <value>other</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>spelling_other</varname>
+		  <condition>spelling==other</condition>
+		  <bonusmultiplier>2</bonusmultiplier>
+          <questiontext>Please specify the spelling.</questiontext>
+          <valuetype>text</valuetype>
+        </question>
+      </questions>
+    </module>
+  </modules>
+
+  <tasks>
+    <task>
+      <content>spelling.html</content>
+      <taskid>1</taskid>
+      <modules>spelling</modules>
+    </task>
+  </tasks>
+  
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>1</tasks>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>1</tasks>
+    </hit>
+    <hit>
+      <hitid>3</hitid>
+      <tasks>1</tasks>
+    </hit>
+  </hits>
+  
+  <documents>
+    <document>
+      <name>spelling.html</name>
+      <content><![CDATA[
+      <p>Please answer these questions.</p>
+      ]]></content>
+    </document>
+  </documents>
+</xml>
