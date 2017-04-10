@@ -1,3 +1,4 @@
+import re
 
 class QTypeRegistry(type) :
     def __init__(cls, name, bases, dct) :
@@ -52,9 +53,44 @@ class Question(object) :
             split_bonus = self.bonus.split(':')
             return { 'type' : 'threshold',
                      'threshold' : int(split_bonus[1]) }
-    def validate(self, response) :
-        """Takes a question response as transmitted via JSON and validates it for this question."""
+    def parse_condition(self, condition_string):
+        """
+        The only conditions that are allowed use "==" or "!=". Whitespace around
+        the comparator is allowed
+        """
+        if condition_string is None:
+            return None
+        else:
+            condition_pattern = re.compile(r'(?P<varname>\b\S+\b)\s*(?P<comparator>==|!=)\s*(?P<value>\b\S+\b)')
+            return condition_pattern.finditer(condition_string).next().groupdict()
+    def satisfies_condition(self, module_responses):
+        condition_dict = self.parse_condition(self.condition)
+        if condition_dict is None:
+            return True
+        else:
+            # extract from the response the variable that is affected by the condition
+            condition_variable = [r for r in module_responses if r['varname'] == condition_dict['varname']][0]
+
+            if((condition_dict['comparator'] == '==') and (condition_variable['response'] == condition_dict['value'])):
+                return True
+            elif((condition_dict['comparator'] == '!=') and (condition_variable['response'] != condition_dict['value'])):
+                return True
+            else:
+                return False
+    def valid_response(self, response):
         return True
+    def validate(self, response, module_responses) :
+        """Takes a question response as transmitted via JSON and validates it 
+           given its own response and that to the rest of the question list.
+           The method calls satisfies_condition(), which checks whether the
+           display condition for the question is met and valid_response(), which
+           checks that the response to the question itself is valid. The latter
+           method can be overridden in classes that inherit from Question."""
+
+        if not self.satisfies_condition(module_responses):
+            return True
+        else:
+            return self.valid_response(response)
 
     # Parses XML to get question 'content' (returns list).
     # Currently only used for categorical questions.
@@ -79,7 +115,7 @@ class CategoricalQuestion(AbstractQuestion):
         return [{'text' : category.find('text').text,
                  'value' : category.find('value').text}
                 for category in question_content.find('categories').iter('category')]
-    def validate(self, response) :
+    def valid_response(self, response) :
         return response.get('response', False)
 
 class NumericQuestion(AbstractQuestion):
@@ -87,7 +123,7 @@ class NumericQuestion(AbstractQuestion):
     @staticmethod
     def parse_content_from_xml(question_content=None):
         return []
-    def validate(self, response) :
+    def valid_response(self, response) :
         try :
             v = float(response.get('response', False))
             return True
@@ -99,11 +135,7 @@ class TextQuestion(AbstractQuestion) :
     @staticmethod
     def parse_content_from_xml(question_content=None):
         return []
-    def validate(self, response) :
-        print "Hello";
-        print self;
-        print "Hello";
-        return True;
+    def valid_response(self, response) :
         return response.get('response', False)
 
 
