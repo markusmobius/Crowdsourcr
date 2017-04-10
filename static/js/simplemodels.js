@@ -77,7 +77,8 @@ var CType = Model.extend({
 	      };
     },
     serialize : function() {
-	      return {
+        //console.log(this.questionlist.serialize());
+        return {
 	          name : this.name,
 	          responses : this.questionlist.serialize()
 	      };	    
@@ -101,6 +102,44 @@ var CType = Model.extend({
     }
 });
 
+var checkSingleCondition = function (vals, condition) {
+    if (condition == null) { return false;}
+    var d = condition.split('!=');
+    if (d.length == 2) {
+        var key = d[0].trim();
+        var val = d[1].trim();
+        if (key in vals) {
+            return val !=vals[key];
+        }
+    }
+    else {
+        d = condition.split('==');
+        if (d.length == 2) {
+            var key = d[0].trim();
+            var val = d[1].trim();
+            if (key in vals) {
+                return val == vals[key];
+            }
+        }
+    }
+    return false;
+};
+var checkConditions = function (renderedquestions, holders) {
+    //collect question values
+    var vals = {};
+    for (var i = 0; i < renderedquestions.length; i++) {
+        vals[renderedquestions[i].varname] = renderedquestions[i].response();
+    }
+    for (var i = 0; i < renderedquestions.length; i++) {
+        //console.log(renderedquestions[i]);
+        if (checkSingleCondition(vals, renderedquestions[i].condition)) {
+            holders[i].hide();
+        }
+        else {
+            holders[i].show();
+        }
+    }
+}
 
 var QuestionList = Model.extend({
     constructor : function(questions) {
@@ -111,15 +150,21 @@ var QuestionList = Model.extend({
     },
     renderDisplay : function(el) {
         this.el = $(el);
-	      this.el.empty();
-        _.each(this.questions, function (q) {
-	          var question_holder = $(document.createElement('li'));	    
-	          var question = new Question(question_holder, q);
+	    this.el.empty();
+	    var rendered_ref = this.renderedquestions;
+	    var holders_ref = this.holders;
+	    _.each(this.questions, function (q) {
+              var question_holder = $(document.createElement('li'));
+              question_holder.change(function () {
+                  checkConditions(rendered_ref, holders_ref);
+              });
+              var question = new Question(question_holder, q);
 	          question.renderDisplay();
 	          this.el.append(question_holder);
 	          this.holders.push(question_holder);
 	          this.renderedquestions.push(question);
-	      }, this);
+        }, this);
+	    checkConditions(rendered_ref, holders_ref);
     },
     serialize : function() {
         return _.invoke(this.renderedquestions, 'serialize');
@@ -135,13 +180,18 @@ var QuestionList = Model.extend({
                 .value();
     },
     validate : function () {
-	      for (var i = 0; i < this.renderedquestions.length; i++) {
-	          if (!this.renderedquestions[i].validate()) {
+        //collect question values
+        var vals = {};
+        for (var i = 0; i < this.renderedquestions.length; i++) {
+            vals[this.renderedquestions[i].varname] = this.renderedquestions[i].response();
+        }
+        for (var i = 0; i < this.renderedquestions.length; i++) {
+            if (!checkSingleCondition(vals, this.renderedquestions[i].condition) && !this.renderedquestions[i].validate()){
 		            this.holders[i].addClass("question-invalid");
 		            return false;
-	          }
-	      }
-	      return true;
+	        }
+	    }
+	    return true;
     }
 });
 
@@ -167,6 +217,7 @@ var Question = Model.extend({
 	      new_question.questiontext = question.questiontext;
 	      new_question.helptext = question.helptext;
 	      new_question.varname = question.varname;
+          new_question.condition=question.condition;
 	      new_question.content = question.content;
 	      new_question.options = question.options;
 	      return new_question;
@@ -215,7 +266,7 @@ var TextQuestion = Question.extend({
     },
     renderDisplay : function() {
         this.el.empty();
-        this.el.html(_.template(this.display_template, this.serializeForDisplay()));
+        var q = this.el.html(_.template(this.display_template, this.serializeForDisplay()));
 	      this.renderHelpText();
     },
     validate : function () {
