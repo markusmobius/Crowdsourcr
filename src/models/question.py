@@ -1,4 +1,5 @@
 import re
+import validators
 
 class QTypeRegistry(type) :
     def __init__(cls, name, bases, dct) :
@@ -138,6 +139,12 @@ class TextQuestion(AbstractQuestion) :
     def valid_response(self, response) :
         return response.get('response', False)
 
+class URLQuestion(TextQuestion) :
+    typeName = 'url'
+    def valid_response(self, response) :
+        if not response.get('response', False):
+            return False
+        return validators.url(response.get('response', False), public = True)
 
 """
 class AbstractMultiQType(Question) :
