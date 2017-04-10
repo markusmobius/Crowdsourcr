@@ -190,8 +190,9 @@ With pip installed, now Python libraries may be installed:
 ::
 
  python -m pip install tornado
- python -m pip install pymongo
+ python -m pip install pymongo==2.5.2
  python -m pip install boto
+ python -m pip install docutils
 
 It may be necessary to specify version numbers if Crowdsourcer ends up
 not working later.  These commands install the newest versions of
