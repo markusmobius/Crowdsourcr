@@ -26,10 +26,11 @@ class CType(object) :
         """Validates a response for this module as given by JSON from the client."""
         questions = {q.varname : q for q in self.questions}
         valids = set()
-        for r in response['responses'] :
+        module_responses = response['responses']
+        for r in module_responses :
             if r.get('varname', None) not in questions :
                 return False
-            if not questions[r['varname']].validate(r) :
+            if not questions[r['varname']].validate(r, module_responses) :
                 return False
             valids.add(r['varname'])
         if valids != set(questions.iterkeys()) :
