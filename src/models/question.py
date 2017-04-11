@@ -24,12 +24,24 @@ class Question(object) :
                         return bonus
                 except:
                     raise Exception('Question bonus string %s improperly formatted.' % bonus)
+
+        def validate_bonusmultiplier(bonusmultiplier):
+            try:
+                bonusmultiplier = float(bonusmultiplier)
+            except:
+                raise Exception('bonus multiplier must be float')
+
+            if not bonusmultiplier > -1.0:
+                raise Exception('bonus multiplier must be larger than -1')
+            else:
+                return bonusmultiplier
+
         self.varname = varname
         self.questiontext = questiontext
         self.helptext = helptext
         self.options = options
         self.bonus = validate_bonus(bonus)
-        self.bonusmultiplier = bonusmultiplier
+        self.bonusmultiplier = validate_bonusmultiplier(bonusmultiplier)
         self.condition = condition
         self.valuetype = valuetype
     @classmethod
