@@ -27,8 +27,9 @@
         </question>
         <question>
           <varname>spelling_other</varname>
-		  <condition>spelling==other</condition>
-		  <bonusmultiplier>0.2</bonusmultiplier>
+		      <condition>spelling==other</condition>
+          <bonus>linear</bonus>
+		      <bonusmultiplier>0.2</bonusmultiplier>
           <questiontext>Please specify the spelling.</questiontext>
           <valuetype>text</valuetype>
         </question>
