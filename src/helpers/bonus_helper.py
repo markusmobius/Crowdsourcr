@@ -26,7 +26,7 @@ class LinearBonusType(BonusType) :
     @staticmethod
     def calculate_bonus(bonus_info, agreed, total) :
         consenters = max(0.0, agreed - 1.0)
-        amt = (1.0 + bonus_info['bonusmultiplier']) * (consenters / total) * max(total / (total - 1), 1)
+        amt = (1.0 + bonus_info['bonusmultiplier']) * (consenters / total) * (total / max((total - 1), 1))
         exp = '%s points for agreeing with %d of the %d other workers on a question with linear payment and a bonus multiplier of %s' % (amt, consenters, total - 1, (1 + bonus_info['bonusmultiplier']))
         return (amt, exp)
 
@@ -76,6 +76,8 @@ def calculate_raw_bonus_info(task_response_info) :
                         worker_bonus_info[workerid]['possible'] += (1.0 + bonus_info['bonusmultiplier'])
                         worker_bonus_info[workerid]['earned'] += bonus_amount
                         worker_bonus_info[workerid]['exp'].append(bonus_exp)
+    print worker_bonus_info
+
     return worker_bonus_info
 
 def normalize_bonus_info(worker_bonus_info) :
@@ -100,5 +102,8 @@ def normalize_bonus_info(worker_bonus_info) :
                               'rawpct' : worker_bonus_percent[a]['pct'],
                               'best' : max_bonus_percent}
                             for a in worker_bonus_percent}
+
+    print worker_bonus_percent
+
     return worker_bonus_percent
 
