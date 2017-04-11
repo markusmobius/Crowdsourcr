@@ -117,7 +117,7 @@
                               mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
                           }
                           if (data.turkinfo.running) {
-                              var amazonLink = "https://requester.mturk.com/mturk/manageHIT?HITId=" + data.turkinfo.hitid;
+                              var amazonLink = data.turkinfo.admin_host + "/mturk/manageHIT?HITId=" + data.turkinfo.hitid;
                               $('#admin-turk-info').append('<p>Currently running with HITId <a href="' + amazonLink + '" target="_blank">' + data.turkinfo.hitid + '</a>.</p>');
                               $('#admin-begin-run').hide();
                               $('#admin-end-run').show();
@@ -126,7 +126,7 @@
                               $('#download-bonusinfo-btn').attr("disabled", true);
                               $('#download-bonusinfo-btn-title').attr("title", "Stop the experiment to ensure MTurk workers are paid their bonuses.");
                           } else {
-                              var amazonLink = "https://requester.mturk.com/mturk/manageHITs";
+                              var amazonLink = data.turkinfo.admin_host + "/mturk/manageHITs";
                               $('#admin-turk-info').append('<p> Not currently running. <a href="' + amazonLink + '" target="_blank">Manage HITs</a></p>');
                               $('#admin-end-run').hide();
                               $('#admin-begin-run').show();

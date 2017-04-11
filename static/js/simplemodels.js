@@ -109,7 +109,7 @@ var checkSingleCondition = function (vals, condition) {
         var key = d[0].trim();
         var val = d[1].trim();
         if (key in vals) {
-            return val !=vals[key];
+            return val != vals[key];
         }
     }
     else {
@@ -208,6 +208,9 @@ var Question = Model.extend({
 	      case 'text':
 	          new_question = new TextQuestion(el, question);
 	          break;
+	      case 'url':
+	          new_question = new URLQuestion(el, question);
+	          break;
 	      }
 
 	      if (new_question === undefined)
@@ -217,7 +220,7 @@ var Question = Model.extend({
 	      new_question.questiontext = question.questiontext;
 	      new_question.helptext = question.helptext;
 	      new_question.varname = question.varname;
-          new_question.condition=question.condition;
+          new_question.condition = question.condition;
 	      new_question.content = question.content;
 	      new_question.options = question.options;
 	      return new_question;
@@ -276,6 +279,17 @@ var TextQuestion = Question.extend({
 	      return this.el.find('textarea:first').val();
     }
 });
+
+var URLQuestion = TextQuestion.extend({
+    validate : function () {
+    	if(this.response() == "") {
+    		return false;
+    	} else{
+    		return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})).?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test( this.response() );
+    	}
+    }
+});
+
 
 var NumericQuestion = Question.extend({
     constructor : function(el, question) {
