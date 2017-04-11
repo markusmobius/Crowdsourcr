@@ -61,11 +61,15 @@ class Question(object) :
         if not self.bonus:
             return None
         elif self.bonus == 'linear':
-            return { 'type' : 'linear' }
+            bonus_dict = { 'type' : 'linear' }
         else:
             split_bonus = self.bonus.split(':')
-            return { 'type' : 'threshold',
-                     'threshold' : int(split_bonus[1]) }
+            bonus_dict =  { 'type' : 'threshold',
+                            'threshold' : int(split_bonus[1]) }
+
+        bonus_dict['bonusmultiplier'] = self.bonusmultiplier
+        return bonus_dict
+
     def parse_condition(self, condition_string):
         """
         The only conditions that are allowed use "==" or "!=". Whitespace around
