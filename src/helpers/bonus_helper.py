@@ -26,16 +26,16 @@ class LinearBonusType(BonusType) :
     @staticmethod
     def calculate_bonus(bonus_info, agreed, total) :
         consenters = max(0.0, agreed - 1.0)
-        amt = consenters / total
-        exp = '%s points for agreeing with %d of %d workers on a question with linear payment' % (amt, consenters, total)
+        amt = (1.0 + bonus_info['bonusmultiplier']) * (consenters / total)
+        exp = '%s points for agreeing with %d of %d workers on a question with linear payment and a bonus multiplier of %d' % (amt, consenters, total, bonus_info['bonusmultiplier'])
         return (amt, exp)
 
 class ThreholdBonusType(BonusType) :
     bonusType = 'threshold'
     @staticmethod
     def calculate_bonus(bonus_info, agreed, total) :
-        amt = 1.0 if 100.0 * agreed / total >= bonus_info['threshold'] else 0.0
-        exp = '%s points for agreeing with %d of %d workers on a question with threshold payment set at %d' % (amt, agreed, total, bonus_info['threshold'])
+        amt = (1.0 + bonus_info['bonusmultiplier']) if 100.0 * agreed / total >= bonus_info['threshold'] else 0.0
+        exp = '%s points for agreeing with %d of %d workers on a question with threshold payment set at %d and a bonus multiplier of %d' % (amt, agreed, total, bonus_info['threshold'], bonus_info['bonusmultiplier'])
         return (amt, exp)
 
         
