@@ -29,6 +29,7 @@ class MTurkConnection(object):
         self.running = running
         self.hitpayment = hitpayment
         self.host = 'mechanicalturk.amazonaws.com' if environment == 'production' else 'mechanicalturk.sandbox.amazonaws.com'
+        self.admin_host = 'https://requester.mturk.com' if environment == 'production' else 'https://requestersandbox.mturk.com'
         self.bonus = float(bonus)
         self.mturk_conn = boto.mturk.connection.MTurkConnection(aws_access_key_id=self.access_key,
                                                                 aws_secret_access_key=self.secret_key,
@@ -51,6 +52,7 @@ class MTurkConnection(object):
                  'secret_key' : self.secret_key,
                  'email' : self.email,
                  'running' : self.running,
+                 'admin_host': self.admin_host,
                  'hitpayment' : self.hitpayment,
                  'hitid' : self.hitid,
                  'title' : self.title,
