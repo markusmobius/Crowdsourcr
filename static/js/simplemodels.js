@@ -109,7 +109,7 @@ var checkSingleCondition = function (vals, condition) {
         var key = d[0].trim();
         var val = d[1].trim();
         if (key in vals) {
-            return val !=vals[key];
+            return val != vals[key];
         }
     }
     else {
@@ -220,7 +220,7 @@ var Question = Model.extend({
 	      new_question.questiontext = question.questiontext;
 	      new_question.helptext = question.helptext;
 	      new_question.varname = question.varname;
-          new_question.condition=question.condition;
+          new_question.condition = question.condition;
 	      new_question.content = question.content;
 	      new_question.options = question.options;
 	      return new_question;
