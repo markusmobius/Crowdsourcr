@@ -25,7 +25,9 @@ class Question(object) :
                 except:
                     raise Exception('Question bonus string %s improperly formatted.' % bonus)
 
-        def validate_bonusmultiplier(bonusmultiplier):
+        def validate_bonusmultiplier(bonusmultiplier, bonus):
+            if bonus is None and (bonusmultiplier is not None and float(bonusmultiplier) != 0.0):
+                raise Exception("Bonus multiplier specified without bonus type")
             try:
                 bonusmultiplier = float(bonusmultiplier)
             except:
@@ -41,7 +43,7 @@ class Question(object) :
         self.helptext = helptext
         self.options = options
         self.bonus = validate_bonus(bonus)
-        self.bonusmultiplier = validate_bonusmultiplier(bonusmultiplier)
+        self.bonusmultiplier = validate_bonusmultiplier(bonusmultiplier, bonus)
         self.condition = condition
         self.valuetype = valuetype
     @classmethod
