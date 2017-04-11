@@ -89,7 +89,8 @@ def normalize_bonus_info(worker_bonus_info) :
     if len(worker_bonus_percent) > 0 :
         best_worker = max(worker_bonus_percent.iterkeys(), 
                           key=(lambda key: worker_bonus_percent[key]['pct']))
-        max_bonus_percent = worker_bonus_percent[best_worker]['pct']
+        if worker_bonus_percent[best_worker]['pct'] > 0.0:
+            max_bonus_percent = worker_bonus_percent[best_worker]['pct']
     # scale by maximum
     worker_bonus_percent = {a.upper().strip() : 
                             { 'pct' : worker_bonus_percent[a]['pct'] / max_bonus_percent,
