@@ -73,7 +73,7 @@ def calculate_raw_bonus_info(task_response_info) :
                         worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
                                                                 'possible' : 0.0,
                                                                 'exp' : []})
-                        worker_bonus_info[workerid]['possible'] += 1.0
+                        worker_bonus_info[workerid]['possible'] += (1.0 + bonus_info['bonusmultiplier'])
                         worker_bonus_info[workerid]['earned'] += bonus_amount
                         worker_bonus_info[workerid]['exp'].append(bonus_exp)
     return worker_bonus_info
