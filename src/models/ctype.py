@@ -21,6 +21,15 @@ class CType(object) :
             filtered_info[varname] = response_info[varname]
             filtered_info[varname]['__bonus__'] = bonus_questions[varname]
         return filtered_info
+
+    def sanitize_response(self, response) :
+        questions = {q.varname : q for q in self.questions}
+
+        sanitize_response = response
+        module_responses = sanitize_response['responses']
+        for r in module_responses :
+            r = questions[r['varname']].sanitize_response(r) 
+        return sanitize_response
                 
     def validate(self, response) :
         """Validates a response for this module as given by JSON from the client."""

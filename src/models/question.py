@@ -96,6 +96,8 @@ class Question(object) :
                 return True
             else:
                 return False
+    def sanitize_response(self, response):
+        return response
     def valid_response(self, response):
         return True
     def validate(self, response, module_responses) :
@@ -154,11 +156,26 @@ class TextQuestion(AbstractQuestion) :
     @staticmethod
     def parse_content_from_xml(question_content=None):
         return []
+    def sanitize_response(self, response):
+        response['response'] = response['response'].strip()
+        return response
     def valid_response(self, response) :
         return response.get('response', False)
 
 class URLQuestion(TextQuestion) :
     typeName = 'url'
+    @staticmethod
+    def stem_url(url):
+        # strip protocols
+        # url = re.sub(r"^https?:\/\/(www.)?", "", url)
+        # strip trailing slashes
+        url = re.sub(r"\/$", "", url)
+        return url
+    def sanitize_response(self, response):
+        # run all the standard text response cleaning before stripping the URL down
+        response['response'] = super(TextQuestion, self).sanitize_response(response['response'])
+        response['response'] = self.stem_url(response['response'])
+        return response
     def valid_response(self, response) :
         if not response.get('response', False):
             return False
