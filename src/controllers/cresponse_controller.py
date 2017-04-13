@@ -40,6 +40,15 @@ class CResponseController(object):
                     module_responses[mod_name][response['varname']][response['response']].append(row['workerid'])
         return module_responses
 
+    def sanitize_response(self, taskid, response, task_controller, module_controller):
+        task = task_controller.get_task_by_id(taskid)
+
+        cleaned_responses = []
+        for m in response :
+            module = module_controller.get_by_name(m['name'])
+            cleaned_responses.append(module.sanitize_response(m))
+        return cleaned_responses
+
     def validate(self, taskid, response, task_controller, module_controller) :
         task = task_controller.get_task_by_id(taskid)
 

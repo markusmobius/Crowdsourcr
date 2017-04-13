@@ -473,6 +473,12 @@ class CResponseHandler(BaseHandler):
             taskindex = existing_status['taskindex']
             taskid = chit.tasks[taskindex]
             #task = self.ctask_controller.get_task_by_id(taskid)
+
+            # clean the response
+            response = self.cresponse_controller.sanitize_response(taskid, response,
+                                                                self.ctask_controller,
+                                                                self.ctype_controller)
+
             valid = self.cresponse_controller.validate(taskid, response,
                                                        self.ctask_controller,
                                                        self.ctype_controller)
