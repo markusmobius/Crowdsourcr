@@ -109,7 +109,11 @@ var checkSingleCondition = function (vals, condition) {
         var key = d[0].trim();
         var val = d[1].trim();
         if (key in vals) {
-            return val != vals[key];
+        	if(typeof vals[key] === "undefined") {
+        		return false;
+        	} else {
+            	return val != vals[key];
+        	}
         }
     }
     else {
@@ -118,7 +122,11 @@ var checkSingleCondition = function (vals, condition) {
             var key = d[0].trim();
             var val = d[1].trim();
             if (key in vals) {
-                return val == vals[key];
+        		if(typeof vals[key] === "undefined") {
+        			return false;
+        		} else {
+                	return val == vals[key];
+            	}
             }
         }
     }
