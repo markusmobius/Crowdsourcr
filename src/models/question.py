@@ -166,8 +166,8 @@ class URLQuestion(TextQuestion) :
     typeName = 'url'
     @staticmethod
     def stem_url(url):
-        # strip protocols
-        # url = re.sub(r"^https?:\/\/(www.)?", "", url)
+        # strip protocols and 'www'
+        url = re.sub(r"^https?:\/\/(www.)?", "", url)
         # strip trailing slashes
         url = re.sub(r"\/$", "", url)
         return url
