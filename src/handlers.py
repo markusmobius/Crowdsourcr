@@ -474,17 +474,18 @@ class CResponseHandler(BaseHandler):
             taskid = chit.tasks[taskindex]
             #task = self.ctask_controller.get_task_by_id(taskid)
 
-            # clean the response
-            response = self.cresponse_controller.sanitize_response(taskid, response,
-                                                                self.ctask_controller,
-                                                                self.ctype_controller)
-
             valid = self.cresponse_controller.validate(taskid, response,
                                                        self.ctask_controller,
                                                        self.ctype_controller)
             if not valid :
                 return self.return_json({'error' : True,
                                          'explanation' : 'invalid_response'})
+
+            # sanitize the response
+            response = self.cresponse_controller.sanitize_response(taskid, response,
+                                                                   self.ctask_controller,
+                                                                   self.ctype_controller)
+
 
             self.logging.info("%s submitted response for task_index %d on HIT %s" % (worker_id, taskindex, hitid))
             self.cresponse_controller.create({'submitted' : datetime.datetime.utcnow(),
