@@ -502,6 +502,11 @@ class CResponseHandler(BaseHandler):
 
 class CSVDownloadHandler(BaseHandler):
     def get(self):
+        """
+        takes all completed hits and puts together two tab-separated files:
+        - task_submission_times.tsv: contains timestamps at which tasks were submitted
+        - question_responses.tsv: contains the responses to all questions
+        """
         completed_workers = self.chit_controller.get_workers_with_completed_hits()
 
         task_submission_times_output = StringIO.StringIO()
