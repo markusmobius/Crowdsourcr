@@ -19,6 +19,8 @@ import urllib
 import csv
 import StringIO
 import app_config
+from io import BytesIO
+from zipfile import ZipFile
  
 from tornado.options import define, options
  
@@ -500,17 +502,26 @@ class CResponseHandler(BaseHandler):
 
 class CSVDownloadHandler(BaseHandler):
     def get(self):
-        self.set_header ('Content-Type', 'text/csv')
-        self.set_header ('Content-Disposition', 'attachment; filename=data.csv')
-
         completed_workers = self.chit_controller.get_workers_with_completed_hits()
 
-        output = StringIO.StringIO()
-        csvwriter = csv.writer(output, delimiter='\t')
+        task_submission_times_output = StringIO.StringIO()
+        task_submission_times_csvwriter = csv.writer(task_submission_times_output, delimiter='\t')
+        self.cresponse_controller.write_task_submission_times_to_csv(task_submission_times_csvwriter, completed_workers=completed_workers)
 
-        self.cresponse_controller.write_response_to_csv(csvwriter, completed_workers=completed_workers)
+        question_responses_output = StringIO.StringIO()
+        question_responses_csvwriter = csv.writer(question_responses_output, delimiter='\t')
+        self.cresponse_controller.write_question_responses_to_csv(question_responses_csvwriter, completed_workers=completed_workers)
 
-        self.finish(output.getvalue())
+        zip_name = "data.zip"
+        f = BytesIO()
+        with ZipFile(f, "w") as zf:
+            zf.writestr('task_submission_times.tsv', task_submission_times_output.getvalue())
+            zf.writestr('question_responses.tsv', question_responses_output.getvalue())
+
+        self.set_header('Content-Type', 'application/zip')
+        self.set_header("Content-Disposition", "attachment; filename={}".format(zip_name))
+
+        self.finish(f.getvalue())
 
 class DocumentationHandler(BaseHandler) :
     """Serves reStructuredText files from the /doc directory.  If
