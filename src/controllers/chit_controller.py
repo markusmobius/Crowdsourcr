@@ -75,7 +75,11 @@ class CHITController(object):
         return [r['hitid'] for r in d]
     def get_workers_with_completed_hits(self) :
         d = self.db.chits.find({'num_completed_hits' : {'$gte' : 1}}, {'completed_hits' : 1})
-        return [r['completed_hits'][0]['worker_id'] for r in d]
+        worker_ids = set()
+        for r in d:
+            for hit in r['completed_hits']:
+                worker_ids.add(hit['worker_id'])
+        return worker_ids
     # static wasn't working ... ?
     # utility method called by MTurkConnecitonController.make_payments
     @classmethod
