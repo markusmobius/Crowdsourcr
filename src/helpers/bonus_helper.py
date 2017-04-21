@@ -39,11 +39,11 @@ class ThreholdBonusType(BonusType) :
         return (amt, exp)
 
         
-def calculate_worker_bonus_info(task_response_info) :
-    raw_bonus = calculate_raw_bonus_info(task_response_info)
+def calculate_worker_bonus_info(task_response_info, evaluated_conditions) :
+    raw_bonus = calculate_raw_bonus_info(task_response_info, evaluated_conditions)
     return normalize_bonus_info(raw_bonus)
 
-def calculate_raw_bonus_info(task_response_info) :
+def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
     '''Gets responses in structure task -> module -> varname ->
     response_value -> [workerids] from RecruitingEndHandler and in
     turn CResponseController.all_responses_by_task(task).  '''
@@ -74,8 +74,12 @@ def calculate_raw_bonus_info(task_response_info) :
                                                                 'possible' : 0.0,
                                                                 'exp' : []})
                         worker_bonus_info[workerid]['possible'] += (1.0 + bonus_info['bonusmultiplier'])
-                        worker_bonus_info[workerid]['earned'] += bonus_amount
-                        worker_bonus_info[workerid]['exp'].append(bonus_exp)
+                        if(evaluated_conditions[task][module][workerid][varname]):
+                            worker_bonus_info[workerid]['earned'] += bonus_amount
+                            worker_bonus_info[workerid]['exp'].append(bonus_exp)
+                        else:
+                            bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
+                            worker_bonus_info[workerid]['exp'].append(bonus_exp)
     print worker_bonus_info
 
     return worker_bonus_info

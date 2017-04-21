@@ -21,6 +21,11 @@ class CType(object) :
             filtered_info[varname] = response_info[varname]
             filtered_info[varname]['__bonus__'] = bonus_questions[varname]
         return filtered_info
+    def evaluate_conditions(self, response_info={}):
+        worker_conditions = {}
+        for workerid, responses in response_info.iteritems():
+            worker_conditions[workerid] = {q.varname : q.satisfies_condition(responses) for q in self.questions}
+        return worker_conditions
 
     def sanitize_response(self, response) :
         questions = {q.varname : q for q in self.questions}

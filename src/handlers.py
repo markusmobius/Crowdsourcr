@@ -246,7 +246,13 @@ class RecruitingEndHandler(BaseHandler):
                                       self.cresponse_controller.all_responses_by_task(taskid=task,
                                                                                       workerids=completed_workers))
                                   for task in self.ctask_controller.get_task_ids()}
-            worker_bonus_info =  helpers.calculate_worker_bonus_info(task_response_info)
+
+            evaluated_conditions = {task : self.ctype_controller.evaluate_module_conditions(
+                                    self.cresponse_controller.worker_responses_by_task(taskid=task,
+                                                                                       workerids=completed_workers))
+                                    for task in self.ctask_controller.get_task_ids()}
+
+            worker_bonus_info =  helpers.calculate_worker_bonus_info(task_response_info, evaluated_conditions)
             self.db.bonus_info.drop()
             for wid, info in worker_bonus_info.iteritems() :
                 self.db.bonus_info.insert({'workerid' : wid,
