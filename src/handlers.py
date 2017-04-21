@@ -72,7 +72,7 @@ class BaseHandler(tornado.web.RequestHandler):
         admin = self.admin_controller.get_by_email(self.get_secure_cookie("admin_email"))
     def return_json(self, data):
         self.set_header('Content-Type', 'application/json')
-        self.finish(tornado.escape.json_encode(data))
+        self.finish(json.dumps(data, indent = 4, sort_keys = True))
 
 class MainHandler(BaseHandler):
     def get(self):
