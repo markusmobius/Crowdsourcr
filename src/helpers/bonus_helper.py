@@ -26,16 +26,16 @@ class LinearBonusType(BonusType) :
     @staticmethod
     def calculate_bonus(bonus_info, agreed, total) :
         consenters = max(0.0, agreed - 1.0)
-        amt = (1.0 + bonus_info['bonusmultiplier']) * (consenters / total) * (total / max((total - 1.0), 1.0))
-        exp = '%s points for agreeing with %d of the %d other workers on a question with linear payment and a bonus multiplier of %s' % (amt, consenters, total - 1, (1 + bonus_info['bonusmultiplier']))
+        amt = bonus_info['bonusweight'] * (consenters / total) * (total / max((total - 1.0), 1.0))
+        exp = '%s points for agreeing with %d of the %d other workers on a question with linear payment and a bonus weight of %s' % (amt, consenters, total - 1, bonus_info['bonusweight'])
         return (amt, exp)
 
 class ThreholdBonusType(BonusType) :
     bonusType = 'threshold'
     @staticmethod
     def calculate_bonus(bonus_info, agreed, total) :
-        amt = (1.0 + bonus_info['bonusmultiplier']) if 100.0 * agreed / total >= bonus_info['threshold'] else 0.0
-        exp = '%s points for agreeing with %d of %d workers on a question with threshold payment set at %d and a bonus multiplier of %s' % (amt, agreed, total, bonus_info['threshold'], (1.0 + bonus_info['bonusmultiplier']))
+        amt = bonus_info['bonusweight'] if 100.0 * agreed / total >= bonus_info['threshold'] else 0.0
+        exp = '%s points for agreeing with %d of %d workers on a question with threshold payment set at %d and a bonus weight of %s' % (amt, agreed, total, bonus_info['threshold'], bonus_info['bonusweight'])
         return (amt, exp)
 
         
@@ -73,7 +73,7 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
                         worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
                                                                 'possible' : 0.0,
                                                                 'exp' : []})
-                        worker_bonus_info[workerid]['possible'] += (1.0 + bonus_info['bonusmultiplier'])
+                        worker_bonus_info[workerid]['possible'] += bonus_info['bonusweight']
                         if(evaluated_conditions[task][module][workerid][varname]):
                             worker_bonus_info[workerid]['earned'] += bonus_amount
                             worker_bonus_info[workerid]['exp'].append(bonus_exp)

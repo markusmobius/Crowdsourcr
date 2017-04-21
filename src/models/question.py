@@ -10,7 +10,7 @@ class QTypeRegistry(type) :
 class Question(object) :
     __metaclass__ = QTypeRegistry
     qtype_subclasses = {}
-    def __init__(self, varname=None, condition=None, questiontext=None, helptext=None, options=None, valuetype=None, bonus=None, bonusmultiplier=None):
+    def __init__(self, varname=None, condition=None, questiontext=None, helptext=None, options=None, valuetype=None, bonus=None, bonusweight=None):
         def validate_bonus(bonus) :
             if bonus == None or bonus == 'linear':
                 return bonus
@@ -25,25 +25,26 @@ class Question(object) :
                 except:
                     raise Exception('Question bonus string %s improperly formatted.' % bonus)
 
-        def validate_bonusmultiplier(bonusmultiplier, bonus=bonus):
-            if bonus is None and (bonusmultiplier is not None and float(bonusmultiplier) != 0.0):
-                raise Exception("Bonus multiplier specified without a bonus type for question %s" % self.varname)
+        def validate_bonusweight(bonusweight, bonus=bonus):
             try:
-                bonusmultiplier = float(bonusmultiplier)
+                bonusweight = float(bonusweight)
             except:
-                raise Exception('bonus multiplier for question %s must be float' % self.varname)
+                raise Exception('bonus weight for question %s must be coercible to float' % self.varname)
 
-            if not bonusmultiplier > -1.0:
-                raise Exception('bonus multiplier for question %s must be larger than -1' % self.varname)
+            if bonus is None and (bonusweight is not None and bonusweight != 1.0):
+                raise Exception("Bonus weight specified without a bonus type for question %s" % self.varname)
+
+            if not bonusweight > 0:
+                raise Exception('bonus weight for question %s must be larger than 0' % self.varname)
             else:
-                return bonusmultiplier
+                return bonusweight
 
         self.varname = varname
         self.questiontext = questiontext
         self.helptext = helptext
         self.options = options
         self.bonus = validate_bonus(bonus)
-        self.bonusmultiplier = validate_bonusmultiplier(bonusmultiplier)
+        self.bonusweight = validate_bonusweight(bonusweight)
         self.condition = condition
         self.valuetype = valuetype
     @classmethod
@@ -53,7 +54,7 @@ class Question(object) :
         return {'valuetype' : self.valuetype,
                 'varname' : self.varname,
 				'condition' : self.condition,
-				'bonusmultiplier' : self.bonusmultiplier,
+				'bonusweight' : self.bonusweight,
                 'questiontext' : self.questiontext,
                 'helptext' : self.helptext,
                 'options' : self.options,
@@ -69,7 +70,7 @@ class Question(object) :
             bonus_dict =  { 'type' : 'threshold',
                             'threshold' : int(split_bonus[1]) }
 
-        bonus_dict['bonusmultiplier'] = self.bonusmultiplier
+        bonus_dict['bonusweight'] = self.bonusweight
         return bonus_dict
 
     def parse_condition(self, condition_string):

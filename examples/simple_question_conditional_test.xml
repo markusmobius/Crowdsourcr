@@ -6,6 +6,7 @@
       <questions>
         <question>
           <varname>spelling</varname>		 
+          <bonus>threshold:50</bonus>
           <questiontext>Please indicate which spelling is correct:</questiontext>
           <valuetype>categorical</valuetype>
           <content>
@@ -28,8 +29,8 @@
         <question>
           <varname>spelling_other</varname>
 		      <condition>spelling==other</condition>
-          <bonus>linear</bonus>
-		      <bonusmultiplier>0.2</bonusmultiplier>
+          <bonus>threshold:50</bonus>
+		      <bonusweight>2</bonusweight>
           <questiontext>Please specify the spelling.</questiontext>
           <valuetype>text</valuetype>
         </question>
