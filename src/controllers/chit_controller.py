@@ -79,7 +79,7 @@ class CHITController(object):
         for r in d:
             for hit in r['completed_hits']:
                 worker_ids.add(hit['worker_id'])
-        return worker_ids
+        return list(worker_ids)
     # static wasn't working ... ?
     # utility method called by MTurkConnecitonController.make_payments
     @classmethod
