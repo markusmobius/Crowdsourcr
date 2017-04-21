@@ -30,7 +30,7 @@
           <varname>spelling_other</varname>
 		      <condition>spelling==other</condition>
           <bonus>threshold:50</bonus>
-		      <bonusweight>2</bonusweight>
+		      <bonuspoints>2</bonuspoints>
           <questiontext>Please specify the spelling.</questiontext>
           <valuetype>text</valuetype>
         </question>

@@ -29,7 +29,7 @@ class XMLTask(object) :
                                                 'questiontext' : question.find('questiontext').text,
                                                 'helptext' : get_help_text(question),
                                                 'bonus' : question.find('bonus').text if question.find('bonus') != None else None,
-                                                'bonusweight' : float(question.find('bonusweight').text) if question.find('bonusweight') != None else 1.0,
+                                                'bonuspoints' : float(question.find('bonuspoints').text) if question.find('bonuspoints') != None else 0.0,
                                                 'valuetype' : question.find('valuetype').text,
                                                 'options' : self.get_options(question),
                                                 'content' : Question.parse_content_from_xml(question.find('valuetype').text,
