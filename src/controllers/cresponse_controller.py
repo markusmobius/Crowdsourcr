@@ -54,6 +54,23 @@ class CResponseController(object):
                     module_responses[mod_name][response['varname']].setdefault(response['response'], [])
                     module_responses[mod_name][response['varname']][response['response']].append(row['workerid'])
         return module_responses
+    def worker_responses_by_task(self, taskid=None, workerids=[]):
+        """
+        # task -> module -> workerid -> {varname: response_value}
+        """
+        d = self.db.cresponses.find({'taskid' : taskid,
+                                     'workerid' : {'$in' : workerids}}, 
+                                    {'workerid' : 1, 
+                                     'response' : 1})
+        module_responses = {} # module -> workerid -> [{'varname': varname, 'response': response}]
+        for row in d:
+            for resp in row['response']:
+                mod_name = resp['name']
+                module_responses.setdefault(mod_name, {})
+                for response in resp['responses']:
+                    module_responses[mod_name].setdefault(row['workerid'], [])
+                    module_responses[mod_name][row['workerid']].append({'varname': response['varname'], 'response': response['response']})
+        return module_responses
 
     def sanitize_response(self, taskid, response, task_controller, module_controller):
         task = task_controller.get_task_by_id(taskid)
