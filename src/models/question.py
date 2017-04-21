@@ -10,7 +10,7 @@ class QTypeRegistry(type) :
 class Question(object) :
     __metaclass__ = QTypeRegistry
     qtype_subclasses = {}
-    def __init__(self, varname=None, condition=None, questiontext=None, helptext=None, options=None, valuetype=None, bonus=None, bonusweight=None):
+    def __init__(self, varname=None, condition=None, questiontext=None, helptext=None, options=None, valuetype=None, bonus=None, bonuspoints=None):
         def validate_bonus(bonus) :
             if bonus == None or bonus == 'linear':
                 return bonus
@@ -25,26 +25,26 @@ class Question(object) :
                 except:
                     raise Exception('Question bonus string %s improperly formatted.' % bonus)
 
-        def validate_bonusweight(bonusweight, bonus=bonus):
+        def validate_bonuspoints(bonuspoints, bonus=bonus):
             try:
-                bonusweight = float(bonusweight)
+                bonuspoints = float(bonuspoints)
             except:
-                raise Exception('bonus weight for question %s must be coercible to float' % self.varname)
+                raise Exception('bonus points for question %s must be coercible to float' % self.varname)
 
-            if bonus is None and (bonusweight is not None and bonusweight != 1.0):
-                raise Exception("Bonus weight specified without a bonus type for question %s" % self.varname)
+            if bonus is None and (bonuspoints is not None and bonuspoints != 0.0):
+                raise Exception("Bonus points specified without a bonus type for question %s" % self.varname)
 
-            if not bonusweight > 0:
-                raise Exception('bonus weight for question %s must be larger than 0' % self.varname)
+            if not bonuspoints >= 0:
+                raise Exception('bonus points for question %s must be larger than 0' % self.varname)
             else:
-                return bonusweight
+                return bonuspoints
 
         self.varname = varname
         self.questiontext = questiontext
         self.helptext = helptext
         self.options = options
         self.bonus = validate_bonus(bonus)
-        self.bonusweight = validate_bonusweight(bonusweight)
+        self.bonuspoints = validate_bonuspoints(bonuspoints)
         self.condition = condition
         self.valuetype = valuetype
     @classmethod
@@ -54,7 +54,7 @@ class Question(object) :
         return {'valuetype' : self.valuetype,
                 'varname' : self.varname,
 				'condition' : self.condition,
-				'bonusweight' : self.bonusweight,
+				'bonuspoints' : self.bonuspoints,
                 'questiontext' : self.questiontext,
                 'helptext' : self.helptext,
                 'options' : self.options,
@@ -70,7 +70,7 @@ class Question(object) :
             bonus_dict =  { 'type' : 'threshold',
                             'threshold' : int(split_bonus[1]) }
 
-        bonus_dict['bonusweight'] = self.bonusweight
+        bonus_dict['bonuspoints'] = self.bonuspoints
         return bonus_dict
 
     def parse_condition(self, condition_string):
