@@ -893,3 +893,84 @@ When specified, the question will only be shown to Turkers if the condition
 is satisfied.
 
 
+Bonus
+---------
+
+Crowdsourcer can automatically award bonuses conditional on agreement 
+between Turkers on each task. This allows one to reward Turkers for good
+performance in multiple entry tasks.
+
+Internally crowdsourcer uses ``bonus points`` as a currency, which are 
+translated into a dollar amount after the conclusion of a run. The maximal
+dollar bonus payment can be specified in the admin interface. After a run
+is finished crowdsourcer will tally up the number of bonus points awarded
+for each question and the number of bonus points that could have been 
+awarded, divide the two and pay out a bonus that's proportional to the
+share of bonus points actually awarded.
+
+
+Specifying a bonus
++++++++++++++++
+
+Bonuses can be specified on a per-question basis by adding a ``<bonus>``
+element to the XML file. By default the maximal number of bonus
+points awarded per question which has an associated ``<bonus>`` will be
+one. This can be changed by adding a ``<bonuspoints>`` element.
+
+ <question>
+   <varname>article_type_categorial</varname>
+   <questiontext>What kind of article is this?</questiontext>
+   <valuetype>categorical</valuetype>
+   <content>
+     <categories>
+       <category>
+         <text>News article</text>
+         <value>news</value>
+       </category>
+       <category>
+         <text>Editorial</text>
+         <value>editorial</value>
+       </category>
+       <category>
+         <text>Other</text>
+         <value>other</value>
+       </category>
+     </categories>
+   </content>
+ </question>
+ <question>
+   <varname>article_type_other</varname>
+   <questiontext>What other kind is it?</questiontext>
+   <valuetype>text</valuetype>
+   <bonus>threshold:50</bonus>
+   <bonuspoints>2</bonuspoints>
+ </question>
+
+
+Bonus schemes
++++++++++++++++
+
+Two kinds of bonus schemes are available:
+
+- linear: a number of bonus points that's a linear function of the share
+  of other Turkers who gave the same answer to the task. To use this scheme
+  add ``<bonus>linear</bonus>`` to the XML specification
+- threshold: an all-or-nothing scheme where the bonus is awarded only if
+  the share of Turkers who gave the same answer to the task (weakly 
+  exceeds a threshold. To use this scheme add 
+  ``<bonus>threshold:50</bonus>`` to the XML specification.
+
+
+Bonus calculation
++++++++++++++++
+
+As described above, crowdsourcer will tally up the number of bonus
+points awarded for each question according to the specified scheme,
+tally up the number of bonus points that could have been awarded, 
+divide the two and pay out a bonus that's proportional to the
+share of bonus points actually awarded.
+
+Bonuses will never be awarded for conditional questions whose condition
+is not satisfied. However, these questions will enter the calculation of
+potential bonus points.
+
