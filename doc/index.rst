@@ -857,6 +857,7 @@ The display of questions can be made conditional on the answer to other
 questions by specifying a ``<condition>``:
 
 ::
+
  <question>
    <varname>article_type_categorial</varname>
    <questiontext>What kind of article is this?</questiontext>
@@ -917,6 +918,8 @@ Bonuses can be specified on a per-question basis by adding a ``<bonus>``
 element to the XML file. By default the maximal number of bonus
 points awarded per question which has an associated ``<bonus>`` will be
 one. This can be changed by adding a ``<bonuspoints>`` element.
+
+::
 
  <question>
    <varname>article_type_categorial</varname>
