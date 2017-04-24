@@ -847,3 +847,49 @@ example:
      </categories>
    </content>
  </question>
+
+
+Conditional Questions
+---------
+
+The display of questions can be made conditional on the answer to other 
+questions by specifying a ``<condition>``:
+
+::
+ <question>
+   <varname>article_type_categorial</varname>
+   <questiontext>What kind of article is this?</questiontext>
+   <valuetype>categorical</valuetype>
+   <content>
+     <categories>
+       <category>
+         <text>News article</text>
+         <value>news</value>
+       </category>
+       <category>
+         <text>Editorial</text>
+         <value>editorial</value>
+       </category>
+       <category>
+         <text>Other</text>
+         <value>other</value>
+       </category>
+     </categories>
+   </content>
+ </question>
+ <question>
+   <varname>article_type_other</varname>
+   <questiontext>What other kind is it?</questiontext>
+   <valuetype>text</valuetype>
+   <condition>article_type_categorial==other</condition>
+ </question>
+
+The condition must be either an equality (``==``) or an inequality 
+(``!=``) with the ``varname`` of another question on the left-hand
+side and a valid ``value`` for that question on the right-hand
+side.
+
+When specified, the question will only be shown to Turkers if the condition
+is satisfied.
+
+
