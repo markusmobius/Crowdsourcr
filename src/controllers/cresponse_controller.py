@@ -50,6 +50,8 @@ class CResponseController(object):
                 mod_name = resp['name']
                 module_responses.setdefault(mod_name, {})
                 for response in resp['responses']:
+                    if 'response' not in response:
+                        continue
                     module_responses[mod_name].setdefault(response['varname'], {})
                     module_responses[mod_name][response['varname']].setdefault(response['response'], [])
                     module_responses[mod_name][response['varname']][response['response']].append(row['workerid'])
@@ -69,7 +71,9 @@ class CResponseController(object):
                 module_responses.setdefault(mod_name, {})
                 for response in resp['responses']:
                     module_responses[mod_name].setdefault(row['workerid'], [])
-                    module_responses[mod_name][row['workerid']].append({'varname': response['varname'], 'response': response['response']})
+                    response_dict = {'varname': response['varname']}
+                    response_dict['response'] = response.setdefault('response', None)
+                    module_responses[mod_name][row['workerid']].append(response_dict)
         return module_responses
 
     def sanitize_response(self, taskid, response, task_controller, module_controller):
