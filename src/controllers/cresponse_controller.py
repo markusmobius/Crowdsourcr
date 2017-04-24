@@ -38,7 +38,7 @@ class CResponseController(object):
                     for question_response in module['responses']:
                         csvwriter.writerow([d['hitid'], d['taskid'], d['workerid'], module['name'],
                                             question_response['varname'],
-                                            question_response['response']])
+                                            question_response.get('response', None)])
     def all_responses_by_task(self, taskid=None, workerids=[]):
         d = self.db.cresponses.find({'taskid' : taskid,
                                      'workerid' : {'$in' : workerids}}, 
