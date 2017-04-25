@@ -175,6 +175,7 @@ class URLQuestion(TextQuestion) :
     def sanitize_response(self, response):
         # run all the standard text response cleaning before stripping the URL down
         response['response'] = super(TextQuestion, self).sanitize_response(response['response'])
+        response['response'] = response['response'].lower()
         response['response'] = self.stem_url(response['response'])
         return response
     def valid_response(self, response) :
