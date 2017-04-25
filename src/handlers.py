@@ -262,7 +262,15 @@ class RecruitingEndHandler(BaseHandler):
                                            'earned' : info['earn'],
                                            'rawpct' : info['rawpct'],
                                            'best' : info['best']})
-            worker_bonus_percent = { wid : info['pct']
+            # if the following is set to True crowdsourcer will normalize the
+            # bonus of the best performer for 100% and scale up all other
+            # bonuses proportionally
+            grade_on_a_curve = False
+            if grade_on_a_curve:
+                bonus_pct = 'pct'
+            else:
+                bonus_pct = 'rawpct'
+            worker_bonus_percent = { wid : info[bonus_pct]
                                      for wid, info in worker_bonus_info.iteritems() }
             self.mturkconnection_controller.end_run(email=admin_email,
                                                     bonus=worker_bonus_percent,
