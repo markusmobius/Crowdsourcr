@@ -183,6 +183,11 @@ class URLQuestion(TextQuestion) :
             return False
         return validators.url(response.get('response', False), public = True)
 
+class CommentQuestion(TextQuestion) :
+    typeName = 'comment'
+    def validate(self, response, module_responses):
+        return True
+
 """
 class AbstractMultiQType(Question) :
     def __init__(self, varname=None, text=None, valuetype=None, options=[]) :
