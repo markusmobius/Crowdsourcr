@@ -219,6 +219,9 @@ var Question = Model.extend({
 	      case 'url':
 	          new_question = new URLQuestion(el, question);
 	          break;
+	      case 'comment':
+	          new_question = new CommentQuestion(el, question);
+	          break;
 	      }
 
 	      if (new_question === undefined)
@@ -298,6 +301,11 @@ var URLQuestion = TextQuestion.extend({
     }
 });
 
+var CommentQuestion = TextQuestion.extend({
+    validate : function () {
+    	return true;
+    }
+});
 
 var NumericQuestion = Question.extend({
     constructor : function(el, question) {
