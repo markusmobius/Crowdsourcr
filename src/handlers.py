@@ -265,7 +265,7 @@ class RecruitingEndHandler(BaseHandler):
             # if the following is set to True crowdsourcer will normalize the
             # bonus of the best performer for 100% and scale up all other
             # bonuses proportionally
-            grade_on_a_curve = False
+            grade_on_a_curve = True
             if grade_on_a_curve:
                 bonus_pct = 'pct'
             else:
