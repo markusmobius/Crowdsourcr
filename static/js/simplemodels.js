@@ -265,7 +265,8 @@ var Question = Model.extend({
 	          this.el.find('.help:first').popover({ placement : 'bottom',
 						                                      title : undefined,
 						                                      content : self.helptext,
-						                                      trigger : 'manual' });
+						                                      trigger : 'manual',
+						                                      html: true });
 	          this.el.find('.help:first').click(function() {
 		            $(this).popover('toggle');
 	          });
