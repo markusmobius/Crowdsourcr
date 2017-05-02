@@ -91,19 +91,24 @@ def normalize_bonus_info(worker_bonus_info) :
                              'poss' : worker_bonus_info[a]['possible'],
                              'exp' : worker_bonus_info[a]['exp']}
                              for a in worker_bonus_info}
+    min_bonus_percent = 0.0
     max_bonus_percent = 1.0
     if len(worker_bonus_percent) > 0 :
+        worst_worker = min(worker_bonus_percent.iterkeys(), 
+                          key=(lambda key: worker_bonus_percent[key]['pct']))
         best_worker = max(worker_bonus_percent.iterkeys(), 
                           key=(lambda key: worker_bonus_percent[key]['pct']))
-        if worker_bonus_percent[best_worker]['pct'] > 0.0:
+        if (worker_bonus_percent[worst_worker]['pct'] != worker_bonus_percent[best_worker]['pct']) and worker_bonus_percent[best_worker]['pct'] > 0.0:
+            min_bonus_percent = worker_bonus_percent[worst_worker]['pct']
             max_bonus_percent = worker_bonus_percent[best_worker]['pct']
-    # scale by maximum
+    # scale by maximum -- minimum
     worker_bonus_percent = {a.upper().strip() : 
-                            { 'pct' : worker_bonus_percent[a]['pct'] / max_bonus_percent,
+                            { 'pct' : (worker_bonus_percent[a]['pct'] - min_bonus_percent) / (max_bonus_percent - min_bonus_percent),
                               'earn' : worker_bonus_percent[a]['earn'],
                               'poss' : worker_bonus_percent[a]['poss'],
                               'exp' : worker_bonus_percent[a]['exp'],
                               'rawpct' : worker_bonus_percent[a]['pct'],
+                              'worst' : min_bonus_percent,
                               'best' : max_bonus_percent}
                             for a in worker_bonus_percent}
 
