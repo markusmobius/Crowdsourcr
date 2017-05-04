@@ -36,9 +36,12 @@ class CResponseController(object):
             if d['workerid'] in completed_workers :
                 for module in d['response']:
                     for question_response in module['responses']:
+                        response_string = question_response.get('response', None)
+                        if response_string is not None:
+                            response_string = response_string.encode("utf8")
                         csvwriter.writerow([d['hitid'], d['taskid'], d['workerid'], module['name'],
                                             question_response['varname'],
-                                            question_response.get('response', None)])
+                                            response_string])
     def all_responses_by_task(self, taskid=None, workerids=[]):
         d = self.db.cresponses.find({'taskid' : taskid,
                                      'workerid' : {'$in' : workerids}}, 
