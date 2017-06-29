@@ -4,7 +4,7 @@
 
 :Author:
   Kyle Miller
-:Modified: June 2014
+:Modified: April 2017
 
 .. contents:: Table of Contents
 
