@@ -58,9 +58,18 @@ class XMLTask(object) :
             exctag = hittag.find('exclusions')
             return exctag.text.split() if exctag != None else []
         for hit in self.hits.iter('hit'):
+            tasks=hit.find('tasks').text.split()
+            taskConditionList=[None] * len(tasks)
+            taskconditions=hit.find('taskconditions')
+            if taskconditions!=None:
+                for condition in taskconditions.iter('taskcondition'):
+                    for i,taskid in enumerate(tasks):
+                        if taskid==condition.find('taskid').text:
+                            taskConditionList[i]=condition.find('condition').text
             yield {'hitid' : hit.find('hitid').text,
                    'exclusions' : get_exclusions(hit),
-                   'tasks' : hit.find('tasks').text.split()}
+                   'tasks' : tasks,
+                   'taskconditions': taskConditionList}
     def get_documents(self) :
         docs = {}
         if self.documents :

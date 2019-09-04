@@ -1,0 +1,107 @@
+<xml>
+  <modules>
+    <module>
+      <header>Instructions</header>
+      <name>screening</name>
+      <questions>
+        <question>
+          <varname>screening</varname>		 
+          <bonus>threshold:50</bonus>
+          <questiontext>Are you smart?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>No</text>
+                <value>no</value>
+              </category>
+              <category>
+                <text>Yes</text>
+                <value>yes</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+      </questions>
+    </module>
+    <module>
+      <header>Spelling</header>
+      <name>spelling</name>
+      <questions>
+        <question>
+          <varname>spelling</varname>		 
+          <bonus>threshold:50</bonus>
+          <questiontext>Please indicate which spelling is correct:</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>Rhythm</text>
+                <value>0</value>
+              </category>
+              <category>
+                <text>Rythm</text>
+                <value>1</value>
+              </category>
+              <category>
+                <text>Other spelling</text>
+                <value>other</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>spelling_other</varname>
+		      <condition>spelling==other</condition>
+          <bonus>threshold:50</bonus>
+		      <bonuspoints>2</bonuspoints>
+          <questiontext>Please specify the spelling.</questiontext>
+          <valuetype>text</valuetype>
+        </question>
+      </questions>
+    </module>
+  </modules>
+
+  <tasks>
+    <task>
+      <content>spelling.html</content>
+      <taskid>1</taskid>
+      <modules>screening</modules>
+    </task>
+    <task>
+      <content>spelling.html</content>
+      <taskid>2</taskid>
+      <modules>spelling</modules>
+    </task>	
+  </tasks>
+  
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>1 2</tasks>
+	  <taskconditions>
+			<taskcondition>
+				<taskid>2</taskid>
+				<condition>1|screening|screening==yes</condition>
+			</taskcondition>
+	  </taskconditions>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>1 2</tasks>
+    </hit>
+    <hit>
+      <hitid>3</hitid>
+      <tasks>1 2</tasks>
+    </hit>
+  </hits>
+  
+  <documents>
+    <document>
+      <name>spelling.html</name>
+      <content><![CDATA[
+      <p>Please answer these questions.</p>
+      ]]></content>
+    </document>
+  </documents>
+</xml>
