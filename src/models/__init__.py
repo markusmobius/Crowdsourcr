@@ -15,6 +15,7 @@ del module"""
 from admin import Admin
 from ctype import CType
 from ctask import CTask
+from set import SET
 from cresponse import CResponse
 from mturkconnection import MTurkConnection
 from chit import CHIT

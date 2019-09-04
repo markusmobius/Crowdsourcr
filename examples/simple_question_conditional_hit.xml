@@ -118,7 +118,7 @@
 			</taskcondition>
 			<taskcondition>
 				<taskid>3</taskid>
-				<condition>notelement($workerid,excludedemographics)</condition>
+				<condition>notinset($workerid,excludedemographics)</condition>
 			</taskcondition>
 	  </taskconditions>
     </hit>

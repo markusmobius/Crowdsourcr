@@ -97,6 +97,7 @@ class Application(tornado.web.Application):
         self.ctask_controller = controllers.CTaskController(self.db)
         self.admin_controller = controllers.AdminController(self.db)
         self.chit_controller = controllers.CHITController(self.db)
+        self.set_controller = controllers.SetController(self.db)
         self.cdocument_controller = controllers.CDocumentController(self.db)
         self.xmltask_controller = controllers.XMLTaskController(self.db)
         self.cresponse_controller = controllers.CResponseController(self.db)
