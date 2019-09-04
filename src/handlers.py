@@ -486,6 +486,7 @@ class CResponseHandler(BaseHandler):
 
             hitid = existing_status['hitid']
             chit = self.chit_controller.get_chit_by_id(hitid)
+            #print(chit.serialize())
             taskindex = existing_status['taskindex']
             taskid = chit.tasks[taskindex]
             #task = self.ctask_controller.get_task_by_id(taskid)
@@ -509,9 +510,31 @@ class CResponseHandler(BaseHandler):
                                               'workerid' : worker_id,
                                               'hitid' : chit.hitid,
                                               'taskid' : taskid})
+            #check if there is a taskcondition set
+            skip=1
+            while taskindex+skip<len(chit.taskconditions):
+                oldSkip=skip
+                if chit.taskconditions[taskindex+skip]!=None:
+                    #let's check the condition
+                    condition=chit.taskconditions[taskindex+skip].split("==")
+                    conditionKey=condition[0].split('|')
+                    docs = self.db.cresponses.find({"$and":[{'workerid' : worker_id},{'hitid' : chit.hitid},{'taskid':conditionKey[0]}]}).sort('submitted')
+                    lastDoc=None
+                    for d in docs:
+                        lastDoc=d
+                    if lastDoc!=None:
+                        response=lastDoc["response"]
+                        for module in response:
+                            if module["name"]==conditionKey[1]:
+                                for q in module["responses"]:
+                                    if q["varname"]==conditionKey[2]:
+                                        if q["response"]!=condition[1]:
+                                            skip+=1
+                if skip==oldSkip:
+                    break;
             self.currentstatus_controller.create_or_update(workerid=worker_id,
                                                            hitid=hitid,
-                                                           taskindex=taskindex+1)
+                                                           taskindex=taskindex+skip)
             self.finish()
 
 class CSVDownloadHandler(BaseHandler):
