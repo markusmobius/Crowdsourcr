@@ -60,11 +60,38 @@
         </question>
       </questions>
     </module>
+    <module>
+      <header>Demographics</header>
+      <name>demographics</name>
+      <questions>
+        <question>
+          <varname>wealth</varname>		 
+          <questiontext>Please tell us how us about your economic circumstances:</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>Poor as a mouse</text>
+                <value>mouse</value>
+              </category>
+              <category>
+                <text>Doing OK.</text>
+                <value>ok</value>
+              </category>
+              <category>
+                <text>Filthy rich.</text>
+                <value>rich</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+      </questions>
+    </module>
   </modules>
 
   <tasks>
     <task>
-      <content>spelling.html</content>
+      <content>screening.html</content>
       <taskid>1</taskid>
       <modules>screening</modules>
     </task>
@@ -73,34 +100,62 @@
       <taskid>2</taskid>
       <modules>spelling</modules>
     </task>	
+    <task>
+      <content>demographics.html</content>
+      <taskid>3</taskid>
+      <modules>demographics</modules>
+    </task>	
   </tasks>
   
   <hits>
     <hit>
       <hitid>1</hitid>
-      <tasks>1 2</tasks>
+      <tasks>1 2 3</tasks>
 	  <taskconditions>
 			<taskcondition>
 				<taskid>2</taskid>
 				<condition>1|screening|screening==yes</condition>
 			</taskcondition>
+			<taskcondition>
+				<taskid>3</taskid>
+				<condition>notelement($workerid,excludedemographics)</condition>
+			</taskcondition>
 	  </taskconditions>
     </hit>
     <hit>
       <hitid>2</hitid>
-      <tasks>1 2</tasks>
+      <tasks>1 2 3</tasks>
     </hit>
     <hit>
       <hitid>3</hitid>
-      <tasks>1 2</tasks>
+      <tasks>1 2 3</tasks>
     </hit>
   </hits>
   
+  <sets>
+	<set>
+		<name>excludedemographics</name>
+		<members>mm lilia</members>
+	</set>
+  </sets>
+  
   <documents>
+    <document>
+      <name>screening.html</name>
+      <content><![CDATA[
+      <p>On this page we screen you.</p>
+      ]]></content>
+    </document>
     <document>
       <name>spelling.html</name>
       <content><![CDATA[
       <p>Please answer these questions.</p>
+      ]]></content>
+    </document>
+    <document>
+      <name>demographics.html</name>
+      <content><![CDATA[
+      <p>On this page we ask questions about yourself.</p>
       ]]></content>
     </document>
   </documents>
