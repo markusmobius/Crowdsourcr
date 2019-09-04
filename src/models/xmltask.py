@@ -15,7 +15,7 @@ class XMLTask(object) :
         self.hits = self.root.find('hits')
         self.documents = self.root.find('documents')
         self.docs = self.get_documents()
-        self.sets = self.get_sets()
+        self.sets = self.root.find('sets')
     def get_modules(self):
         def get_help_text(ent) :
             ment = ent.find('helptext')
@@ -75,7 +75,7 @@ class XMLTask(object) :
         for set in self.sets.iter('set'):
             # first see if there is a corresponding document
             name = set.find('name').text.strip()
-            members = task.find('members').text.split()
+            members = set.find('members').text.split()
             yield {'name' : name,
                    'members' : members}
     def get_documents(self) :

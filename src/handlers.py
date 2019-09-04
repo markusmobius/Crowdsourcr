@@ -48,6 +48,9 @@ class BaseHandler(tornado.web.RequestHandler):
     def chit_controller(self):
         return self.application.chit_controller
     @property
+    def set_controller(self):
+        return self.application.set_controller
+    @property
     def cdocument_controller(self):
         return self.application.cdocument_controller
     @property
@@ -200,6 +203,8 @@ class XMLUploadHandler(BaseHandler):
                     self.ctask_controller.create(task)
                 for hit in xmltask.get_hits():
                     self.chit_controller.create(hit)
+                for set in xmltask.get_sets():
+                    self.set_controller.create(set)
                 for name, doc in xmltask.docs.iteritems():
                     self.cdocument_controller.create(name, doc)
             self.return_json({'success' : True})
@@ -516,22 +521,31 @@ class CResponseHandler(BaseHandler):
                 oldSkip=skip
                 if chit.taskconditions[taskindex+skip]!=None:
                     #let's check the condition
-                    condition=chit.taskconditions[taskindex+skip].split("==")
-                    conditionKey=condition[0].split('|')
-                    docs = self.db.cresponses.find({"$and":[{'workerid' : worker_id},{'hitid' : chit.hitid},{'taskid':conditionKey[0]}]}).sort('submitted')
-                    lastDoc=None
-                    for d in docs:
-                        lastDoc=d
-                    if lastDoc!=None:
-                        response=lastDoc["response"]
-                        for module in response:
-                            if module["name"]==conditionKey[1]:
-                                for q in module["responses"]:
-                                    if q["varname"]==conditionKey[2]:
-                                        if q["response"]!=condition[1]:
-                                            skip+=1
-                if skip==oldSkip:
-                    break;
+                    condition=chit.taskconditions[taskindex+skip]
+                    if len(condition)>0 and condition.startswith("notinset(") and condition[-1]==")":
+                        fields=condition[len("notinset("):-1].split(",")
+                        if fields[0]=="$workerid":
+                            set = self.db.sets.find_one({'name' : fields[1]})
+                            if set != None:
+                                if worker_id in set["members"]:
+                                    skip+=1
+                    else:
+                        fields=chit.taskconditions[taskindex+skip].split("==")
+                        conditionKey=fields[0].split('|')
+                        docs = self.db.cresponses.find({"$and":[{'workerid' : worker_id},{'hitid' : chit.hitid},{'taskid':conditionKey[0]}]}).sort('submitted')
+                        lastDoc=None
+                        for d in docs:
+                            lastDoc=d
+                        if lastDoc!=None:
+                            response=lastDoc["response"]
+                            for module in response:
+                                if module["name"]==conditionKey[1]:
+                                    for q in module["responses"]:
+                                        if q["varname"]==conditionKey[2]:
+                                            if q["response"]!=fields[1]:
+                                                skip+=1
+                    if skip==oldSkip:
+                        break;
             self.currentstatus_controller.create_or_update(workerid=worker_id,
                                                            hitid=hitid,
                                                            taskindex=taskindex+skip)
