@@ -83,11 +83,12 @@ class Question(object) :
         allVariables=dict()
         has_error=False
         for r in module_responses:
-            allVariables[r["varname"]]=r["response"]
+            if "response" in r:
+                allVariables[r["varname"]]=r["response"]
         status=Status()
         evaluatedLexer=lex.check_conditions(allVariables, dict(), status)
         if status.error!=None:
-            return True
+            return False
         return evaluatedLexer
 
     def sanitize_response(self, response):
