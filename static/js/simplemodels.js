@@ -474,7 +474,8 @@ var CategoricalQuestion = Question.extend({
 	      return nestedTemplate(this.nest, this.nested_display_template, 0, this.questiontext, this.varname);
     },
     validate: function () {
-        return this.response() != "";
+        var resp = this.response();
+        return !(resp == "" | resp===undefined);
     },
     response : function() {
 	      // darn selectors... (gross)
