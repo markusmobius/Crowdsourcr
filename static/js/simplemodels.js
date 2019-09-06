@@ -397,12 +397,16 @@ var CategoricalQuestion = Question.extend({
         this.el = $(el);
 	      this.display_template = $('#catquestion-display-template').html();
 	      this.display_template_sideways = $('#catquestionsideways-display-template').html();
+        this.display_template_dropdown = $('#catquestiondropdown-display-template').html();
 	      this.nested_display_template = $('#catquestionsnested-display-template').html();
 	      this.nesting_delimiter = '|';
     },
     shouldBeSideways : function () {
 	      return this.options.layout === 'horizontal' || (this.content.length >= 5
 		                                                    && _.all(this.content, function (choice) { return choice.text.length <= 2; }));
+    },
+    shouldBeDropdown: function () {
+        return this.options.layout === 'dropdown';
     },
     renderDisplay : function() {
         this.el.empty();
@@ -425,7 +429,10 @@ var CategoricalQuestion = Question.extend({
 		            });
 	          this.el.html(rendered_nest);
 	      } else {
-	          var t = this.shouldBeSideways() ? this.display_template_sideways : this.display_template;
+              var t = this.shouldBeSideways() ? this.display_template_sideways : this.display_template;
+              if (this.shouldBeDropdown()) {
+                  t = this.display_template_dropdown;
+              }
             this.el.html(_.template(t, this.serializeForDisplay()));
 	      }
 	      this.renderHelpText();
@@ -466,9 +473,15 @@ var CategoricalQuestion = Question.extend({
     drawNesting : function() {
 	      return nestedTemplate(this.nest, this.nested_display_template, 0, this.questiontext, this.varname);
     },
+    validate: function () {
+        return this.response() != "";
+    },
     response : function() {
 	      // darn selectors... (gross)
-	      return this.el.find('input:not([value=""]):checked').val();
+        if (this.shouldBeDropdown()) {
+            return this.el.find('select:not([value=""])').val();
+        }
+        return this.el.find('input:not([value=""]):checked').val();
     } 
 });
 
