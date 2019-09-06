@@ -23,6 +23,8 @@ from io import BytesIO
 from zipfile import ZipFile
  
 from tornado.options import define, options
+from helpers import CustomEncoder, Lexer, Status
+import jsonpickle
  
 class BaseHandler(tornado.web.RequestHandler):
     __superusers__ = app_config.superadmins
@@ -475,6 +477,21 @@ class CHITReturnHandler(BaseHandler):
         self.clear_cookie('workerid')
         self.redirect(redir_url)
 
+class Set():
+    def __init__(self,db,name):
+        self.db=db
+        self.name=name
+
+    def hasMember(self,value):
+        rows = self.db.sets.find({"$and":[{'name' : self.name},{'member' : str(value)}]})
+        member=None
+        for m in rows:
+            member=m
+        if member==None:
+            return False
+        else:
+            return True
+
 class CResponseHandler(BaseHandler):
     def post(self):
         worker_id = self.get_secure_cookie('workerid')
@@ -521,31 +538,40 @@ class CResponseHandler(BaseHandler):
                 oldSkip=skip
                 if chit.taskconditions[taskindex+skip]!=None:
                     #let's check the condition
-                    condition=chit.taskconditions[taskindex+skip]
-                    if len(condition)>0 and condition.startswith("notinset(") and condition[-1]==")":
-                        fields=condition[len("notinset("):-1].split(",")
-                        if fields[0]=="$workerid":
-                            set = self.db.sets.find_one({'name' : fields[1]})
-                            if set != None:
-                                if worker_id in set["members"]:
-                                    skip+=1
+                    condition=jsonpickle.decode(chit.taskconditions[taskindex+skip])
+                    allVariables=dict()
+                    has_error=False
+                    for v in condition.varlist:
+                        if v=="$workerid":
+                            allVariables["$workerid"]=worker_id
+                        else:
+                            frags=v.split('*')
+                            if len(frags)!=3:
+                                has_error=True
+                            else:
+                                docs = self.db.cresponses.find({"$and":[{'workerid' : worker_id},{'hitid' : chit.hitid},{'taskid':frags[0]}]}).sort('submitted')
+                                lastDoc=None
+                                for d in docs:
+                                    lastDoc=d
+                                if lastDoc!=None:
+                                    response=lastDoc["response"]
+                                    for module in response:
+                                        if module["name"]==frags[1]:
+                                            for q in module["responses"]:
+                                                if q["varname"]==frags[2]:
+                                                    allVariables[v]=q["response"]
+                    
+                    allSets=dict() 
+                    for s in condition.setlist:
+                        allSets[s]=Set(self.db,s)
+                    if has_error:
+                        skip+=1
                     else:
-                        fields=chit.taskconditions[taskindex+skip].split("==")
-                        conditionKey=fields[0].split('|')
-                        docs = self.db.cresponses.find({"$and":[{'workerid' : worker_id},{'hitid' : chit.hitid},{'taskid':conditionKey[0]}]}).sort('submitted')
-                        lastDoc=None
-                        for d in docs:
-                            lastDoc=d
-                        if lastDoc!=None:
-                            response=lastDoc["response"]
-                            for module in response:
-                                if module["name"]==conditionKey[1]:
-                                    for q in module["responses"]:
-                                        if q["varname"]==conditionKey[2]:
-                                            if q["response"]!=fields[1]:
-                                                skip+=1
-                    if skip==oldSkip:
-                        break;
+                        status=Status()
+                        if not condition.check_conditions(allVariables, allSets, status):
+                            skip+=1
+                if skip==oldSkip:
+                   break;
             self.currentstatus_controller.create_or_update(workerid=worker_id,
                                                            hitid=hitid,
                                                            taskindex=taskindex+skip)

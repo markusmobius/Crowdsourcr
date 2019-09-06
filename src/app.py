@@ -188,6 +188,7 @@ def clear_db(db):
     db.paid_bonus.drop()
     db.bonus_info.drop()
     db.events.drop()
+    db.sets.drop()
 
 if __name__ == "__main__":
     main()

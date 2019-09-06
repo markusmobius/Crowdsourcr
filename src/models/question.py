@@ -1,5 +1,8 @@
 import re
 import validators
+from helpers import CustomEncoder, Lexer, Status
+import jsonpickle
+
 
 class QTypeRegistry(type) :
     def __init__(cls, name, bases, dct) :
@@ -73,30 +76,20 @@ class Question(object) :
         bonus_dict['bonuspoints'] = self.bonuspoints
         return bonus_dict
 
-    def parse_condition(self, condition_string):
-        """
-        The only conditions that are allowed use "==" or "!=". Whitespace around
-        the comparator is allowed
-        """
-        if condition_string is None:
-            return None
-        else:
-            condition_pattern = re.compile(r'(?P<varname>\b\S+\b)\s*(?P<comparator>==|!=)\s*(?P<value>\b\S+\b)')
-            return condition_pattern.finditer(condition_string).next().groupdict()
     def satisfies_condition(self, module_responses):
-        condition_dict = self.parse_condition(self.condition)
-        if condition_dict is None:
+        if (self.condition==None):
             return True
-        else:
-            # extract from the response the variable that is affected by the condition
-            condition_variable = [r for r in module_responses if r['varname'] == condition_dict['varname']][0]
+        lex=jsonpickle.decode(self.condition)
+        allVariables=dict()
+        has_error=False
+        for r in module_responses:
+            allVariables[r["varname"]]=r["response"]
+        status=Status()
+        evaluatedLexer=lex.check_conditions(allVariables, dict(), status)
+        if status.error!=None:
+            return True
+        return evaluatedLexer
 
-            if((condition_dict['comparator'] == '==') and (condition_variable['response'] == condition_dict['value'])):
-                return True
-            elif((condition_dict['comparator'] == '!=') and (condition_variable['response'] != condition_dict['value'])):
-                return True
-            else:
-                return False
     def sanitize_response(self, response):
         return response
     def valid_response(self, response):

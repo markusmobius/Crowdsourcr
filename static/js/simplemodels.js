@@ -102,36 +102,102 @@ var CType = Model.extend({
     }
 });
 
-var checkSingleCondition = function (vals, condition) {
-    if (condition == null) { return true;}
-    var d = condition.split('!=');
-    if (d.length == 2) {
-        var key = d[0].trim();
-        var val = d[1].trim();
-        if (key in vals) {
-        	if(typeof vals[key] === "undefined") {
-        		return false;
-        	} else {
-            	return val != vals[key];
-        	}
+var check_condition_single = function (condition, vals, status) {
+    if (condition.op === "NOTINSET") {
+        status.error = true;
+        return true;
+    }
+    condition.variables.forEach(function (v) {
+        if (!(v in vals)) {
+            status.error = true;
         }
+    });
+    if (status.error) { return true; }
+    var LHS_sum = 0;
+    var LHS = ""
+    if (condition.values_integers.length > 0) {
+        condition.variables.forEach(function (v) {
+            var parsed = parseInt(vals[v]);
+            if (isNaN(parsed)) {
+                status.error = true;
+            }
+            else
+            {
+                LHS_sum = LHS_sum + parsed;
+            }
+        });
     }
     else {
-        d = condition.split('==');
-        if (d.length == 2) {
-            var key = d[0].trim();
-            var val = d[1].trim();
-            if (key in vals) {
-        		if(typeof vals[key] === "undefined") {
-        			return false;
-        		} else {
-                	return val == vals[key];
-            	}
+        LHS = vals[condition.variables[0]];
+    }
+    switch (condition.op) {
+        case ("EQUAL"):
+            if (condition.values_integers.length > 0) {
+                return LHS_sum == condition.values_integers[0];
             }
-        }
+            else {
+                return LHS == condition.values_string[0];
+            }
+        case ("NOTEQUAL"):
+            if (condition.values_integers.length > 0) {
+                return LHS_sum != condition.values_integers[0];
+            }
+            else {
+                return LHS != condition.values_string[0];
+            }
+        case ("GREATEREQUAL"):
+            if (condition.values_integers.length > 0) {
+                return LHS_sum >= condition.values_integers[0];
+            }
+            break;
+        case ("LESSEQUAL"):
+            if (condition.values_integers.length > 0) {
+                return LHS_sum <= condition.values_integers[0];
+            }
+            break;
     }
     return true;
+}
+
+var checkLexer = function (lex, vals, status) {
+    var condition_values = [];
+    lex.conditions.forEach(function (c) {
+        condition_values.push(check_condition_single(c, vals, status));
+    });
+    lex.fragments.forEach(function (f) {
+        condition_values.push(checkLexer(f, vals, status));
+    });
+    switch (lex.logical) {
+        case "NONE":
+            return condition_values[0];
+        case "AND":
+            var sum = true;
+            condition_values.forEach(function (p) {
+                sum = sum & p;
+            });
+            return sum;
+        case "OR":
+            sum = true;
+            condition_values.forEach(function (p) {
+                sum = sum | p;
+            });
+            return sum;
+    }
+    return true;
+}
+
+var checkSingleCondition = function (vals, condition) {
+    if (condition == null) { return true; }
+    //parse lexed condition
+    var lex = JSON.parse(condition);
+    var status = { error: false };
+    var evaluatedLexer = checkLexer(lex, vals, status);
+    if (status.error) {
+        return false;
+    }
+    return evaluatedLexer;
 };
+
 var checkConditions = function (renderedquestions, holders) {
     //collect question values
     var vals = {};
