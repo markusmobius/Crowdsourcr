@@ -4,6 +4,8 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 from question import Question
+from helpers import CustomEncoder, Lexer, Status
+import jsonpickle
 
 class XMLTask(object) :
     def __init__(self, xml_path=None) :
@@ -25,8 +27,16 @@ class XMLTask(object) :
                           'name' : module.find('name').text,
                           'questions' : []}
             for question in module.find('questions').iter('question'):
+                lexedCondition=None
+                if question.find('condition') != None:
+                    conditionStr=question.find('condition').text
+                    lex = Lexer()
+                    status = Status()
+                    if not lex.can_import(conditionStr, status):
+                        raise Exception(status.error)
+                    lexedCondition=jsonpickle.encode(lex)
                 module_out['questions'].append({'varname' : question.find('varname').text,
-                                                'condition' : question.find('condition').text if question.find('condition') != None else None,
+                                                'condition' : lexedCondition,
                                                 'questiontext' : question.find('questiontext').text,
                                                 'helptext' : get_help_text(question),
                                                 'bonus' : question.find('bonus').text if question.find('bonus') != None else None,
@@ -63,21 +73,28 @@ class XMLTask(object) :
             taskConditionList=[None] * len(tasks)
             taskconditions=hit.find('taskconditions')
             if taskconditions!=None:
-                for condition in taskconditions.iter('taskcondition'):
+                for taskcondition in taskconditions.iter('taskcondition'):
                     for i,taskid in enumerate(tasks):
-                        if taskid==condition.find('taskid').text:
-                            taskConditionList[i]=condition.find('condition').text
+                        if taskid==taskcondition.find('taskid').text:
+                            conditionStr=taskcondition.find('condition').text
+                            lex = Lexer()
+                            status = Status()
+                            if not(lex.can_import(conditionStr, status)):
+                                raise Exception(status.error)
+                            taskConditionList[i]= jsonpickle.encode(lex)
             yield {'hitid' : hit.find('hitid').text,
                    'exclusions' : get_exclusions(hit),
                    'tasks' : tasks,
                    'taskconditions': taskConditionList}
     def get_sets(self):
-        for set in self.sets.iter('set'):
-            # first see if there is a corresponding document
-            name = set.find('name').text.strip()
-            members = set.find('members').text.split()
-            yield {'name' : name,
-                   'members' : members}
+        if self.sets!=None:
+            for set in self.sets.iter('set'):
+                # first see if there is a corresponding document
+                name = set.find('name').text.strip()
+                members = set.find('members').text.split()
+                for member in members:
+                    yield {'name' : name,
+                        'member' : str(member.strip())}
     def get_documents(self) :
         docs = {}
         if self.documents :

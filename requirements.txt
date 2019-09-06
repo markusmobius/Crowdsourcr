@@ -1,10 +1,12 @@
 #apt-get install pip
 #pip install -r requirements.txt
 
-pymongo==2.5.2
-tornado==3.1
-boto==2.29.1
-validators==0.11.3
+pymongo
+tornado
+boto
+validators
+future-fstrings
+jsonpickle
 
 # Only if on linux
 #python-daemon==1.6

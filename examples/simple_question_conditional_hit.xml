@@ -6,7 +6,6 @@
       <questions>
         <question>
           <varname>screening</varname>		 
-          <bonus>threshold:50</bonus>
           <questiontext>Are you smart?</questiontext>
           <valuetype>categorical</valuetype>
           <content>
@@ -18,6 +17,57 @@
               <category>
                 <text>Yes</text>
                 <value>yes</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>sum10</varname>		 
+          <questiontext>What is 5+5?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>10</text>
+                <value>1</value>
+              </category>
+              <category>
+                <text>20</text>
+                <value>0</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>sum15</varname>		 
+          <questiontext>What is 5+10?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>20</text>
+                <value>0</value>
+              </category>
+              <category>
+                <text>15</text>
+                <value>1</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>biggerthan</varname>		 
+          <questiontext>Which number is bigger: 12 or 15?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>12</text>
+                <value>0</value>
+              </category>
+              <category>
+                <text>15</text>
+                <value>1</value>
               </category>
             </categories>
           </content>
@@ -52,12 +102,77 @@
         </question>
         <question>
           <varname>spelling_other</varname>
-		      <condition>spelling==other</condition>
+		      <condition>
+			  <![CDATA[
+			  spelling==other
+			  ]]>
+			  </condition>
           <bonus>threshold:50</bonus>
 		      <bonuspoints>2</bonuspoints>
           <questiontext>Please specify the spelling.</questiontext>
           <valuetype>text</valuetype>
         </question>
+        <question>
+          <varname>letterc</varname>		 
+          <questiontext>What does the letter C stand for?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>C is for cookie</text>
+                <value>cookie</value>
+              </category>
+              <category>
+                <text>C is for car</text>
+                <value>car</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>songc</varname>		 
+		      <condition>
+			  <![CDATA[
+			  letterc==cookie
+			  ]]>
+			  </condition>
+          <questiontext>What famous song starts with the memorale line: C is for cookie ...</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>C is for cookie, that's good enough for me!</text>
+                <value>1</value>
+              </category>
+              <category>
+                <text>C is for cookie but I like carrots ...</text>
+                <value>0</value>
+              </category>
+            </categories>
+          </content>
+        </question>	
+        <question>
+          <varname>singerc</varname>		 
+		      <condition>
+			  <![CDATA[
+			  letterc==cookie&songc==1
+			  ]]>
+			  </condition>
+          <questiontext>Which famous singer sang this song?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>Cookie monster</text>
+                <value>1</value>
+              </category>
+              <category>
+                <text>Cher</text>
+                <value>0</value>
+              </category>
+            </categories>
+          </content>
+        </question>	
       </questions>
     </module>
     <module>
@@ -114,11 +229,19 @@
 	  <taskconditions>
 			<taskcondition>
 				<taskid>2</taskid>
-				<condition>1|screening|screening==yes</condition>
+				<condition>
+				<![CDATA[
+				1*screening*screening==yes&(1*screening*sum10+1*screening*sum15+1*screening*biggerthan>=2)
+				]]>
+				</condition>
 			</taskcondition>
 			<taskcondition>
 				<taskid>3</taskid>
-				<condition>notinset($workerid,excludedemographics)</condition>
+				<condition>
+				<![CDATA[
+				notinset{$workerid,excludedemographics}
+				]]>
+				</condition>
 			</taskcondition>
 	  </taskconditions>
     </hit>
