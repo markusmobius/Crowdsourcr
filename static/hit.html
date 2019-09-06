@@ -290,6 +290,19 @@
 	      <% _.each(content, function(choice) { %> <div class="radio"><label><input type="radio" name="<%= varname %>" value="<%= choice.value %>"/><%= choice.text %></label></div> <% }); %>
       </div>
     </script>
+
+    <script type="text/template" id="catquestiondropdown-display-template">
+      <div class="form-group">
+	      <label> 
+	        <%= questiontext %> 
+	        <% if (helptext) { %><div class="help">?</div><% } %>
+	      </label>
+		  <select name="<%= varname %>">
+		  <option value="">Please make a selection</option>
+	      <% _.each(content, function(choice) { %> <option value="<%= choice.value %>"><%= choice.text %></option> <% }); %>
+		  </select>
+      </div>
+    </script>
     
     <script type="text/template" id="catquestionsideways-display-template">
       <div class="form-group">

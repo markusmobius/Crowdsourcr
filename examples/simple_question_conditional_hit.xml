@@ -200,6 +200,30 @@
             </categories>
           </content>
         </question>
+        <question>
+          <varname>reincarnation</varname>		 
+          <questiontext>If you could start all over: who would you like to be?</questiontext>
+          <valuetype>categorical</valuetype>
+		    <options>
+				<layout>dropdown</layout>
+			</options>
+          <content>
+            <categories>
+              <category>
+                <text>Emperor Nero</text>
+                <value>nero</value>
+              </category>
+              <category>
+                <text>Whinston Churchill</text>
+                <value>churchill</value>
+              </category>
+              <category>
+                <text>Wizard of Oz</text>
+                <value>oz</value>
+              </category>
+            </categories>
+          </content>
+        </question>
       </questions>
     </module>
   </modules>
