@@ -52,8 +52,8 @@ class SingleCondition:
                 self.op = "NOTINSET"
                 fields=condition_string[len("notinset{"):-1].split(",")
                 if len(fields)==2:
-                    self.variables.append(fields[0])
-                    self.variables.append(fields[1])
+                    self.variables.append(fields[0].strip())
+                    self.variables.append(fields[1].strip())
                 else:
                     status.error=f"{condition_string} needs to have two arguments"
                 return
@@ -128,6 +128,8 @@ class SingleCondition:
         return sb
 
     def check_condition_single_cond(self, all_variables,all_sets, status):
+        print(all_variables)
+        print(all_sets)
         ''' Inputs: all_variables, type {str: str}
                     status, type Status instance
             Output: bool '''

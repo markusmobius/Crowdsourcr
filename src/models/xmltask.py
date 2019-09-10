@@ -77,14 +77,21 @@ class XMLTask(object) :
                     if taskcondition.find('taskid')==None:
                         raise Exception('taskid is not defined in taskcondition')
                     conditionStr=taskcondition.find('condition').text
-                    lex = Lexer()
-                    status = Status()
-                    if not(lex.can_import(conditionStr, status)):
-                        raise Exception(status.error)
                     for subtaskid in taskcondition.find('taskid').text.split(' '):
                         for i,taskid in enumerate(tasks):
                             if taskid==subtaskid:
-                                taskConditionList[i]= jsonpickle.encode(lex)
+                                if taskConditionList[i]==None:
+                                    taskConditionList[i]=[]
+                                taskConditionList[i].append("("+conditionStr+")")
+                for i,tc in enumerate(taskConditionList):
+                    if tc!=None:
+                        lex = Lexer()
+                        status = Status()
+                        if not(lex.can_import("&".join(tc), status)):
+                            print("&".join(tc))
+                            raise Exception(status.error)
+                        taskConditionList[i]= jsonpickle.encode(lex)
+                        print(taskConditionList[i])
             yield {'hitid' : hit.find('hitid').text,
                    'exclusions' : get_exclusions(hit),
                    'tasks' : tasks,
