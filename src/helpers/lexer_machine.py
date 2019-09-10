@@ -61,6 +61,20 @@ class SingleCondition:
                 status.error=f"{condition_string} is not a valid notinset condition"
                 return
             return
+        if 'inset{' in condition_string:
+            if condition_string.startswith("inset{") and condition_string[-1]=="}":
+                self.op = "INSET"
+                fields=condition_string[len("inset{"):-1].split(",")
+                if len(fields)==2:
+                    self.variables.append(fields[0].strip())
+                    self.variables.append(fields[1].strip())
+                else:
+                    status.error=f"{condition_string} needs to have two arguments"
+                return
+            else:
+                status.error=f"{condition_string} is not a valid inset condition"
+                return
+            return
         status.error = f"{condition_string} is an invalid condition"
 
     def condition_fragments(self, frags, condition_string, status):
@@ -101,7 +115,7 @@ class SingleCondition:
             self.values_string.append(argument)
 
     def serialize_single_cond(self):
-        if self.op!="NOTINSET":
+        if self.op!="NOTINSET" and self.op!="INSET":
             sb = "+".join(self.variables)
         else:
             sb=""
@@ -115,6 +129,12 @@ class SingleCondition:
             sb += "<="
         elif self.op == "NOTINSET":
             sb += "notinset("
+            sb +=self.variables[0]
+            sb +=","
+            sb +=self.variables[1]
+            sb +=")"
+        elif self.op == "INSET":
+            sb += "inset("
             sb +=self.variables[0]
             sb +=","
             sb +=self.variables[1]
@@ -135,6 +155,8 @@ class SingleCondition:
             Output: bool '''
         if self.op == "NOTINSET":
             return self.check_notinset_cond(all_variables,all_sets,status)
+        if self.op == "INSET":
+            return self.check_inset_cond(all_variables,all_sets,status)
         status.error = None
         LHS_sum=0
         LHS=""
@@ -183,6 +205,20 @@ class SingleCondition:
             return False
         LHS=str(all_variables[self.variables[0]])
         return not all_sets[self.variables[1]].hasMember(LHS);
+
+    def check_inset_cond(self, all_variables,all_sets, status):
+        ''' Inputs: all_variables, type {str: str}
+                    status, type Status instance
+            Output: bool '''
+        #convert everything to string
+        if self.variables[0] not in all_variables:
+            status.error = f"cannot check condition {self.serialize_single_cond()}: variable {self.variables[0]} is undefined"
+            return False
+        if self.variables[1] not in all_sets:
+            status.error = f"cannot check condition {self.serialize_single_cond()}: set {self.variables[1]} is undefined"
+            return False
+        LHS=str(all_variables[self.variables[0]])
+        return all_sets[self.variables[1]].hasMember(LHS);
 
 class Lexer:
     def __init__(self):
@@ -314,7 +350,7 @@ class Lexer:
         self.varlist=[]
         self.setlist=[]
         for cond in self.conditions:
-            if cond.op=="NOTINSET":
+            if cond.op=="NOTINSET" or cond.op=="INSET":
                 self.varlist.append(cond.variables[0])
                 self.setlist.append(cond.variables[1])
             else:

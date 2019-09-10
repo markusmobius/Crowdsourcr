@@ -88,10 +88,10 @@ class XMLTask(object) :
                         lex = Lexer()
                         status = Status()
                         if not(lex.can_import("&".join(tc), status)):
-                            print("&".join(tc))
+                            #print("&".join(tc))
                             raise Exception(status.error)
                         taskConditionList[i]= jsonpickle.encode(lex)
-                        print(taskConditionList[i])
+                        #print(taskConditionList[i])
             yield {'hitid' : hit.find('hitid').text,
                    'exclusions' : get_exclusions(hit),
                    'tasks' : tasks,
