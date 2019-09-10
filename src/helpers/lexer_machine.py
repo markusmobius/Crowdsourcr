@@ -148,8 +148,6 @@ class SingleCondition:
         return sb
 
     def check_condition_single_cond(self, all_variables,all_sets, status):
-        print(all_variables)
-        print(all_sets)
         ''' Inputs: all_variables, type {str: str}
                     status, type Status instance
             Output: bool '''
@@ -162,7 +160,7 @@ class SingleCondition:
         LHS=""
         for var in self.variables:
            if not(var in all_variables):
-              status.error = f"cannot check condition {self.serialize_single_cond()}: variable {var} is undefined"
+              #status.error = f"cannot check condition {self.serialize_single_cond()}: variable {var} is undefined"
               return False
         if len(self.values_integers) > 0:
            # we have an integer
