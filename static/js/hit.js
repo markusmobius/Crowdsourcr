@@ -53,7 +53,7 @@ function showWithData(task, modules) {
     var iframe = $('<iframe src="about:blank" frameborder="0" border="0" cellspacing="0"/>');
     $('#hit-content').empty().append(iframe);
     _.defer(function () {
-		iframe.contents()[0].write('<head><link rel="stylesheet" href="/static/css/main.css" /><link rel="stylesheet" href="/static/css/bootstrap.min.css" /><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><script src="/static/js/bootstrap.min.js"></script></head>');
+		iframe.contents()[0].write('<head><link rel="stylesheet" href="/static/css/main.css"/><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script></head>');
         iframe.contents()[0].write(task.content);
     });
     currentTypeGroup = new CTypeGroup();
