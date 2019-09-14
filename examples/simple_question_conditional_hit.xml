@@ -5,18 +5,41 @@
       <name>screening</name>
       <questions>
         <question>
-          <varname>screening</varname>		 
+          <varname>smart</varname>		 
           <questiontext>Are you smart?</questiontext>
           <valuetype>categorical</valuetype>
           <content>
             <categories>
               <category>
                 <text>No</text>
-                <value>no</value>
+                <value>0</value>
               </category>
               <category>
                 <text>Yes</text>
-                <value>yes</value>
+                <value>1</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>kidding</varname>
+          <condition>
+            <![CDATA[
+			  smart==0
+			  ]]>
+          </condition>
+
+          <questiontext>You were kidding, right?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>No</text>
+                <value>0</value>
+              </category>
+              <category>
+                <text>Yes</text>
+                <value>1</value>
               </category>
             </categories>
           </content>
@@ -255,7 +278,7 @@
 				<taskid>2</taskid>
 				<condition>
 				<![CDATA[
-				1*screening*screening==yes&(1*screening*sum10+1*screening*sum15+1*screening*biggerthan>=2)
+				1*screening*smart+1*screening*kidding+1*screening*sum10+1*screening*sum15+1*screening*biggerthan>=4
 				]]>
 				</condition>
 			</taskcondition>

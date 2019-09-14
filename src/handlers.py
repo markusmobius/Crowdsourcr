@@ -558,7 +558,7 @@ class CResponseHandler(BaseHandler):
                                     for module in response:
                                         if module["name"]==frags[1]:
                                             for q in module["responses"]:
-                                                if q["varname"]==frags[2]:
+                                                if q["varname"]==frags[2] and ("response" in q):
                                                     allVariables[v]=q["response"]
                     
                     allSets=dict() 

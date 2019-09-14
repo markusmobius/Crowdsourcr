@@ -161,12 +161,15 @@ class SingleCondition:
         for var in self.variables:
            if not(var in all_variables):
               #status.error = f"cannot check condition {self.serialize_single_cond()}: variable {var} is undefined"
-              return False
+              #we don't return False if it's an adding-up condition
+              if not len(self.variables) > 1:
+                return False
         if len(self.values_integers) > 0:
            # we have an integer
            for var in self.variables:
                try:
-                  LHS_sum+=int(all_variables[var])
+                  if var in all_variables:
+                    LHS_sum+=int(all_variables[var])
                except:
                   status.error = f"cannot check condition {self.serialize_single_cond()}: variable value {all_variables[var]} is not an integer"
                   return False
