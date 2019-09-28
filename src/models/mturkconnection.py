@@ -1,9 +1,9 @@
 import os
-import boto.mturk.connection
-import boto.mturk.question 
-import boto.mturk.qualification
-import boto.mturk.price
+import boto3
+import xmltodict
+import json
 import datetime
+
 #QuestionContent,Question,QuestionForm,Overview,AnswerSpecification,SelectionAnswer,FormattedContent,FreeTextAnswer
 
 class MTurkConnection(object):
@@ -31,21 +31,34 @@ class MTurkConnection(object):
         self.host = 'mechanicalturk.amazonaws.com' if environment == 'production' else 'mechanicalturk.sandbox.amazonaws.com'
         self.admin_host = 'https://requester.mturk.com' if environment == 'production' else 'https://requestersandbox.mturk.com'
         self.bonus = float(bonus)
-        self.mturk_conn = boto.mturk.connection.MTurkConnection(aws_access_key_id=self.access_key,
-                                                                aws_secret_access_key=self.secret_key,
-                                                                host=self.host)
+        environments = {
+            "production": {
+                "endpoint": "https://mturk-requester.us-east-1.amazonaws.com",
+                "preview": "https://www.mturk.com/mturk/preview"
+            },
+            "sandbox": {
+                "endpoint": "https://mturk-requester-sandbox.us-east-1.amazonaws.com",
+                "preview": "https://workersandbox.mturk.com/mturk/preview"
+            },
+        }
+        mturk_environment = environments["production"] if environment == 'production' else environments["sandbox"]
+        self.client=mturk = boto3.client('mturk',
+                                aws_access_key_id = self.access_key,
+                                aws_secret_access_key = self.secret_ke,
+                                region_name='us-east-1',
+                                endpoint_url = mturk_environment['endpoint'])
         self.hitid = hitid
     def try_auth(self, access_key=None, secret_key=None):
         return True if self.get_balance() else False
 
     def get_balance(self):
         try:
-            return self.mturk_conn.get_account_balance()
+            return self.client.get_account_balance()
         except:
             return None
 
     def get_all_hits(self):
-        return [hit.HITId for hit in self.mturk_conn.get_all_hits()]
+        return [hit.HITId for hit in self.client.list_hits()]
     
     def serialize(self):
         return { 'access_key' : self.access_key,
@@ -63,9 +76,28 @@ class MTurkConnection(object):
     def deserialize(cls, d):
         return MTurkConnection(**d)
     def begin_run(self, max_assignments=1, url=""):
-        overview = boto.mturk.question.Overview()
-        overview.append_field('Title', self.title)
-        overview.append(boto.mturk.question.FormattedContent('<p>%(description)s  To begin, navigate to the following url: <a href="%(url)s">%(url)s</a>.</p>' % {'description' : self.description, 'url' : url}))
+        hitinfo=client.create_hit(
+            MaxAssignments=max_assignments,
+            Title=self.title,
+            Description=self.description,
+            LifetimeInSeconds=14400,
+            AssignmentDurationInSeconds=datetime.timedelta(hours=2),
+            Keywords=self.keywords,
+            Reward=self.hitpayment,
+            QualificationRequirements=[
+                {
+                    'QualificationTypeId': 'string',
+                    'Comparator': 'EqualTo',
+                        'LocaleValues': [
+                            {
+                            'Country': 'US',
+                            },
+                        ],
+                },
+            ],
+            Question='<p>'+self.description+' To begin, navigate to the following url: <a href="'+url+'">%('+url+')s</a>.</p>'
+        )
+
         
         
         qc1 = boto.mturk.question.QuestionContent()
@@ -77,24 +109,6 @@ class MTurkConnection(object):
                                           answer_spec=boto.mturk.question.AnswerSpecification(fta1),
                                           is_required=True)
 
-        question_form = boto.mturk.question.QuestionForm()
-        question_form.append(overview)
-        question_form.append(q1)
-
-        qualifications = boto.mturk.qualification.Qualifications()
-        qualifications.add(boto.mturk.qualification.LocaleRequirement('EqualTo',
-                                                                      'US'))
-
-        duration = datetime.timedelta(hours=2)
-
-        hitinfo = self.mturk_conn.create_hit(questions=question_form,
-                                             max_assignments=max_assignments,
-                                             title=self.title,
-                                             description=self.description,
-                                             duration=duration,
-                                             keywords=self.keywords,
-                                             reward=self.hitpayment,
-                                             qualifications=qualifications)
         self.running = True
         self.hitid = hitinfo[0].HITId
         return True
@@ -102,35 +116,32 @@ class MTurkConnection(object):
         paid_bonus = []
         try:
             worker_assignments = {}
-            page_num = 1
+            next_token=None
             while True :
-                asg = self.mturk_conn.get_assignments(self.hitid, 
-                                                      page_number=page_num,
-                                                      page_size=100)
-                if len(asg) == 0 :
+                response = self.self.list_assignments_for_hit(HITId=self.hitid, 
+                                                      NextToken=next_token,
+                                                      MaxResults=100)
+                if response['NextToken']== None :
                     break
-                for a in asg :
+                for a in response['Assignments'] :
                     if a.WorkerId not in already_paid :
                         worker_assignments[a.WorkerId] = a.AssignmentId
-                page_num += 1
-
+                next_token = response['NextToken']
                 
             for workerid, assignmentid in worker_assignments.iteritems() :
                 if workerid not in bonus :
                     print "Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid
                 else :
                     bonus_amt = min(10, max(0.05, round(bonus[workerid] * self.bonus, 2)))
-                    bonus_to_pay = boto.mturk.price.Price(amount=bonus_amt)
-                    self.mturk_conn.grant_bonus(worker_id=workerid,
-                                                assignment_id=assignmentid,
-                                                bonus_price=bonus_to_pay,
-                                                reason='Bonus for completion of news classification task.')
+                    self.client.send_bonus(WorkerId=workerid,
+                                           BonusAmount=bonus_amt,
+                                           AssignmentId=assignmentid,
+                                           Reason='Bonus for completion of classification task.')
                     paid_bonus.append({'workerid' : workerid,
                                        'percent' : bonus[workerid],
                                        'amount' : bonus_amt,
                                        'assignmentid' : assignmentid})
-
-            self.mturk_conn.expire_hit(self.hitid)
+            self.client.delete_hit(HITId=self.hitid)
         except:
             print "Error caught when trying to end run."
             raise
@@ -143,6 +154,18 @@ class MTurkConnection(object):
             return []
         else:
             all_assignments = []
+            while True :
+                response = self.self.list_assignments_for_hit(HITId=self.hitid, 
+                                                      NextToken=next_token,
+                                                      MaxResults=100)
+                if response['NextToken']== None :
+                    break
+                for a in response['Assignments'] :
+                    if a.WorkerId not in already_paid :
+                        worker_assignments[a.WorkerId] = a.AssignmentId
+                next_token = response['NextToken']
+
+
             page_num = 1
             while True:
                 try:
@@ -165,7 +188,7 @@ class MTurkConnection(object):
     def make_payments(self, assignment_ids=[]) :
         for assignmentid in assignment_ids:
             try:
-                self.mturk_conn.approve_assignment(assignmentid)
+                self.client.approve_assignment(AssignmentId=assignmentid)
             except:
                 continue
 
