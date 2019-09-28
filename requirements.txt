@@ -3,10 +3,11 @@
 
 pymongo
 tornado
-boto
+boto3
 validators
 future-fstrings
 jsonpickle
+xmltodict
 
 # Only if on linux
 #python-daemon==1.6
