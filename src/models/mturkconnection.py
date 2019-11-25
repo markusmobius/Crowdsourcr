@@ -11,7 +11,7 @@ class MTurkConnection(object):
                  access_key=None, 
                  secret_key=None, 
                  email=None, 
-                 hitpayment=1.0, 
+                 hitpayment="0.01", 
                  running=False, 
                  hitid=None, 
                  title="News Classification Task", 
@@ -34,31 +34,38 @@ class MTurkConnection(object):
         environments = {
             "production": {
                 "endpoint": "https://mturk-requester.us-east-1.amazonaws.com",
-                "preview": "https://www.mturk.com/mturk/preview"
+                "preview": "https://www.mturk.com/mturk/preview",
+                "manage": "https://requester.mturk.com/mturk/manageHITs"
             },
             "sandbox": {
                 "endpoint": "https://mturk-requester-sandbox.us-east-1.amazonaws.com",
-                "preview": "https://workersandbox.mturk.com/mturk/preview"
+                "preview": "https://workersandbox.mturk.com/mturk/preview",
+                "manage": "https://requestersandbox.mturk.com/mturk/manageHITs"
             },
         }
-        mturk_environment = environments["production"] if environment == 'production' else environments["sandbox"]
+        self.mturk_environment = environments["production"] if environment == 'production' else environments["sandbox"]
         self.client = boto3.client('mturk',
-                                aws_access_key_id = self.access_key,
-                                aws_secret_access_key = self.secret_key,
-                                region_name='us-east-1',
-                                endpoint_url = mturk_environment['endpoint'])
-        self.hitid = hitid
-    def try_auth(self, access_key=None, secret_key=None):
+            endpoint_url = self.mturk_environment['endpoint'], 
+            region_name = 'us-east-1', 
+            aws_access_key_id = self.access_key, 
+            aws_secret_access_key = self.secret_key)
+        self.hit_id = hitid
+
+    def try_auth(self):
         return True if self.get_balance() else False
 
     def get_balance(self):
         try:
-            return self.client.get_account_balance()
+            balance = self.client.get_account_balance()['AvailableBalance']
+            print("Account balance: %s" % (balance))
+            #print("Account balance: %d" % (balance['AvailableBalance']))
+            return balance
         except:
+            print("Problem getting account balance")
             return None
 
     def get_all_hits(self):
-        return [hit.HITId for hit in self.client.list_hits()]
+        return [hit['HITId'] for hit in self.client.list_hits()['HITs']]
     
     def serialize(self):
         return { 'access_key' : self.access_key,
@@ -67,7 +74,7 @@ class MTurkConnection(object):
                  'running' : self.running,
                  'admin_host': self.admin_host,
                  'hitpayment' : self.hitpayment,
-                 'hitid' : self.hitid,
+                 'hitid' : self.hit_id,
                  'title' : self.title,
                  'description' : self.description,
                  'keywords' : self.keywords,
@@ -75,58 +82,76 @@ class MTurkConnection(object):
     @classmethod
     def deserialize(cls, d):
         return MTurkConnection(**d)
-    def begin_run(self, max_assignments=1, url=""):
-        hitinfo=client.create_hit(
+
+    def begin_run(self, max_assignments=1, url="https://www.google.com"):
+        question_xml = """<?xml version="1.0" encoding="UTF-8"?>
+        <ExternalQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd">
+          <ExternalURL>QUESTION_URL</ExternalURL>
+          <FrameHeight>0</FrameHeight>
+        </ExternalQuestion>
+        """
+        hitinfo = self.client.create_hit(
             MaxAssignments=max_assignments,
             Title=self.title,
             Description=self.description,
             LifetimeInSeconds=14400,
-            AssignmentDurationInSeconds=datetime.timedelta(hours=2),
+            AssignmentDurationInSeconds=60 * 60 * 2,
             Keywords=self.keywords,
             Reward=self.hitpayment,
-            QualificationRequirements=[
-                {
-                    'QualificationTypeId': 'string',
+            QualificationRequirements=[{
+                    'QualificationTypeId': '00000000000000000071',
                     'Comparator': 'EqualTo',
-                        'LocaleValues': [
-                            {
+                    'LocaleValues': [{
                             'Country': 'US',
-                            },
-                        ],
-                },
-            ],
-            Question='<p>'+self.description+' To begin, navigate to the following url: <a href="'+url+'">%('+url+')s</a>.</p>'
+                    }]
+            }],
+            Question = question_xml.replace("QUESTION_URL", url)
+            # Question='<p>'+self.description+' To begin, navigate to the following url: <a href="'+url+'">%('+url+')s</a>.</p>'
         )
 
-        
-        
-        qc1 = boto.mturk.question.QuestionContent()
-        qc1.append_field('Title','Secret Code')
-        qc1.append_field('Text', 'Enter the 16 character secret code that you will receive after you complete this task.')
-        fta1 = boto.mturk.question.FreeTextAnswer()
-        q1 = boto.mturk.question.Question(identifier='secretcode',
-                                          content=qc1,
-                                          answer_spec=boto.mturk.question.AnswerSpecification(fta1),
-                                          is_required=True)
+        self.hit_type_id = hitinfo['HIT']['HITTypeId']
+        self.hit_id = hitinfo['HIT']['HITId']
+        print("\nCreated HIT: %s" % self.hit_id)
+        print("You can view the HIT here: ")
+        print(self.mturk_environment['preview'] + "?groupId={}".format(self.hit_type_id))
+        print("And manage the results here: ")
+        print(self.mturk_environment['manage'])
+
+        # qc1 = boto.mturk.question.QuestionContent()
+        # qc1.append_field('Title','Secret Code')
+        # qc1.append_field('Text', 'Enter the 16 character secret code that you will receive after you complete this task.')
+        # fta1 = boto.mturk.question.FreeTextAnswer()
+        # q1 = boto.mturk.question.Question(identifier='secretcode',
+        #                                   content=qc1,
+        #                                   answer_spec=boto.mturk.question.AnswerSpecification(fta1),
+        #                                   is_required=True)
 
         self.running = True
-        self.hitid = hitinfo[0].HITId
         return True
-    def end_run(self, bonus={}, already_paid=[]):
+
+    def end_run(self, bonus={}, already_paid=[], hit_id = None):
+        if not self.hit_id or not self.running:
+            return []
+        if hit_id is None:
+            hit_id = self.hit_id 
         paid_bonus = []
         try:
             worker_assignments = {}
             next_token=None
-            while True :
-                response = self.self.list_assignments_for_hit(HITId=self.hitid, 
-                                                      NextToken=next_token,
-                                                      MaxResults=100)
-                if response['NextToken']== None :
-                    break
+            while True:
+                if next_token is None:
+                    response = self.client.list_assignments_for_hit(HITId = hit_id, MaxResults = 100)
+                else:
+                    response = self.client.list_assignments_for_hit(HITId=hit_id, NextToken = next_token, MaxResults=100)
+
                 for a in response['Assignments'] :
-                    if a.WorkerId not in already_paid :
-                        worker_assignments[a.WorkerId] = a.AssignmentId
-                next_token = response['NextToken']
+                    if a['WorkerId'] not in already_paid :
+                        worker_assignments[a['WorkerId']] = a['AssignmentId']
+
+                if 'NextToken' in response.keys():
+                    next_token = response['NextToken']
+                else:
+                    break
                 
             for workerid, assignmentid in worker_assignments.iteritems() :
                 if workerid not in bonus :
@@ -134,54 +159,45 @@ class MTurkConnection(object):
                 else :
                     bonus_amt = min(10, max(0.05, round(bonus[workerid] * self.bonus, 2)))
                     self.client.send_bonus(WorkerId=workerid,
-                                           BonusAmount=bonus_amt,
+                                           BonusAmount=str(bonus_amt),
                                            AssignmentId=assignmentid,
-                                           Reason='Bonus for completion of classification task.')
+                                           Reason='Bonus for completion of task.')
                     paid_bonus.append({'workerid' : workerid,
                                        'percent' : bonus[workerid],
                                        'amount' : bonus_amt,
                                        'assignmentid' : assignmentid})
-            self.client.delete_hit(HITId=self.hitid)
+            try:
+                self.client.delete_hit(HITId=hit_id)
+                print("Deleted hit: ", hit_id)
+            except:
+                self.client.update_expiration_for_hit(HITId = hit_id, ExpireAt = datetime.datetime(2019, 1, 1))
+                print("Expired hit: ", hit_id)
         except:
             print "Error caught when trying to end run."
             raise
         self.running = False
         return paid_bonus
-        # Retain HITId to continue making payments even after HIT has finished running.
-        # self.hitid = None
+
     def get_payments_to_make(self):
-        if not self.hitid or not self.running:
+        if not self.hit_id or not self.running:
             return []
         else:
             all_assignments = []
+            next_token = None 
             while True :
-                response = self.self.list_assignments_for_hit(HITId=self.hitid, 
-                                                      NextToken=next_token,
-                                                      MaxResults=100)
-                if response['NextToken']== None :
-                    break
-                for a in response['Assignments'] :
-                    if a.WorkerId not in already_paid :
-                        worker_assignments[a.WorkerId] = a.AssignmentId
-                next_token = response['NextToken']
-
-
-            page_num = 1
-            while True:
                 try:
-                    tmp_asg = self.mturk_conn.get_assignments(self.hitid,
-                                                              page_number=page_num,
-                                                              page_size=100)
-                    if len(tmp_asg) == 0:
+                    if next_token is None:
+                        response = self.client.list_assignments_for_hit(HITId = self.hit_id, MaxResults = 100)
+                    else:
+                        response = self.client.list_assignments_for_hit(HITId=self.hit_id, NextToken = next_token, MaxResults=100)
+        
+                    all_assignments = [[a['AssignmentId'], a['WorkerId'], a['Answer']] for a in response['Assignments'] if a['AssignmentStatus'] == 'Submitted']
+                    if 'NextToken' in response.keys():
+                        next_token = response['NextToken']
+                    else:
                         break
-                    all_assignments += [[a.AssignmentId,
-                                         a.WorkerId,
-                                         a.answers[0][0].fields[0].strip().lower()]
-                                        for a in tmp_asg 
-                                        if a.AssignmentStatus == 'Submitted']
-                    page_num += 1
-                except : 
-                    raise
+                except:
+                    raise 
             
             return all_assignments
 
@@ -193,40 +209,29 @@ class MTurkConnection(object):
                 continue
 
 
+if __name__=='__main__':
+    mturk = MTurkConnection(access_key="KEYHERE", secret_key="SECRETHERE")
+    mturk.try_auth()
+    mturk.begin_run()
+    print("Payments to make: ", mturk.get_payments_to_make())
+    mturk.end_run()
 
+    hits = mturk.client.list_hits()['HITs']
+    if True:
+        for hit in hits:
+            hitid = hit['HITId']
+            title = hit['Title']
+            creation_date = hit['CreationTime']
+            status = hit['HITStatus']
+            print(hitid, title, creation_date, status)
 
-def _assignment_scratchpad():
-    """
-    # can[ only call this on status==Submitted
-    #        self.mturk_conn.approve_assignment(all_assignments[0].AssignmentId)
-    print all_assignments[0].AssignmentStatus
-    print all_assignments[0].AssignmentId
-    print all_assignments[0].AutoApprovalTime
-    print all_assignments[0].HITId
-    print all_assignments[0].WorkerId
-    print all_assignments[0].answers[0][0].fields[0]
-    print dir(all_assignments[0].answers[0][0].fields)
-    
-    
-    all_assignments = self.mturk_conn.get_assignments(self.hitid) returns
-    
-    list of ['AcceptTime', 'Assignment', 'AssignmentId', 'AssignmentStatus', 'AutoApprovalTime', 'HITId', 'SubmitTime', 'WorkerId']
-    print all_assignments[0].AssignmentStatus
-    print all_assignments[0].AssignmentId
-    print all_assignments[0].AutoApprovalTime
-    print all_assignments[0].HITId
-    print all_assignments[0].WorkerId
-    
-    outputs
-    
-    Submitted
-    2OQ5COW0LGRZ3MSYTQ365NUZ2G8Y75
-    2013-09-05T17:19:19Z
-    22ESBRI8IUB2Y8PFXMJTVB3L22CG4T
-    A1C3R0EZ6HI9OX
-    
-    and we can fetch the answer (we only have one field, the secret code...) with:
-    all_assignments[0].answers[0][0].fields[0]
-    
-    """
-    
+            if status == "Reviewable":
+                print("Deleting hit.", hitid)
+                mturk.client.delete_hit(HITId = hitid)
+            else:
+                try:
+                    mturk.client.update_expiration_for_hit(HITId = hitid, ExpireAt = datetime.datetime(2015, 1, 1))
+                    mturk.client.delete_hit(HITId = hitid)
+                    print("Expiring and deleting hit.", hitid)
+                except:
+                    print("Could not expire and delete hit ", hitid)
