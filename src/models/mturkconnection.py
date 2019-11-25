@@ -42,9 +42,9 @@ class MTurkConnection(object):
             },
         }
         mturk_environment = environments["production"] if environment == 'production' else environments["sandbox"]
-        self.client=mturk = boto3.client('mturk',
+        self.client = boto3.client('mturk',
                                 aws_access_key_id = self.access_key,
-                                aws_secret_access_key = self.secret_ke,
+                                aws_secret_access_key = self.secret_key,
                                 region_name='us-east-1',
                                 endpoint_url = mturk_environment['endpoint'])
         self.hitid = hitid
