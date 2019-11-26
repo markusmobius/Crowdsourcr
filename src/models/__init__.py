@@ -12,12 +12,12 @@ for module in os.listdir(os.path.dirname(__file__)):
             print "Warning: Unable to load class '"+cls.__name__+"' from file '"+module+"'."
 del module"""
 
-from admin import Admin
-from ctype import CType
-from ctask import CTask
-from set import SET
-from cresponse import CResponse
-from mturkconnection import MTurkConnection
-from chit import CHIT
-from question import Question
-from xmltask import XMLTask
+from .admin import Admin
+from .ctype import CType
+from .ctask import CTask
+from .set import SET
+from .cresponse import CResponse
+from .mturkconnection import MTurkConnection
+from .chit import CHIT
+from .question import Question
+from .xmltask import XMLTask

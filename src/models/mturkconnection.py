@@ -130,7 +130,7 @@ class MTurkConnection(object):
                 
             for workerid, assignmentid in worker_assignments.iteritems() :
                 if workerid not in bonus :
-                    print "Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid
+                    print("Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid)
                 else :
                     bonus_amt = min(10, max(0.05, round(bonus[workerid] * self.bonus, 2)))
                     self.client.send_bonus(WorkerId=workerid,
@@ -143,7 +143,7 @@ class MTurkConnection(object):
                                        'assignmentid' : assignmentid})
             self.client.delete_hit(HITId=self.hitid)
         except:
-            print "Error caught when trying to end run."
+            print("Error caught when trying to end run.")
             raise
         self.running = False
         return paid_bonus

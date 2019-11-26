@@ -17,7 +17,7 @@ import json
 import helpers
 import urllib
 import csv
-import StringIO
+import io
 import app_config
 from io import BytesIO
 from zipfile import ZipFile
@@ -25,9 +25,11 @@ from zipfile import ZipFile
 from tornado.options import define, options
 from helpers import CustomEncoder, Lexer, Status
 import jsonpickle
+import tornado.auth
  
 class BaseHandler(tornado.web.RequestHandler):
     __superusers__ = app_config.superadmins
+    
     @property
     def logging(self) :
         return self.application.logging
@@ -71,10 +73,10 @@ class BaseHandler(tornado.web.RequestHandler):
     def main_hit_url(self) :
         return "http://" + self.request.host + "/HIT"
     def is_super_admin(self):
-        admin_email = self.get_secure_cookie('admin_email')
+        admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         return admin_email in self.__superusers__
     def get_current_admin(self):
-        admin = self.admin_controller.get_by_email(self.get_secure_cookie("admin_email"))
+        admin = self.admin_controller.get_by_email(tornado.escape.to_unicode(self.get_secure_cookie("admin_email")))
     def return_json(self, data):
         self.set_header('Content-Type', 'application/json')
         self.finish(json.dumps(data, indent = 4, sort_keys = True))
@@ -123,68 +125,28 @@ class AdminAllHandler(BaseHandler) :
         else:
             self.write("error")
 
-class GoogleLoginHandler(BaseHandler):
-    @tornado.web.asynchronous
-    def get(self) :
-        if self.admin_controller.get_by_email(self.get_secure_cookie('admin_email', '')) :
+class GoogleLoginHandler(BaseHandler, tornado.auth.GoogleOAuth2Mixin):
+    @tornado.gen.coroutine
+    def get(self):
+        if self.get_argument('code', False):
+            redirect_uri=self.request.protocol+"://"+self.request.host+self.application.settings['login_url']
+            access = yield self.get_authenticated_user(
+                redirect_uri=redirect_uri,
+                code=self.get_argument('code'))
+            user = yield self.oauth2_request("https://www.googleapis.com/oauth2/v1/userinfo", access_token=access["access_token"])
+            print(json.dumps(user))
+            self.set_secure_cookie('admin_email', user['email'])
+            self.set_secure_cookie('admin_name', user['name'])
             self.redirect('/admin/')
-            return
-
-        import urlparse
-        self.redirect_uri = urlparse.urljoin(self.request.full_url(),
-                                             self.application.settings['login_url'])
-
-        if self.get_argument("state", None) == self.get_secure_cookie("oauth_state") != None :
-            self._on_auth()
-            return
-
-        state = self.random256()
-        self.set_secure_cookie("oauth_state", state)
-        args = {
-            "response_type" : "code",
-            "client_id" : app_config.google['client_id'],
-            "redirect_uri" : self.redirect_uri,
-            "scope" : "openid email",
-            "approval_prompt" : "auto",
-            "state" : state
-            }
-        url = "https://accounts.google.com/o/oauth2/auth"
-        self.redirect(url + "?" + urllib.urlencode(args))
-    def _on_auth(self) :
-        if self.get_argument("error", None) :
-            raise tornado.web.HTTPError(500, self.get_argument("error"))
-        code = self.get_argument("code")
-        args = {
-            "code" : code,
-            "client_id" : app_config.google['client_id'],
-            "client_secret" : app_config.google['client_secret'],
-            "redirect_uri" : self.redirect_uri,
-            "grant_type" : "authorization_code"
-            }
-        tornado.httpclient.AsyncHTTPClient().fetch("https://accounts.google.com/o/oauth2/token",
-                                                   self._on_token, method="POST", body=urllib.urlencode(args))
-    def _on_token(self, response) :
-        if response.error :
-            raise tornado.web.HTTPError(500, "Getting tokens failed")
-        data = json.loads(response.body)
-        self.access_data = data
-        headers = tornado.httputil.HTTPHeaders({
-                "Authorization" : "Bearer " + data['access_token']
-                })
-        tornado.httpclient.AsyncHTTPClient().fetch("https://www.googleapis.com/userinfo/v2/me",
-                                                   headers=headers, callback=self._on_userinfo)
-    def _on_userinfo(self, response) :
-        if response.error :
-            raise tornado.web.HTTPError(500, "Getting user info failed")
-        data = json.loads(response.body)
-
-        self.set_secure_cookie('admin_email', data['email'])
-        self.set_secure_cookie('admin_name', data['name'])
-        self.redirect('/admin/')
-
-    def random256(self) :
-        import base64
-        return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
+        else:
+            redirect_uri=self.request.protocol+"://"+self.request.host+self.application.settings['login_url']
+            yield self.authorize_redirect(
+                redirect_uri=redirect_uri,
+                client_id=app_config.google['client_id'],
+                client_secret=app_config.google['client_secret'],
+                scope=['profile', 'email'],
+                response_type='code',
+                extra_params={'approval_prompt': 'auto'})
 
 
 class XMLUploadHandler(BaseHandler):
@@ -207,7 +169,7 @@ class XMLUploadHandler(BaseHandler):
                     self.chit_controller.create(hit)
                 for set in xmltask.get_sets():
                     self.set_controller.create(set)
-                for name, doc in xmltask.docs.iteritems():
+                for name, doc in xmltask.docs.items():
                     self.cdocument_controller.create(name, doc)
             self.return_json({'success' : True})
         except Exception as x :
@@ -223,7 +185,7 @@ class DocumentViewHandler(BaseHandler):
 
 class RecruitingBeginHandler(BaseHandler):
     def post(self):
-        admin_email = self.get_secure_cookie('admin_email')
+        admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         max_assignments = self.chit_controller.get_agg_hit_info()['num_hits']
         if admin_email:
             self.event_controller.add_event(admin_email + " began run")
@@ -236,7 +198,7 @@ class RecruitingBeginHandler(BaseHandler):
 class RecruitingEndHandler(BaseHandler):
     def post(self):
         #TODO: validate expermenter
-        admin_email = self.get_secure_cookie('admin_email')
+        admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         if not admin_email :
             return
         tkconn = self.mturkconnection_controller.get_by_email(admin_email)
@@ -261,7 +223,7 @@ class RecruitingEndHandler(BaseHandler):
 
             worker_bonus_info =  helpers.calculate_worker_bonus_info(task_response_info, evaluated_conditions)
             self.db.bonus_info.drop()
-            for wid, info in worker_bonus_info.iteritems() :
+            for wid, info in worker_bonus_info.items() :
                 self.db.bonus_info.insert({'workerid' : wid,
                                            'percent' : info['pct'],
                                            'explanation' : info['exp'],
@@ -278,7 +240,7 @@ class RecruitingEndHandler(BaseHandler):
             else:
                 bonus_pct = 'rawpct'
             worker_bonus_percent = { wid : info[bonus_pct]
-                                     for wid, info in worker_bonus_info.iteritems() }
+                                     for wid, info in worker_bonus_info.items() }
             self.mturkconnection_controller.end_run(email=admin_email,
                                                     bonus=worker_bonus_percent,
                                                     environment=self.settings['environment'])
@@ -290,7 +252,7 @@ class BonusInfoHandler(BaseHandler) :
     def get(self) :
         self.set_header ('Content-Type', 'text/json')
         self.set_header ('Content-Disposition', 'attachment; filename=bonusinfo.json')
-        admin_email = self.get_secure_cookie('admin_email')
+        admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         if admin_email and self.admin_controller.get_by_email(admin_email) :
             bi = self.db.bonus_info.find()
             pb = self.db.paid_bonus.find()
@@ -316,7 +278,7 @@ class BonusInfoHandler(BaseHandler) :
 
 class RecruitingInfoHandler(BaseHandler):
     def post(self):
-        admin_email = self.get_secure_cookie('admin_email')
+        admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         if admin_email:
             recruiting_info = json.loads(self.get_argument('data', '{}'))
             recruiting_info['email'] = admin_email
@@ -325,9 +287,9 @@ class RecruitingInfoHandler(BaseHandler):
         self.finish()
 
 class AdminInfoHandler(BaseHandler):
-    @tornado.web.asynchronous
+    #@tornado.web.asynchronous
     def get(self):
-        admin_email = self.get_secure_cookie('admin_email')
+        admin_email= tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         if not admin_email:
             self.return_json({'authed' : False, 'reason' : 'no_login'})
         if not self.admin_controller.get_by_email(admin_email):
@@ -352,8 +314,8 @@ class AdminInfoHandler(BaseHandler):
         outstanding_hits = self.currentstatus_controller.outstanding_hits()
         self.return_json({'authed' : True,
                           'environment' : self.settings['environment'],
-                          'email' : self.get_secure_cookie('admin_email'),
-                          'full_name' : self.get_secure_cookie('admin_name'),
+                          'email' : tornado.escape.to_unicode(self.get_secure_cookie('admin_email')),
+                          'full_name' : tornado.escape.to_unicode(self.get_secure_cookie('admin_name')),
                           'superadmin' : self.is_super_admin(),
                           'hitinfo' : hit_info,
                           'hitstatus' : {'outstanding' : outstanding_hits,
@@ -367,7 +329,7 @@ class AdminInfoHandler(BaseHandler):
 
 class AdminHitInfoHandler(BaseHandler):
     def get(self, id=None) :
-        admin_email = self.get_secure_cookie('admin_email')
+        admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         if admin_email and self.admin_controller.get_by_email(admin_email):
             if id == None :
                 ids = self.chit_controller.get_chit_ids()
@@ -380,13 +342,13 @@ class AdminHitInfoHandler(BaseHandler):
 
 class AdminTaskInfoHandler(BaseHandler):
     def get(self, tid) :
-        admin_email = self.get_secure_cookie('admin_email')
+        admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         if admin_email and self.admin_controller.get_by_email(admin_email):
             task = self.ctask_controller.get_task_by_id(tid)
             modules = self.ctype_controller.get_by_names(task.modules)
             self.return_json({
                 "task" : task.serialize(),
-                "modules" : {name : module.to_dict() for name, module in modules.iteritems()}
+                "modules" : {name : module.to_dict() for name, module in modules.items()}
             })
         else :
             self.return_json(False)
@@ -399,7 +361,7 @@ class WorkerLoginHandler(BaseHandler):
 class CHITViewHandler(BaseHandler):
     def post(self):
         forced = False
-        workerid = self.get_secure_cookie('workerid')
+        workerid = tornado.escape.to_unicode(self.get_secure_cookie('workerid'))
         if self.get_argument('force', False) : # for letting admin see a particular hit
             forced = True
             hitid = self.get_argument('hitid', None)
@@ -434,7 +396,7 @@ class CHITViewHandler(BaseHandler):
                                                                    hitid=hitid,
                                                                    taskindex = taskindex)
                     self.return_json({"task" : task.serialize(),
-                                      "modules" : {name : module.to_dict() for name, module in modules.iteritems()},
+                                      "modules" : {name : module.to_dict() for name, module in modules.items()},
                                       "task_num" : taskindex,
                                       "num_tasks" : len(chit.tasks)})
             else:
@@ -456,7 +418,7 @@ class CHITViewHandler(BaseHandler):
 
 class WorkerPingHandler(BaseHandler) :
     def post(self) :
-        workerid = self.get_secure_cookie('workerid')
+        workerid = tornado.escape.to_unicode(self.get_secure_cookie('workerid'))
         existing_status = self.currentstatus_controller.get_current_status(workerid)
         if existing_status :
             self.db.workerpings.update({'hitid' : existing_status['hitid']},
@@ -468,7 +430,7 @@ class WorkerPingHandler(BaseHandler) :
 # https://workersandbox.mturk.com/mturk/continue?hitId=2CQU98JHSTLB3ZGMPO0IRBJEK6HQEE
 class CHITReturnHandler(BaseHandler):
     def get(self):
-        workerid = self.get_secure_cookie('workerid')
+        workerid = tornado.escape.to_unicode(self.get_secure_cookie('workerid'))
         mthitid = self.mturkconnection_controller.get_hit_id()
         if workerid :
             self.currentstatus_controller.remove(workerid)
@@ -494,7 +456,7 @@ class Set():
 
 class CResponseHandler(BaseHandler):
     def post(self):
-        worker_id = self.get_secure_cookie('workerid')
+        worker_id = tornado.escape.to_unicode(self.get_secure_cookie('workerid'))
         existing_status = self.currentstatus_controller.get_current_status(worker_id)
         if not existing_status:
             if not worker_id :
@@ -586,11 +548,11 @@ class CSVDownloadHandler(BaseHandler):
         """
         completed_workers = self.chit_controller.get_workers_with_completed_hits()
 
-        task_submission_times_output = StringIO.StringIO()
+        task_submission_times_output = io.StringIO()
         task_submission_times_csvwriter = csv.writer(task_submission_times_output, delimiter='\t')
         self.cresponse_controller.write_task_submission_times_to_csv(task_submission_times_csvwriter, completed_workers=completed_workers)
 
-        question_responses_output = StringIO.StringIO()
+        question_responses_output = io.StringIO()
         question_responses_csvwriter = csv.writer(question_responses_output, delimiter='\t')
         self.cresponse_controller.write_question_responses_to_csv(question_responses_csvwriter, completed_workers=completed_workers)
 

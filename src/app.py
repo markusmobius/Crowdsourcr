@@ -39,7 +39,7 @@ class Application(tornado.web.Application):
         self.db = pymongo.MongoClient()[db_name]
         if drop == "REALLYREALLY" :
             clear_db(self.db)
-            print "Cleared."
+            print("Cleared.")
             sys.exit(0)
 
         self.asynchronizer = asynchronizer.Asynchronizer(callback_transformer=asynchronizer.in_ioloop)
@@ -52,7 +52,8 @@ class Application(tornado.web.Application):
             "cookie_secret": Settings.COOKIE_SECRET,
             "root_path": Settings.ROOT_PATH,
             "login_url": "/admin/login/",
-            "environment" : environment
+            "environment" : environment,
+            "google_oauth" :{"key": app_config.google['client_id'], "secret": app_config.google['client_secret']}           
         }
 
         app_handlers = [

@@ -3,7 +3,7 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
-from question import Question
+from .question import Question
 from helpers import CustomEncoder, Lexer, Status
 import jsonpickle
 

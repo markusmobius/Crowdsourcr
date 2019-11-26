@@ -1,11 +1,11 @@
 import threading
-import Queue
+import queue
 import tornado.ioloop
 
 class Asynchronizer(object) :
     def __init__(self, callback_transformer = (lambda x : x)) :  
         self.callback_transformer = callback_transformer
-        self.queue = Queue.Queue()
+        self.queue = queue.Queue()
         self.thread = threading.Thread(target=self.worker)
         self.alive = True
     def register_callback(self, thunk, callback) :
