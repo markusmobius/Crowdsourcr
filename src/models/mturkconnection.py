@@ -184,7 +184,7 @@ class MTurkConnection(object):
                 
             for workerid, assignmentid in worker_assignments.iteritems() :
                 if workerid not in bonus :
-                    print "Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid
+                    print("Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid)
                 else :
                     bonus_amt = min(10, max(0.01, round(bonus[workerid] * self.bonus, 2)))
                     self.client.send_bonus(WorkerId=workerid,
@@ -198,7 +198,7 @@ class MTurkConnection(object):
             self.client.update_expiration_for_hit(HITId = self.hit_id, ExpireAt = datetime.datetime(2019, 1, 1))
             print("Expired hit: ", self.hit_id)
         except:
-            print "Error caught when trying to end run."
+            print("Error caught when trying to end run.")
             raise
         self.running = False
         return paid_bonus

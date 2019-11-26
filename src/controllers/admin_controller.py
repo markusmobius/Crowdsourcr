@@ -20,8 +20,8 @@ class AdminController(object):
         except TypeError as e:
             return None
         except Exception as e:
-            print type(e)
-            print e
+            print(type(e))
+            print(e)
             raise
     def create(self, d) :
         c = models.Admin.from_dict(d)
@@ -29,5 +29,5 @@ class AdminController(object):
         return c
     def remove(self, d) :
         c = self.get_by_email(d['email'])
-        print c
+        print(c)
         self.db.admin.remove(c.to_dict())

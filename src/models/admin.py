@@ -1,4 +1,4 @@
-from model import Model
+from .model import Model
 
 class Admin(Model) :
     def __init__(self, email) :

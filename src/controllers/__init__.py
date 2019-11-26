@@ -9,14 +9,14 @@ for module in os.listdir(os.path.dirname(__file__)):
         setattr(sys.modules[__name__], cls.__name__, cls)    
 del module"""
 
-from admin_controller import AdminController
-from ctype_controller import CTypeController
-from ctask_controller import CTaskController
-from cresponse_controller import CResponseController
-from mturkconnection_controller import MTurkConnectionController
-from xmltask_controller import XMLTaskController
-from chit_controller import CHITController
-from cdocument_controller import CDocumentController
-from current_status_controller import CurrentStatusController
-from event_controller import EventController
-from set_controller import SetController
+from .admin_controller import AdminController
+from .ctype_controller import CTypeController
+from .ctask_controller import CTaskController
+from .cresponse_controller import CResponseController
+from .mturkconnection_controller import MTurkConnectionController
+from .xmltask_controller import XMLTaskController
+from .chit_controller import CHITController
+from .cdocument_controller import CDocumentController
+from .current_status_controller import CurrentStatusController
+from .event_controller import EventController
+from .set_controller import SetController
