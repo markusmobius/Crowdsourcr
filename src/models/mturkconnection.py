@@ -12,7 +12,7 @@ class MTurkConnection(object):
                  access_key=None, 
                  secret_key=None, 
                  email=None, 
-                 hitpayment="0.01", 
+                 hitpayment=0.01, 
                  running=False, 
                  hitid=None, 
                  title="News Classification Task", 
@@ -52,7 +52,7 @@ class MTurkConnection(object):
             aws_secret_access_key = self.secret_key)
         self.hit_id = hitid
 
-    def try_auth(self):
+    def try_auth(self, access_key = None, secret_key = None):
         return True if self.get_balance() else False
 
     def get_balance(self):
@@ -128,7 +128,7 @@ class MTurkConnection(object):
             LifetimeInSeconds=14400,
             AssignmentDurationInSeconds=60 * 60 * 2,
             Keywords=self.keywords,
-            Reward=self.hitpayment,
+            Reward=str(self.hitpayment),
             QualificationRequirements=[{
                     'QualificationTypeId': '00000000000000000071',
                     'Comparator': 'EqualTo',
