@@ -40,10 +40,7 @@ Linux
 For these installation instructions, we will assume an Ubuntu
 installation.
 
-Make sure that Python 3 and ``pip`` are installed:
-::
-
-  sudo apt-get install python3.8 python-pip
+Make sure that Python 3 and ``pip`` are installed.
 
 Then, either install the requirements as described in
 ``requirements.txt`` (and possibly update the version numbers), or
@@ -184,14 +181,14 @@ installation, too.
 With pip installed, now Python libraries may be installed:
 ::
 
-pip install tornado
-pip install pymongo
-pip install boto3
-pip install docutils
-pip install validators
-pip install future-fstrings
-pip install jsonpickle
-pip install xmltodict
+ pip install tornado
+ pip install pymongo
+ pip install boto3
+ pip install docutils
+ pip install validators
+ pip install future-fstrings
+ pip install jsonpickle
+ pip install xmltodict
 
 Install MongoDB_.  To set up the database, go into Mongo's ``bin``
 directory with the command promt and run
@@ -842,7 +839,7 @@ example:
 
 
 Conditional Questions
----------
+---------------------
 
 The display of questions can be made conditional on the answer to other 
 questions by specifying a ``<condition>``:
@@ -903,7 +900,7 @@ share of bonus points actually awarded.
 
 
 Specifying a bonus
-+++++++++++++++
+++++++++++++++++++
 
 Bonuses can be specified on a per-question basis by adding a ``<bonus>``
 element to the XML file. By default the maximal number of bonus
@@ -957,7 +954,7 @@ Two kinds of bonus schemes are available:
 
 
 Bonus calculation
-+++++++++++++++
++++++++++++++++++
 
 As described above, crowdsourcer will tally up the number of bonus
 points awarded for each question according to the specified scheme,

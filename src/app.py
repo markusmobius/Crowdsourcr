@@ -11,6 +11,7 @@ import hashlib
 import os
 import sys
 import traceback
+import asyncio
 
 import Settings
 import asynchronizer
@@ -171,6 +172,8 @@ def start_as_daemon() :
         pid.remove(pidfile_path)
 
 def main():
+    if os.name == 'nt':
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     tornado.options.parse_command_line()
     if options.daemonize :
         start_as_daemon()
