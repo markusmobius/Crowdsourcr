@@ -1,4 +1,4 @@
-from question import Question
+from .question import Question
 
 class CType(object) :
     def __init__(self, name=None, header=None, questions=[]) :
@@ -47,7 +47,7 @@ class CType(object) :
             if not questions[r['varname']].validate(r, module_responses) :
                 return False
             valids.add(r['varname'])
-        if valids != set(questions.iterkeys()) :
+        if valids != set(questions.keys()) :
             return False
         return True
 

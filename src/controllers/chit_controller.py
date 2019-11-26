@@ -26,7 +26,7 @@ class CHITController(object):
         #loaded_chits = [c['hitid'] for c in cl] if cl else []
         ct = datetime.datetime.utcnow()
         min_seconds = 30.0
-        print outstanding_hits
+        print(outstanding_hits)
         d = self.db.chits.find_one({'$and' : 
                                     [{ 'num_completed_hits' : {'$lt' : 1} },
                                      { 'exclusions' : {'$nin' : exclusions}},

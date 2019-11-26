@@ -4,15 +4,7 @@ from helpers import CustomEncoder, Lexer, Status
 import jsonpickle
 
 
-class QTypeRegistry(type) :
-    def __init__(cls, name, bases, dct) :
-        if hasattr(cls, "typeName") :
-            Question.qtype_subclasses[cls.typeName] = cls
-        super(QTypeRegistry, cls).__init__(name, bases, dct)
-
 class Question(object) :
-    __metaclass__ = QTypeRegistry
-    qtype_subclasses = {}
     def __init__(self, varname=None, condition=None, questiontext=None, helptext=None, options=None, valuetype=None, bonus=None, bonuspoints=None):
         def validate_bonus(bonus) :
             if bonus == None or bonus == 'linear':
@@ -52,7 +44,16 @@ class Question(object) :
         self.valuetype = valuetype
     @classmethod
     def deserialize(cls, d) :
-        return cls.qtype_subclasses[d['valuetype']].deserialize(d)
+        if d['valuetype']=="categorical":
+           return CategoricalQuestion.deserialize(d)
+        if d['valuetype']=="numeric":
+           return NumericQuestion.deserialize(d)
+        if d['valuetype']=="text":
+           return TextQuestion.deserialize(d)
+        if d['valuetype']=="url":
+           return URLQuestion.deserialize(d)
+        if d['valuetype']=="comment":
+           return CommentQuestion.deserialize(d)
     def serialize(self) :
         return {'valuetype' : self.valuetype,
                 'varname' : self.varname,
@@ -112,7 +113,16 @@ class Question(object) :
     # Currently only used for categorical questions.
     @classmethod
     def parse_content_from_xml(cls, question_type, question_content):
-        return cls.qtype_subclasses[question_type].parse_content_from_xml(question_content)
+        if question_type=="categorical":
+           return CategoricalQuestion.parse_content_from_xml(question_content)
+        if question_type=="numeric":
+           return NumericQuestion.parse_content_from_xml(question_content)
+        if question_type=="text":
+           return TextQuestion.parse_content_from_xml(question_content)
+        if question_type=="url":
+           return URLQuestion.parse_content_from_xml(question_content)
+        if question_type=="comment":
+           return CommentQuestion.parse_content_from_xml(question_content)
 
 # Allows question-specific deserialization (not currently used).
 # Otherwise unnecessary.

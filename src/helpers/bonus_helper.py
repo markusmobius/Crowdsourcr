@@ -80,7 +80,7 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
                         else:
                             bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
                             worker_bonus_info[workerid]['exp'].append(bonus_exp)
-    print worker_bonus_info
+    print(worker_bonus_info)
 
     return worker_bonus_info
 
@@ -112,7 +112,7 @@ def normalize_bonus_info(worker_bonus_info) :
                               'best' : max_bonus_percent}
                             for a in worker_bonus_percent}
 
-    print worker_bonus_percent
+    print(worker_bonus_percent)
 
     return worker_bonus_percent
 
