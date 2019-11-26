@@ -11,6 +11,7 @@ import hashlib
 import os
 import sys
 import traceback
+import asyncio
 
 import Settings
 import asynchronizer
@@ -39,7 +40,7 @@ class Application(tornado.web.Application):
         self.db = pymongo.MongoClient()[db_name]
         if drop == "REALLYREALLY" :
             clear_db(self.db)
-            print "Cleared."
+            print("Cleared.")
             sys.exit(0)
 
         self.asynchronizer = asynchronizer.Asynchronizer(callback_transformer=asynchronizer.in_ioloop)
@@ -52,7 +53,8 @@ class Application(tornado.web.Application):
             "cookie_secret": Settings.COOKIE_SECRET,
             "root_path": Settings.ROOT_PATH,
             "login_url": "/admin/login/",
-            "environment" : environment
+            "environment" : environment,
+            "google_oauth" :{"key": app_config.google['client_id'], "secret": app_config.google['client_secret']}           
         }
 
         app_handlers = [
@@ -170,6 +172,8 @@ def start_as_daemon() :
         pid.remove(pidfile_path)
 
 def main():
+    if os.name == 'nt':
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     tornado.options.parse_command_line()
     if options.daemonize :
         start_as_daemon()

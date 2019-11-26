@@ -3,8 +3,8 @@
 ============================
 
 :Author:
-  Kyle Miller
-:Modified: June 2014
+  Kyle Miller, Ling Dong and Markus Mobius
+:Modified: November 2019
 
 .. contents:: Table of Contents
 
@@ -40,10 +40,7 @@ Linux
 For these installation instructions, we will assume an Ubuntu
 installation.
 
-Make sure that Python 2.7 and ``pip`` are installed:
-::
-
-  sudo apt-get install python2.7 python-pip
+Make sure that Python 3 and ``pip`` are installed.
 
 Then, either install the requirements as described in
 ``requirements.txt`` (and possibly update the version numbers), or
@@ -171,11 +168,9 @@ using Windows Server for instance.  See
 http://windows.microsoft.com/en-us/windows/open-port-windows-firewall
 for guidance.
 
-Install Python_ 2.7.  Make sure and enable the setting to place Python
+Install Python 3.  Make sure and enable the setting to place Python
 in the system path.  Otherwise, you will need to modify the
-Crowdsourcer startup script with the location of your Python.  Make
-sure that ``python`` refers to Python 2.7 and not Python 3, otherwise
-the software is likely not to work correctly!
+Crowdsourcer startup script with the location of your Python.
 
 Install the Python packaging system pip_.  You will be running
 ``python get-pip.py``, which is a good test of your python
@@ -186,23 +181,14 @@ installation, too.
 With pip installed, now Python libraries may be installed:
 ::
 
- python -m pip install tornado
- python -m pip install pymongo
- python -m pip install boto
- python -m pip install docutils
- python -m pip install validators
- python -m pip install future-fstrings
- python -m pip install jsonpickle
-
-It may be necessary to specify version numbers if Crowdsourcer ends up
-not working later.  These commands install the newest versions of
-these packages.  For instance:
-::
-
- python -m pip install boto==2.49.1
-
-Look in ``requirements.txt`` for a known set of version numbers that
-work.
+ pip install tornado
+ pip install pymongo
+ pip install boto3
+ pip install docutils
+ pip install validators
+ pip install future-fstrings
+ pip install jsonpickle
+ pip install xmltodict
 
 Install MongoDB_.  To set up the database, go into Mongo's ``bin``
 directory with the command promt and run
@@ -853,7 +839,7 @@ example:
 
 
 Conditional Questions
----------
+---------------------
 
 The display of questions can be made conditional on the answer to other 
 questions by specifying a ``<condition>``:
@@ -914,7 +900,7 @@ share of bonus points actually awarded.
 
 
 Specifying a bonus
-+++++++++++++++
+++++++++++++++++++
 
 Bonuses can be specified on a per-question basis by adding a ``<bonus>``
 element to the XML file. By default the maximal number of bonus
@@ -968,7 +954,7 @@ Two kinds of bonus schemes are available:
 
 
 Bonus calculation
-+++++++++++++++
++++++++++++++++++
 
 As described above, crowdsourcer will tally up the number of bonus
 points awarded for each question according to the specified scheme,
