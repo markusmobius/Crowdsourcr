@@ -1,4 +1,5 @@
 import os
+import sys
 import boto3
 import xmltodict
 import json
@@ -90,6 +91,36 @@ class MTurkConnection(object):
           <FrameHeight>0</FrameHeight>
         </ExternalQuestion>
         """
+
+        question_xml = """<?xml version="1.0" encoding="UTF-8"?>
+        <QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionForm.xsd">
+        <Overview>
+            <Title>{title}</Title>
+            <FormattedContent><![CDATA[
+                <p>{description}</p>
+                <p>To begin, navigate to the following url: <a href="{url1}">{url2}</a></p>
+            ]]></FormattedContent>
+        </Overview>
+        <Question>
+            <QuestionIdentifier>secretcode</QuestionIdentifier>
+            <DisplayName>Secret Code</DisplayName>
+            <IsRequired>true</IsRequired>
+            <QuestionContent>
+                <Text>
+                    Enter the 16 character secret code that you will receive after you complete this task.
+                </Text>
+            </QuestionContent>
+            <AnswerSpecification>
+                <FreeTextAnswer>
+                    <Constraints>
+                        <Length minLength="16" maxLength="16"/>
+                    </Constraints>
+                </FreeTextAnswer>
+            </AnswerSpecification>
+        </Question>
+        </QuestionForm>
+        """.format(title = self.title, description = self.description, url1 = url, url2 = url)
+
         hitinfo = self.client.create_hit(
             MaxAssignments=max_assignments,
             Title=self.title,
@@ -129,20 +160,18 @@ class MTurkConnection(object):
         self.running = True
         return True
 
-    def end_run(self, bonus={}, already_paid=[], hit_id = None):
-        if not self.hit_id or not self.running:
+    def end_run(self, bonus={}, already_paid=[]):
+        if not self.hit_id and not self.running:
             return []
-        if hit_id is None:
-            hit_id = self.hit_id 
         paid_bonus = []
         try:
             worker_assignments = {}
             next_token=None
             while True:
                 if next_token is None:
-                    response = self.client.list_assignments_for_hit(HITId = hit_id, MaxResults = 100)
+                    response = self.client.list_assignments_for_hit(HITId = self.hit_id, MaxResults = 100)
                 else:
-                    response = self.client.list_assignments_for_hit(HITId=hit_id, NextToken = next_token, MaxResults=100)
+                    response = self.client.list_assignments_for_hit(HITId=self.hit_id, NextToken = next_token, MaxResults=100)
 
                 for a in response['Assignments'] :
                     if a['WorkerId'] not in already_paid :
@@ -157,7 +186,7 @@ class MTurkConnection(object):
                 if workerid not in bonus :
                     print "Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid
                 else :
-                    bonus_amt = min(10, max(0.05, round(bonus[workerid] * self.bonus, 2)))
+                    bonus_amt = min(10, max(0.01, round(bonus[workerid] * self.bonus, 2)))
                     self.client.send_bonus(WorkerId=workerid,
                                            BonusAmount=str(bonus_amt),
                                            AssignmentId=assignmentid,
@@ -166,12 +195,8 @@ class MTurkConnection(object):
                                        'percent' : bonus[workerid],
                                        'amount' : bonus_amt,
                                        'assignmentid' : assignmentid})
-            try:
-                self.client.delete_hit(HITId=hit_id)
-                print("Deleted hit: ", hit_id)
-            except:
-                self.client.update_expiration_for_hit(HITId = hit_id, ExpireAt = datetime.datetime(2019, 1, 1))
-                print("Expired hit: ", hit_id)
+            self.client.update_expiration_for_hit(HITId = self.hit_id, ExpireAt = datetime.datetime(2019, 1, 1))
+            print("Expired hit: ", self.hit_id)
         except:
             print "Error caught when trying to end run."
             raise
@@ -179,7 +204,7 @@ class MTurkConnection(object):
         return paid_bonus
 
     def get_payments_to_make(self):
-        if not self.hit_id or not self.running:
+        if not self.hit_id and not self.running:
             return []
         else:
             all_assignments = []
@@ -191,41 +216,86 @@ class MTurkConnection(object):
                     else:
                         response = self.client.list_assignments_for_hit(HITId=self.hit_id, NextToken = next_token, MaxResults=100)
         
-                    all_assignments = [[a['AssignmentId'], a['WorkerId'], a['Answer']] for a in response['Assignments'] if a['AssignmentStatus'] == 'Submitted']
+                    all_assignments += [[a['AssignmentId'], a['WorkerId'], a['Answer'].partition("<FreeText>")[2].partition("</FreeText>")[0]] 
+                                        for a in response['Assignments'] if a['AssignmentStatus'] == 'Submitted']
+                    
                     if 'NextToken' in response.keys():
                         next_token = response['NextToken']
                     else:
-                        break
+                        return all_assignments
                 except:
                     raise 
-            
-            return all_assignments
 
     def make_payments(self, assignment_ids=[]) :
+        npayments = 0
         for assignmentid in assignment_ids:
             try:
                 self.client.approve_assignment(AssignmentId=assignmentid)
+                npayments += 1
             except:
                 continue
+        print("Successfully made %d of %d payments" % (npayments, len(assignment_ids)))
+
+    def delete_hit(self):
+        try:
+            self.client.delete_hit(HITId=self.hit_id)
+            print("Deleted hit: ", self.hit_id)
+        except:
+            try:
+                self.client.update_expiration_for_hit(HITId = self.hit_id, ExpireAt = datetime.datetime(2019, 1, 1))
+                self.client.delete_hit(HITId=self.hit_id)
+                print("Expired and deleted hit: ", self.hit_id)
+            except:
+                print("Could not delete hit: ", self.hit_id)
+
 
 
 if __name__=='__main__':
-    mturk = MTurkConnection(access_key="KEYHERE", secret_key="SECRETHERE")
-    mturk.try_auth()
-    mturk.begin_run()
-    print("Payments to make: ", mturk.get_payments_to_make())
-    mturk.end_run()
+    ID = None
+    action = None 
+    if len(sys.argv) > 2:
+        ID = sys.argv[2]
+    if len(sys.argv) > 1:
+        action = sys.argv[1]
 
-    hits = mturk.client.list_hits()['HITs']
-    if True:
+    mturk = MTurkConnection(access_key="ACCESS", secret_key="SECRET", hitid = ID, bonus = 0.01)
+    mturk.try_auth()
+
+    if action == "-create":
+        mturk.begin_run()
+    elif action == "-details":
+        response = mturk.client.get_hit(HITId = ID)
+        for i in response['HIT']:
+            if i == "Question":
+                continue
+            print(i, response['HIT'][i])
+        response = mturk.client.list_assignments_for_hit(HITId = ID, MaxResults = 100)
+        all_assignments = [[a['AssignmentStatus'], a['AssignmentId'], a['WorkerId'], a['Answer']] 
+                                        for a in response['Assignments']]
+        print(all_assignments)
+    elif action == "-expire":
+        mturk.client.update_expiration_for_hit(HITId = ID, ExpireAt = datetime.datetime(2019, 1, 1))
+        print("Expired hit: ", ID)
+    elif action == "-delete":
+        mturk.end_run()
+        mturk.delete_hit()
+    elif action == "-pay":
+        to_pay = mturk.get_payments_to_make()
+        print("Payments to make: ", to_pay)
+        mturk.make_payments([a[0] for a in to_pay])
+    elif action == "-clear": # clears group
+        hits = mturk.client.list_hits()['HITs']
         for hit in hits:
+            groupid = hit['HITGroupId']
             hitid = hit['HITId']
             title = hit['Title']
             creation_date = hit['CreationTime']
             status = hit['HITStatus']
-            print(hitid, title, creation_date, status)
+            print("GroupID: %s | HIT: %s | Created : %s | %s | %s" % (groupid, hitid, creation_date, title, status))
 
-            if status == "Reviewable":
+            if ID is not None and hit['HITGroupId'] != ID:
+                continue
+            elif status == "Reviewable":
                 print("Deleting hit.", hitid)
                 mturk.client.delete_hit(HITId = hitid)
             else:
@@ -235,3 +305,12 @@ if __name__=='__main__':
                     print("Expiring and deleting hit.", hitid)
                 except:
                     print("Could not expire and delete hit ", hitid)
+    else:
+        hits = mturk.client.list_hits()['HITs']
+        for hit in hits:
+            groupid = hit['HITGroupId']
+            hitid = hit['HITId']
+            title = hit['Title']
+            creation_date = hit['CreationTime']
+            status = hit['HITStatus']
+            print("GroupID: %s | HIT: %s | Created : %s | %s | %s" % (groupid, hitid, creation_date, title, status))
