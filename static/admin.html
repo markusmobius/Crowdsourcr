@@ -107,8 +107,6 @@
                           $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
                           if (updateTurkInfo) {
                               var mturk_form = $('#admin-mturk-cred-form');
-                              mturk_form.find('input[name="access_key"]:first').val(data.turkinfo.access_key);
-                              mturk_form.find('input[name="secret_key"]:first').val(data.turkinfo.secret_key);
                               mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
                               mturk_form.find('input[name="hit_title"]:first').val(data.turkinfo.title);
                               var textarea = mturk_form.find('textarea[name="hit_description"]:first').val(data.turkinfo.description);
@@ -234,9 +232,7 @@
       
       function beginRecruiting(callback) {
           var form_elem = $('#admin-mturk-cred-form');
-          var mturk_info = {access_key : form_elem.find('input[name="access_key"]:first').val(),
-                            secret_key : form_elem.find('input[name="secret_key"]:first').val(),
-                            hitpayment : parseFloat(form_elem.find('input[name="hit_payment"]:first').val()),
+          var mturk_info = {hitpayment : parseFloat(form_elem.find('input[name="hit_payment"]:first').val()),
                             title : form_elem.find('input[name="hit_title"]').val(),
                             description : form_elem.find('textarea[name="hit_description"]').val(),
                             keywords : form_elem.find('input[name="hit_keywords"]').val(),
@@ -385,14 +381,6 @@
 	  <fieldset>
 	    <legend> Recruit on MTurk </legend>
 	    <p> Your account information can be found <a href="https://portal.aws.amazon.com/gp/aws/securityCredentials">here.</a></p>
-	    <div class="form-group">
-	      <label>Access Key</label>
-	      <input type="text" name="access_key" class="form-control"/>
-	    </div>
-	    <div class="form-group">
-	      <label>Secret Key</label>
-	      <input type="text" name="secret_key" class="form-control" />
-	    </div>
 	    <div class="form-group">
 	      <label>Payment per HIT</label>
 	      <div class="input-group">

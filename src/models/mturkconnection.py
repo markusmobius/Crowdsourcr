@@ -5,13 +5,12 @@ import xmltodict
 import json
 import datetime
 import asyncio
+import app_config
 
 #QuestionContent,Question,QuestionForm,Overview,AnswerSpecification,SelectionAnswer,FormattedContent,FreeTextAnswer
 
 class MTurkConnection:
-    def __init__(self, 
-                 access_key=None, 
-                 secret_key=None, 
+    def __init__(self,
                  email=None, 
                  hitpayment=0.01, 
                  running=False, 
@@ -26,8 +25,6 @@ class MTurkConnection:
         self.title = title
         self.description = description
         self.keywords = keywords
-        self.access_key = access_key
-        self.secret_key = secret_key
         self.email = email
         self.running = running
         self.hitpayment = hitpayment
@@ -51,11 +48,11 @@ class MTurkConnection:
         self.client = boto3.client('mturk',
             endpoint_url = self.mturk_environment['endpoint'], 
             region_name = 'us-east-1', 
-            aws_access_key_id = self.access_key, 
-            aws_secret_access_key = self.secret_key)
+            aws_access_key_id = app_config.aws['access_key'], 
+            aws_secret_access_key = app_config.aws['access_secret'])
         self.hit_id = hitid
 
-    async def try_auth(self, access_key = None, secret_key = None):
+    async def try_auth(self):
         return True if await self.get_balance_async() else False
 
     
@@ -77,9 +74,7 @@ class MTurkConnection:
         return [hit['HITId'] for hit in self.client.list_hits()['HITs']]
     
     def serialize(self):
-        return { 'access_key' : self.access_key,
-                 'secret_key' : self.secret_key,
-                 'email' : self.email,
+        return { 'email' : self.email,
                  'running' : self.running,
                  'admin_host': self.admin_host,
                  'preview':self.preview,
@@ -267,7 +262,7 @@ if __name__=='__main__':
     if len(sys.argv) > 1:
         action = sys.argv[1]
 
-    mturk = MTurkConnection(access_key="ACCESS", secret_key="SECRET", hitid = ID, bonus = 0.01)
+    mturk = MTurkConnection(hitid = ID, bonus = 0.01)
     mturk.try_auth()
 
     if action == "-create":
