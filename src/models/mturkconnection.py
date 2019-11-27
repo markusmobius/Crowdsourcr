@@ -8,7 +8,7 @@ import asyncio
 
 #QuestionContent,Question,QuestionForm,Overview,AnswerSpecification,SelectionAnswer,FormattedContent,FreeTextAnswer
 
-class MTurkConnection(object):
+class MTurkConnection:
     def __init__(self, 
                  access_key=None, 
                  secret_key=None, 
@@ -16,6 +16,7 @@ class MTurkConnection(object):
                  hitpayment=0.01, 
                  running=False, 
                  hitid=None, 
+                 preview=None,
                  title="News Classification Task", 
                  description="Classify a set of news articles as part of an academic research study.",
                  keywords="news, classification, research, academic",
@@ -31,7 +32,7 @@ class MTurkConnection(object):
         self.running = running
         self.hitpayment = hitpayment
         self.host = 'mechanicalturk.amazonaws.com' if environment == 'production' else 'mechanicalturk.sandbox.amazonaws.com'
-        self.preview=''
+        self.preview=preview
         self.admin_host = 'https://requester.mturk.com' if environment == 'production' else 'https://requestersandbox.mturk.com'
         self.bonus = float(bonus)
         environments = {
@@ -76,7 +77,6 @@ class MTurkConnection(object):
         return [hit['HITId'] for hit in self.client.list_hits()['HITs']]
     
     def serialize(self):
-        print("prev:"+self.preview)
         return { 'access_key' : self.access_key,
                  'secret_key' : self.secret_key,
                  'email' : self.email,
@@ -90,7 +90,7 @@ class MTurkConnection(object):
                  'keywords' : self.keywords,
                  'bonus' : self.bonus}
     @classmethod
-    def deserialize(cls, d):
+    def deserialize(cls, d):  
         return MTurkConnection(**d)
 
     async def begin_run_async(self, max_assignments=1, url="https://www.google.com"):
