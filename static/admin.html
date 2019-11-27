@@ -118,7 +118,7 @@
                           }
                           if (data.turkinfo.running) {
                               var amazonLink = data.turkinfo.admin_host + "/mturk/manageHIT?HITId=" + data.turkinfo.hitid;
-                              $('#admin-turk-info').append('<p>Currently running with HITId <a href="' + amazonLink + '" target="_blank">' + data.turkinfo.hitid + '</a>.</p>');
+                              $('#admin-turk-info').append('<p>Currently running with HITId <a href="' + amazonLink + '" target="_blank">' + data.turkinfo.hitid + '</a>.</p><p><a href="'+data.turkinfo.preview+'" target="_blank">View HIT</a>.</p>');
                               $('#admin-begin-run').hide();
                               $('#admin-end-run').show();
                               $('#upload-btn').attr("disabled", true);
@@ -340,7 +340,7 @@
   </head>
   <body>
     <div class="header-container">
-      <div class="header-title abs-center"><h3>News Crowdsourcer v1.0</h3></div>
+      <div class="header-title abs-center"><h3>News Crowdsourcer v2.0</h3></div>
     </div>
     <div class="splitscreen">
       <div id="admin-info" class="vertical-padding">

@@ -29,17 +29,17 @@ class MTurkConnectionController(object):
             d['environment']=environment
             return MTurkConnection.deserialize(d)
 
-    def begin_run(self, email=None, max_assignments=1, url="", environment="development"):
+    async def begin_run_async(self, email=None, max_assignments=1, url="", environment="development"):
         mt_conn = self.get_by_email(email=email, environment=environment)
-        is_authed = mt_conn.try_auth() if mt_conn else False
-        if is_authed and mt_conn.begin_run(max_assignments=max_assignments, url=url):
+        is_authed = await mt_conn.try_auth() if mt_conn else False
+        if is_authed and await mt_conn.begin_run_async(max_assignments=max_assignments, url=url):
             self.update(mt_conn)
 
-    def end_run(self, email=None, bonus={}, environment="development") :
+    async def end_run_async(self, email=None, bonus={}, environment="development") :
         mt_conn = self.get_by_email(email=email, environment=environment)
         ap_sel = self.db.paid_bonus.find()
         already_paid = [a['workerid'] for a in ap_sel]
-        paid_bonus = mt_conn.end_run(bonus=bonus, already_paid=already_paid)
+        paid_bonus = await mt_conn.end_run_async(bonus=bonus, already_paid=already_paid)
         for pb_info in paid_bonus :
             self.db.paid_bonus.insert(pb_info)
         self.update(mt_conn)

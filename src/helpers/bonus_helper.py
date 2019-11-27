@@ -1,26 +1,16 @@
 
 
-# TODO: use this registry to validate questions in question model.
-
-class BonusTypeRegistry(type) :
-    def __init__(cls, name, bases, dct) :
-        if hasattr(cls, "bonusType") :
-            BonusType.btype_subclasses[cls.bonusType] = cls
-        super(BonusTypeRegistry, cls).__init__(name, bases, dct)
-
 class BonusType(object) :
-    __metaclass__ = BonusTypeRegistry
-    btype_subclasses = {}
     def __init__(self) :
         pass
     @classmethod
-    def calculate_bonus(cls, bonus_info, agreed, total) :
-        if not cls.btype_subclasses.get(bonus_info['type'], None) :
-            raise Exception('Error: unsupported bonus type %s. All subclasses: %s' % (bonus_info['type'], str(cls.btype_subclasses)))
-        return cls.btype_subclasses[bonus_info['type']].calculate_bonus(bonus_info=bonus_info,
-                                                                        agreed=agreed,
-                                                                        total=total)
-
+    def calculate_bonus(cls, bonus_info, agreed, total):
+        if bonus_info['type']=="linear":
+            return LinearBonusType.calculate_bonus(bonus_info=bonus_info,agreed=agreed,total=total)
+        if bonus_info['type']=="threshold":
+            return ThresholdBonusType.calculate_bonus(bonus_info=bonus_info,agreed=agreed,total=total)
+        raise Exception('Error: unsupported bonus type %s' % (bonus_info['type']))
+              
 class LinearBonusType(BonusType) :
     bonusType = 'linear'
     @staticmethod
@@ -30,7 +20,7 @@ class LinearBonusType(BonusType) :
         exp = '%s bonus points for agreeing with %d of the %d other workers on a question with linear payment and maximal bonus points of %s' % (amt, consenters, total - 1, bonus_info['bonuspoints'])
         return (amt, exp)
 
-class ThreholdBonusType(BonusType) :
+class ThresholdBonusType(BonusType) :
     bonusType = 'threshold'
     @staticmethod
     def calculate_bonus(bonus_info, agreed, total) :
@@ -48,9 +38,9 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
     response_value -> [workerids] from RecruitingEndHandler and in
     turn CResponseController.all_responses_by_task(task).  '''
     worker_bonus_info = {}
-    for task, filtered_responses in task_response_info.iteritems() :
-        for module, varnames in filtered_responses.iteritems() :
-            for varname, responses in varnames.iteritems() :
+    for task, filtered_responses in task_response_info.items() :
+        for module, varnames in filtered_responses.items() :
+            for varname, responses in varnames.items() :
                 bonus_info = responses['__bonus__']
                 # responses is a dictionary mapping the response
                 # for 'varname' to a list of worker ids who 
@@ -58,7 +48,7 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
                 total_responses = 1.0 * sum([len(responses[c]) 
                                              for c in responses 
                                              if c != '__bonus__'])
-                for response, workerids in responses.iteritems() :
+                for response, workerids in responses.items() :
                     if response == '__bonus__' : continue
                     # total_responses measures the total number of workers
                     # who answered this question, while agreed measures
@@ -94,9 +84,9 @@ def normalize_bonus_info(worker_bonus_info) :
     min_bonus_percent = 0.0
     max_bonus_percent = 1.0
     if len(worker_bonus_percent) > 0 :
-        worst_worker = min(worker_bonus_percent.iterkeys(), 
+        worst_worker = min(worker_bonus_percent.keys(), 
                           key=(lambda key: worker_bonus_percent[key]['pct']))
-        best_worker = max(worker_bonus_percent.iterkeys(), 
+        best_worker = max(worker_bonus_percent.keys(), 
                           key=(lambda key: worker_bonus_percent[key]['pct']))
         if (worker_bonus_percent[worst_worker]['pct'] != worker_bonus_percent[best_worker]['pct']) and worker_bonus_percent[best_worker]['pct'] > 0.0:
             min_bonus_percent = worker_bonus_percent[worst_worker]['pct']
