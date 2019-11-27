@@ -23,7 +23,7 @@ class CType(object) :
         return filtered_info
     def evaluate_conditions(self, response_info={}):
         worker_conditions = {}
-        for workerid, responses in response_info.iteritems():
+        for workerid, responses in response_info.items():
             worker_conditions[workerid] = {q.varname : q.satisfies_condition(responses) for q in self.questions}
         return worker_conditions
 

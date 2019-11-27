@@ -25,7 +25,6 @@ from zipfile import ZipFile
 from tornado.options import define, options
 from helpers import CustomEncoder, Lexer, Status
 import jsonpickle
-import tornado.auth
  
 class BaseHandler(tornado.web.RequestHandler):
     __superusers__ = app_config.superadmins
@@ -126,21 +125,20 @@ class AdminAllHandler(BaseHandler) :
             self.write("error")
 
 class GoogleLoginHandler(BaseHandler, tornado.auth.GoogleOAuth2Mixin):
-    @tornado.gen.coroutine
-    def get(self):
+    async def get(self):
         if self.get_argument('code', False):
             redirect_uri=self.request.protocol+"://"+self.request.host+self.application.settings['login_url']
-            access = yield self.get_authenticated_user(
+            access = await self.get_authenticated_user(
                 redirect_uri=redirect_uri,
                 code=self.get_argument('code'))
-            user = yield self.oauth2_request("https://www.googleapis.com/oauth2/v1/userinfo", access_token=access["access_token"])
+            user = await self.oauth2_request("https://www.googleapis.com/oauth2/v1/userinfo", access_token=access["access_token"])
             print(json.dumps(user))
             self.set_secure_cookie('admin_email', user['email'])
             self.set_secure_cookie('admin_name', user['name'])
             self.redirect('/admin/')
         else:
             redirect_uri=self.request.protocol+"://"+self.request.host+self.application.settings['login_url']
-            yield self.authorize_redirect(
+            await self.authorize_redirect(
                 redirect_uri=redirect_uri,
                 client_id=app_config.google['client_id'],
                 client_secret=app_config.google['client_secret'],
@@ -184,26 +182,29 @@ class DocumentViewHandler(BaseHandler):
             raise tornado.web.HTTPError(404)
 
 class RecruitingBeginHandler(BaseHandler):
-    def post(self):
+    async def post(self):
         admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         max_assignments = self.chit_controller.get_agg_hit_info()['num_hits']
         if admin_email:
             self.event_controller.add_event(admin_email + " began run")
-            self.mturkconnection_controller.begin_run(email=admin_email, 
+            await self.mturkconnection_controller.begin_run_async(email=admin_email, 
                                                       max_assignments=max_assignments,
                                                       url=self.main_hit_url,
                                                       environment=self.settings['environment'])
         self.finish()
 
 class RecruitingEndHandler(BaseHandler):
-    def post(self):
+    async def post(self):
         #TODO: validate expermenter
         admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         if not admin_email :
             return
         tkconn = self.mturkconnection_controller.get_by_email(admin_email)
         if tkconn :
-            self.event_controller.add_event(admin_email + " ending run " + tkconn.hitid)
+            if hasattr(tkconn,"hitid"):
+                self.event_controller.add_event(admin_email + " ending run " + tkconn.hitid)
+            else:
+                self.event_controller.add_event(admin_email + " ending run")            
             completed_workers = self.chit_controller.get_workers_with_completed_hits()
             worker_bonus_info = {}
             # all_responses_by_task returns 
@@ -241,7 +242,7 @@ class RecruitingEndHandler(BaseHandler):
                 bonus_pct = 'rawpct'
             worker_bonus_percent = { wid : info[bonus_pct]
                                      for wid, info in worker_bonus_info.items() }
-            self.mturkconnection_controller.end_run(email=admin_email,
+            await self.mturkconnection_controller.end_run_async(email=admin_email,
                                                     bonus=worker_bonus_percent,
                                                     environment=self.settings['environment'])
             self.event_controller.add_event("Run ended")
@@ -287,8 +288,7 @@ class RecruitingInfoHandler(BaseHandler):
         self.finish()
 
 class AdminInfoHandler(BaseHandler):
-    #@tornado.web.asynchronous
-    def get(self):
+    async def get(self):
         admin_email= tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         if not admin_email:
             self.return_json({'authed' : False, 'reason' : 'no_login'})
@@ -302,11 +302,10 @@ class AdminInfoHandler(BaseHandler):
             hit_info = self.chit_controller.get_agg_hit_info()
             hit_info = self.cresponse_controller.append_completed_task_info(**hit_info)   
             if turk_conn:
-                def _callback(balance) :
-                    turk_balance = str(((balance or [''])[0]))
-                    self._send_json(hit_info, turk_info, turk_balance)
+                balance = await turk_conn.get_balance_async()
+                turk_balance = str(balance or '')
                 turk_info = turk_conn.serialize()
-                self.application.asynchronizer.register_callback(turk_conn.get_balance, _callback)
+                self._send_json(hit_info, turk_info, turk_balance)
             else :
                 self._send_json(hit_info, turk_info, turk_balance)
     def _send_json(self, hit_info, turk_info, turk_balance) :

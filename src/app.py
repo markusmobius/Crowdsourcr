@@ -14,7 +14,6 @@ import traceback
 import asyncio
 
 import Settings
-import asynchronizer
 
 from tornado.options import define, options
  
@@ -42,9 +41,6 @@ class Application(tornado.web.Application):
             clear_db(self.db)
             print("Cleared.")
             sys.exit(0)
-
-        self.asynchronizer = asynchronizer.Asynchronizer(callback_transformer=asynchronizer.in_ioloop)
-        self.asynchronizer.run()
 
         settings = {
             "template_path":Settings.TEMPLATE_PATH,
