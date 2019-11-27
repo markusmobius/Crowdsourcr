@@ -13,3 +13,8 @@ google = {
     "client_id" : "this-is-your-id.apps.googleusercontent.com",
     "client_secret" : "thisIsYourClientSecret"
 }
+
+aws={
+    "access_key" : "this-is-your-aws access_key",
+    "access_secret" : "this-is-your-aws-access_key"
+}
