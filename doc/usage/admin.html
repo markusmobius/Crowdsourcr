@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Administration &#8212; Crowdsourcr 2.0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="XML Format" href="xmlformat.html" />
+    <link rel="prev" title="Model" href="model.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Crowdsourcr</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running.html">Running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="xmlformat.html">XML Format</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Administration</a><ul>
+<li><a class="reference internal" href="#admin-panel">Admin panel</a><ul>
+<li><a class="reference internal" href="#status">Status</a></li>
+<li><a class="reference internal" href="#upload">Upload</a></li>
+<li><a class="reference internal" href="#recruit">Recruit</a></li>
+<li><a class="reference internal" href="#events">Events</a></li>
+<li><a class="reference internal" href="#hits">HITs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#superadmin-panel">Superadmin panel</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="model.html" title="Previous Chapter: Model"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Model</span>
+    </a>
+  </li>
+  <li>
+    <a href="xmlformat.html" title="Next Chapter: XML Format"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">XML Format &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/usage/admin.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Administration</a><ul>
+<li><a class="reference internal" href="#admin-panel">Admin panel</a><ul>
+<li><a class="reference internal" href="#status">Status</a></li>
+<li><a class="reference internal" href="#upload">Upload</a></li>
+<li><a class="reference internal" href="#recruit">Recruit</a></li>
+<li><a class="reference internal" href="#events">Events</a></li>
+<li><a class="reference internal" href="#hits">HITs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#superadmin-panel">Superadmin panel</a></li>
+</ul>
+</li>
+</ul>
+
+<form action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="administration">
+<h1>Administration<a class="headerlink" href="#administration" title="Permalink to this headline">¶</a></h1>
+<p>Once Crowdsourcer is installed and running, there are two important
+URLs.  The first is</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">YOUR</span><span class="o">.</span><span class="n">DOMAIN</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>which has this online documentation for Crowdsourcer, and the other is</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">YOUR</span><span class="o">.</span><span class="n">DOMAIN</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>which is the main administrative panel.  You will be redirected to
+Google for authentication.  Crowdsourcer asks for your identity so
+that it can record who begins and ends HITs for accountability.</p>
+<p>You may find that Crowdsourcer does not let you see the Admin panel.
+If this happens, check <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code> to see that your
+Google account is indeed in the superadmins list.  Worse, you may find
+that Google is not wanting to authenticate.  If this happens, make
+sure you followed the instructions in <a class="reference internal" href="installation.html#google-configuration"><span class="std std-ref">Google configuration</span></a> exactly.</p>
+<div class="section" id="admin-panel">
+<h2>Admin panel<a class="headerlink" href="#admin-panel" title="Permalink to this headline">¶</a></h2>
+<p>You can get to the admin panel using the URL similar to
+<code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN/admin/</span></code>.  When there is a Mechanical Turk run,
+the interface will look something like the following:</p>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_admin_example_scaled.png" src="../_images/crowdsourcer_admin_example_scaled.png" />
+</div>
+<div class="section" id="status">
+<h3>Status<a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_admin_status_example.png" src="../_images/crowdsourcer_admin_status_example.png" />
+</div>
+<p>The status is in the upper left corner of the interface.  It tells you
+whether the system is running in <code class="docutils literal notranslate"><span class="pre">development</span></code> or <code class="docutils literal notranslate"><span class="pre">production</span></code>
+mode, whether you are a superadmin (and a link to the <a class="reference internal" href="#superadmin-panel">Superadmin
+panel</a>), how many cHITs and tasks are loaded and completed,
+information about your Mechanical Turk account (if one has been
+entered), as well as the HIT id for the current HIT (if one is
+currently running).</p>
+<p>If a Mechanical Turk account has been provided in the <a class="reference internal" href="#recruit">Recruit</a>
+interface, then there will be one of two buttons: “Begin Run” or “End
+Run.”</p>
+<dl class="simple">
+<dt>Begin Run</dt><dd><p>Publishes a HIT on Amazon Mechanical Turk with the information
+provided under <a class="reference internal" href="#recruit">Recruit</a>.  The cHITs shown in <a class="reference internal" href="#hits">HITs</a> will be assigned
+to the MTurk workers as they visit your Crowdsourcer
+installation. The published HIT will have exactly as many
+assignments as there are uncompleted cHITs.  Beginning a run does
+not clear the database of prior responses; this is accomplished by
+uploading an XML file again.</p>
+</dd>
+<dt>End Run</dt><dd><p>Expires the HIT on Amazon Mechanical Turk and computes and pays out
+bonuses (if applicable).</p>
+</dd>
+</dl>
+<p>In both cases, an event will be recorded and show up in the <a class="reference internal" href="#events">Events</a>
+area.</p>
+</div>
+<div class="section" id="upload">
+<span id="admin-upload"></span><h3>Upload<a class="headerlink" href="#upload" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_admin_upload_example.png" src="../_images/crowdsourcer_admin_upload_example.png" />
+</div>
+<p>The format for a Crowdsourcer run description is XML as described in
+this document.</p>
+<dl class="simple">
+<dt>Upload XML</dt><dd><p>If there is no ongoing run, then this button will be enabled.
+Select a Crowdsourcer XML file and click “Upload XML” to upload a
+job description.  This operation will also clear all prior results
+from the database, so make sure to use the following download
+buttons <em>before</em> uploading a new XML file.</p>
+</dd>
+<dt>Download current data</dt><dd><p>At any point (even during an ongoing run), you may download the
+resulting data from the job.  The output format is described in this
+document.</p>
+</dd>
+<dt>Download bonus info</dt><dd><p>After ending a run and after the bonus info has been computed, this
+button will be enabled and it will contain JSON describing all of
+the awarded bonuses.</p>
+</dd>
+</dl>
+<p>Note that the only way to run an experiment again is to re-upload the
+XML, as this is the only way to clear the database (except for using
+the <code class="docutils literal notranslate"><span class="pre">--drop</span></code> option, described above).</p>
+</div>
+<div class="section" id="recruit">
+<h3>Recruit<a class="headerlink" href="#recruit" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_admin_recruit_example.png" src="../_images/crowdsourcer_admin_recruit_example.png" />
+</div>
+<p>To be able to publish a HIT onto Amazon Mechanical Turk, you must
+enter the Access Key and the Secret Key for your account, as well as
+how much you want to pay per HIT, a title, a description, and some
+keywords for the HIT.  After changing this information, you must click
+“Update Turk Info” for the change to take effect.</p>
+<p>All admins share the same Mechanical Turk information, and all admins
+can see the access key and secret key for the account.</p>
+<p>While there is an ongoing run, clicking “Update Turk Info” will not
+change the posted description on Mechanical Turk.  It is not wise to
+click this button while there is an ongoing run because this has been
+untested.</p>
+</div>
+<div class="section" id="events">
+<h3>Events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_admin_events_example.png" src="../_images/crowdsourcer_admin_events_example.png" />
+</div>
+<p>Whenever runs are begun or ended, an entry is recorded in the Events
+area.  These events are persisted between sessions and jobs.</p>
+</div>
+<div class="section" id="hits">
+<h3>HITs<a class="headerlink" href="#hits" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_admin_hits_example.png" src="../_images/crowdsourcer_admin_hits_example.png" />
+</div>
+<p>When an XML file has been uploaded, this area is populated with all of
+the cHITs described in that file.  When an MTurk worker accepts the
+published HIT, they are directed to <code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN/HIT/</span></code>, where
+they are assigned one of these cHITs.</p>
+<p>Each cHIT is formatted based on if it is being worked on or if it has
+been completed.  It should be clear form experience which formatting
+style corresponds to HITs that no one is working on, that someone is
+working on, and that have been completed.  At the time of writing,
+though, the formats were orange normal, red bold, and green italics,
+respectively.</p>
+<p>Note that if another admin uploads a new XML file, this area will not
+be updated.  You must refresh the page.</p>
+<p>Upon clicking on a cHIT, a Tasks section appears just below which
+shows all of the tasks inside that cHIT.  When clicking on any of the
+tasks, you can see what an MTurk worker would see for that task.  When
+clicking on “Show HIT” in this Tasks section, the cHIT is reserved for
+you and you may take the cHIT yourself, recording the data in the
+database (here, “reserve” means that no other worker will be assigned
+this cHIT unless the system automatically releases the assignment
+because it goes “stale”).  The URL for these “Show HIT” links can be
+given to anyone if you want them to take a particular cHIT.</p>
+</div>
+</div>
+<div class="section" id="superadmin-panel">
+<h2>Superadmin panel<a class="headerlink" href="#superadmin-panel" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_superadmin_example.png" src="../_images/crowdsourcer_superadmin_example.png" />
+</div>
+<p>If you are a superadmin, a link with the text “Administer admins” will
+appear in the status area of the admin panel.  This panel lets you add
+Google accounts which should be able to access the admin panel.
+Whenever a superadmins visits the admin panel, they are automatically
+added to the list of admins.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Microsoft Research.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

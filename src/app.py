@@ -45,6 +45,7 @@ class Application(tornado.web.Application):
         settings = {
             "template_path":Settings.TEMPLATE_PATH,
             "static_path":Settings.STATIC_PATH,
+            "doc_path":Settings.DOC_PATH,
             "debug":Settings.DEBUG,
             "cookie_secret": Settings.COOKIE_SECRET,
             "root_path": Settings.ROOT_PATH,
@@ -57,6 +58,7 @@ class Application(tornado.web.Application):
             #(r'/', handlers.MainHandler),
             (r'/', tornado.web.RedirectHandler, {"url" : "/doc"}),
             (r'/help/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='help.html')),
+            (r'/doc/(.*)', tornado.web.StaticFileHandler, dict(path=settings['doc_path'], default_filename='index.html')),
             (r'/help/(README.md)', tornado.web.StaticFileHandler, dict(path=settings['root_path'], default_filename='README.md')),
 #            (r'/types/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='types.html')),
 #            (r'/types/new/?', handlers.CTypeCreateHandler),
@@ -85,7 +87,6 @@ class Application(tornado.web.Application):
             (r'/HIT/return/?', handlers.CHITReturnHandler),
             (r'/worker/login/?', handlers.WorkerLoginHandler),
             (r'/worker/ping/?', handlers.WorkerPingHandler),
-            (r'/doc/(.*)', handlers.DocumentationHandler),
             (r'.*()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='404.html'))
         ]
         tornado.web.Application.__init__(self, app_handlers, **settings)
