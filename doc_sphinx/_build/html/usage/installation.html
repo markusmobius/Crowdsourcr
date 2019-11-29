@@ -150,17 +150,17 @@ library.  Optionally, it may use <a class="reference external" href="http://ngin
 multiple processes and for serving static content.</p>
 <div class="section" id="linux">
 <h2>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
-<p>For these installation instructions, we will assume an Ubuntu
-installation.</p>
+<p>For this section, we will assume an Ubuntu installation.</p>
 <p>Make sure that Python 3 and <code class="docutils literal notranslate"><span class="pre">pip</span></code> are installed.</p>
-<p>Then, either install the requirements as described in
-<code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> (and possibly update the version numbers), or
-just run</p>
+<p>Then, either install the requirements as described in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, or just run</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
-<p>Make sure <a class="reference external" href="http://www.mongodb.org/">MongoDB</a> is installed and running. If it is not, follow the
-instructions at
+<p>If you want to modify the documentation you also need to install the boostrap theme for sphinx:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx_bootstrap_theme</span>
+</pre></div>
+</div>
+<p>Make sure <a class="reference external" href="http://www.mongodb.org/">MongoDB</a> is installed and running. If it is not, follow the instructions at
 <a class="reference external" href="http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/">http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/</a>.</p>
 <p>To set up Crowdsourcer itself, copy <code class="docutils literal notranslate"><span class="pre">config/app_config.py.example</span></code>
 to <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code> and modify the settings.  Crowdsourcer
@@ -169,18 +169,15 @@ OAuth2 keys from their <a class="reference external" href="https://console.devel
 (or <a class="reference internal" href="#google-configuration">Google configuration</a> below) has more details about this.  Put
 your Google account into the list of superadmins so that you can
 administrate the administrators for Crowdsourcer.</p>
+<p>You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.</p>
 <p>At this point, it should be possible to start Crowdsourcer by entering
 the <cite>src</cite> directory and running</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span>
+</pre></div>
+</div>
+<p>and then going to <code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN/admin</span></code>. If you cannot access the website you need to open port 80 on the Ubuntu firewall.</p>
+<p>Note, that Crowdsourcr will by default only run in the MTurk sandbox mode. If you want to post jobs to MTurk use instead:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
-</pre></div>
-</div>
-<p>and then going to <code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN/admin</span></code>.  You will probably
-need to allow access to port 80 using the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">iptables</span> <span class="o">-</span><span class="n">t</span> <span class="n">nat</span> <span class="o">-</span><span class="n">A</span> <span class="n">PREROUTING</span> <span class="o">-</span><span class="n">p</span> <span class="n">tcp</span> <span class="o">--</span><span class="n">dport</span> <span class="mi">80</span> <span class="o">-</span><span class="n">j</span> <span class="n">REDIRECT</span> <span class="o">--</span><span class="n">to</span><span class="o">-</span><span class="n">port</span> <span class="mi">8080</span>
-</pre></div>
-</div>
-<p>and then instead run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
 </pre></div>
 </div>
 <p>On Linux, we support starting Crowdsourcer as a daemon.  For this to
@@ -217,7 +214,7 @@ server {
        location ^~  {
                 expires max;
                 add_header Cache-Control public;
-                root /home/kmill/news_crowdsourcer; # REPLACE THIS APPROPRIATELY
+                root /home/kmill/crowdsourcer; # REPLACE THIS APPROPRIATELY
        }
 
        location ~ /.* {
@@ -254,29 +251,19 @@ configuration with</p>
 </div>
 <div class="section" id="windows">
 <h2>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
-<p>First, you will need to download the Crowdsourcer application and put
-it somewhere such as <code class="docutils literal notranslate"><span class="pre">C:/news_crowdsourcer</span></code>.  Depending on the
-location of the Crowdsourcer repository, it may be helpful to first
-install <a class="reference external" href="http://git-scm.com/">git</a> for windows.</p>
-<p>It may be necessary to open port 80 in the Windows firewall, when
-using Windows Server for instance.  See
-<a class="reference external" href="http://windows.microsoft.com/en-us/windows/open-port-windows-firewall">http://windows.microsoft.com/en-us/windows/open-port-windows-firewall</a>
-for guidance.</p>
-<p>Install Python 3.  Make sure and enable the setting to place Python
-in the system path.  Otherwise, you will need to modify the
-Crowdsourcer startup script with the location of your Python.</p>
-<p>Install the Python packaging system <a class="reference external" href="https://pip.pypa.io/en/latest/installing.html">pip</a>.  You will be running
-<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">get-pip.py</span></code>, which is a good test of your python
-installation, too.</p>
-<p>With pip installed, now Python libraries may be installed:</p>
+<p>Install the latest version of Python 3 including pip. Make sure that the python executable is in the PATH variable (and prior to any Python 2 installation).</p>
+<p>Install the following Python libraries:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">tornado</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">pymongo</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">boto3</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">docutils</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">validators</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">future</span><span class="o">-</span><span class="n">fstrings</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">jsonpickle</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">xmltodict</span>
+</pre></div>
+</div>
+<p>If you want to modify the documentation you also need to install the boostrap theme for sphinx:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx_bootstrap_theme</span>
 </pre></div>
 </div>
 <p>Install <a class="reference external" href="http://www.mongodb.org/">MongoDB</a>.  To set up the database, go into Mongo’s <code class="docutils literal notranslate"><span class="pre">bin</span></code>
@@ -293,13 +280,18 @@ OAuth2 keys from their <a class="reference external" href="https://console.devel
 (or <a class="reference internal" href="#google-configuration">Google configuration</a> below) has more details about this.  Put
 your Google account into the list of superadmins so that you can
 administrate the administrators for Crowdsourcer.</p>
+<p>You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.</p>
 <p>At this point, it should be possible to start Crowdsourcer by entering
 the <cite>src</cite> directory and running</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span>
 </pre></div>
 </div>
 <p>and then going to <code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN/admin</span></code>.</p>
-<p>However, it is better to be using nginx as a proxy for load balancing
+<p>Note, that Crowdsourcr will by default only run in the MTurk sandbox mode. If you want to post jobs to MTurk use instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
+</pre></div>
+</div>
+<p>For optimal speed, you can use nginx as a proxy for load balancing
 and for serving static content.</p>
 <p>Download a zip package of <a class="reference external" href="http://nginx.org/">nginx</a> for Windows and unzip it into a
 directory such as <code class="docutils literal notranslate"><span class="pre">C:/nginx</span></code> (we will assume this is where you
@@ -366,9 +358,8 @@ be prompted to first set up your OAuth consent screen. Enter the minimal
 amount of information that will let you pass to the next screen. On
 the next screen select “Web application”, choose a name and click
 “Create”.  Enter information similar to that in the following image,
-replacing the domain appropriately.  Note carefully the trailing
-slash in the “Authorized Redirect URI” and the <code class="docutils literal notranslate"><span class="pre">http</span></code> rather
-than <code class="docutils literal notranslate"><span class="pre">https</span></code>. Authentication will not work if either of these
+replacing the domain appropriately. If you want to do local testing add <code class="docutils literal notranslate"><span class="pre">http://localhost:8080</span></code> as authorized domain (if you are running on port 8080) and <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/admin/loing</span></code>
+as authorized redirect URI.  Note carefully the trailing slash in the “Authorized Redirect URI” and the <code class="docutils literal notranslate"><span class="pre">http</span></code> rather than <code class="docutils literal notranslate"><span class="pre">https</span></code>. Authentication will not work if either of these
 are missing.</p>
 <div class="figure align-center">
 <img alt="Example configuration for an OAuth client id for Crowdsourcer." src="../_images/crowdsourcer_google_oauth.png" />
