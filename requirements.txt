@@ -4,11 +4,10 @@
  pip install tornado
  pip install pymongo
  pip install boto3
- pip install docutils
  pip install validators
  pip install future-fstrings
  pip install jsonpickle
  pip install xmltodict
 
 # Only if on linux
-#python-daemon==1.6
+#pip install python-daemon

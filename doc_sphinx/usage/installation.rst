@@ -15,20 +15,22 @@ multiple processes and for serving static content.
 Linux
 -----
 
-For these installation instructions, we will assume an Ubuntu
-installation.
+For this section, we will assume an Ubuntu installation.
 
 Make sure that Python 3 and ``pip`` are installed.
 
-Then, either install the requirements as described in
-``requirements.txt`` (and possibly update the version numbers), or
-just run
+Then, either install the requirements as described in ``requirements.txt``, or just run
 ::
 
   sudo pip install -r requirements.txt
 
-Make sure MongoDB_ is installed and running. If it is not, follow the
-instructions at 
+If you want to modify the documentation you also need to install the boostrap theme for sphinx:
+
+::
+
+  sudo pip install sphinx_bootstrap_theme
+
+Make sure MongoDB_ is installed and running. If it is not, follow the instructions at 
 `<http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/>`_.
 
 To set up Crowdsourcer itself, copy ``config/app_config.py.example``
@@ -40,22 +42,20 @@ OAuth2 keys from their `developer console
 your Google account into the list of superadmins so that you can
 administrate the administrators for Crowdsourcer.
 
+You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in ``config/app_config.py``.
+
 At this point, it should be possible to start Crowdsourcer by entering
 the `src` directory and running
 ::
 
+ python app.py --port=80
+
+and then going to ``http://YOUR.DOMAIN/admin``. If you cannot access the website you need to open port 80 on the Ubuntu firewall.
+
+Note, that Crowdsourcr will by default only run in the MTurk sandbox mode. If you want to post jobs to MTurk use instead:
+::
+
  python app.py --port=80 --environment=production
-
-and then going to ``http://YOUR.DOMAIN/admin``.  You will probably
-need to allow access to port 80 using the following command:
-::
-
- sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
-
-and then instead run
-::
-
- python app.py --port=8080 --environment=production
 
 On Linux, we support starting Crowdsourcer as a daemon.  For this to
 work, copy ``config/daemons_config.py.example`` to
@@ -94,7 +94,7 @@ with the following content:
         location ^~  {
                  expires max;
                  add_header Cache-Control public;
-                 root /home/kmill/news_crowdsourcer; # REPLACE THIS APPROPRIATELY
+                 root /home/kmill/crowdsourcer; # REPLACE THIS APPROPRIATELY
         }
  
         location ~ /.* {
@@ -134,39 +134,25 @@ This completes the Linux installation.
 Windows
 -------
 
-First, you will need to download the Crowdsourcer application and put
-it somewhere such as ``C:/news_crowdsourcer``.  Depending on the
-location of the Crowdsourcer repository, it may be helpful to first
-install git_ for windows.
+Install the latest version of Python 3 including pip. Make sure that the python executable is in the PATH variable (and prior to any Python 2 installation). 
 
-.. _git: http://git-scm.com/
-
-It may be necessary to open port 80 in the Windows firewall, when
-using Windows Server for instance.  See
-http://windows.microsoft.com/en-us/windows/open-port-windows-firewall
-for guidance.
-
-Install Python 3.  Make sure and enable the setting to place Python
-in the system path.  Otherwise, you will need to modify the
-Crowdsourcer startup script with the location of your Python.
-
-Install the Python packaging system pip_.  You will be running
-``python get-pip.py``, which is a good test of your python
-installation, too.
-
-.. _pip: https://pip.pypa.io/en/latest/installing.html
-
-With pip installed, now Python libraries may be installed:
+Install the following Python libraries:
 ::
 
  pip install tornado
  pip install pymongo
  pip install boto3
- pip install docutils
  pip install validators
  pip install future-fstrings
  pip install jsonpickle
  pip install xmltodict
+
+If you want to modify the documentation you also need to install the boostrap theme for sphinx:
+
+::
+
+  sudo pip install sphinx_bootstrap_theme
+
 
 Install MongoDB_.  To set up the database, go into Mongo's ``bin``
 directory with the command promt and run
@@ -186,15 +172,22 @@ OAuth2 keys from their `developer console
 your Google account into the list of superadmins so that you can
 administrate the administrators for Crowdsourcer.
 
+You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in ``config/app_config.py``.
+
 At this point, it should be possible to start Crowdsourcer by entering
 the `src` directory and running
 ::
 
- python app.py --port=80 --environment=production
+ python app.py --port=80
 
 and then going to ``http://YOUR.DOMAIN/admin``.
 
-However, it is better to be using nginx as a proxy for load balancing
+Note, that Crowdsourcr will by default only run in the MTurk sandbox mode. If you want to post jobs to MTurk use instead:
+::
+
+ python app.py --port=80 --environment=production
+
+For optimal speed, you can use nginx as a proxy for load balancing
 and for serving static content.
 
 Download a zip package of nginx_ for Windows and unzip it into a
@@ -269,9 +262,8 @@ be prompted to first set up your OAuth consent screen. Enter the minimal
 amount of information that will let you pass to the next screen. On
 the next screen select "Web application", choose a name and click
 "Create".  Enter information similar to that in the following image,
-replacing the domain appropriately.  Note carefully the trailing
-slash in the "Authorized Redirect URI" and the ``http`` rather
-than ``https``. Authentication will not work if either of these
+replacing the domain appropriately. If you want to do local testing add ``http://localhost:8080`` as authorized domain (if you are running on port 8080) and ``http://localhost:8080/admin/loing``
+as authorized redirect URI.  Note carefully the trailing slash in the "Authorized Redirect URI" and the ``http`` rather than ``https``. Authentication will not work if either of these
 are missing.
 
 .. figure:: ../doc_img/crowdsourcer_google_oauth.png
