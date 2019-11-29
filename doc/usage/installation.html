@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Installation &#8212; Crowdsourcr 2.0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Running" href="running.html" />
+    <link rel="prev" title="Welcome to Crowdsourcr!" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Crowdsourcr</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running.html">Running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin.html">Administration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="xmlformat.html">XML Format</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#linux">Linux</a></li>
+<li><a class="reference internal" href="#windows">Windows</a></li>
+<li><a class="reference internal" href="#google-configuration">Google configuration</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="../index.html" title="Previous Chapter: Welcome to Crowdsourcr!"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Welcome to Cr...</span>
+    </a>
+  </li>
+  <li>
+    <a href="running.html" title="Next Chapter: Running"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Running &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/usage/installation.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#linux">Linux</a></li>
+<li><a class="reference internal" href="#windows">Windows</a></li>
+<li><a class="reference internal" href="#google-configuration">Google configuration</a></li>
+</ul>
+</li>
+</ul>
+
+<form action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Crowdsourcer is a <a class="reference external" href="https://www.python.org/">Python</a> program that uses <a class="reference external" href="http://www.mongodb.org/">MongoDB</a> and the <a class="reference external" href="https://www.tornadoweb.org/">Tornado</a>
+library.  Optionally, it may use <a class="reference external" href="http://nginx.org/">nginx</a> for load balancing across
+multiple processes and for serving static content.</p>
+<div class="section" id="linux">
+<h2>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
+<p>For these installation instructions, we will assume an Ubuntu
+installation.</p>
+<p>Make sure that Python 3 and <code class="docutils literal notranslate"><span class="pre">pip</span></code> are installed.</p>
+<p>Then, either install the requirements as described in
+<code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> (and possibly update the version numbers), or
+just run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>Make sure <a class="reference external" href="http://www.mongodb.org/">MongoDB</a> is installed and running. If it is not, follow the
+instructions at
+<a class="reference external" href="http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/">http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/</a>.</p>
+<p>To set up Crowdsourcer itself, copy <code class="docutils literal notranslate"><span class="pre">config/app_config.py.example</span></code>
+to <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code> and modify the settings.  Crowdsourcer
+uses Google OAuth2 for authentication, so you need to get Google
+OAuth2 keys from their <a class="reference external" href="https://console.developers.google.com/">developer console</a>.  The configuration file
+(or <a class="reference internal" href="#google-configuration">Google configuration</a> below) has more details about this.  Put
+your Google account into the list of superadmins so that you can
+administrate the administrators for Crowdsourcer.</p>
+<p>At this point, it should be possible to start Crowdsourcer by entering
+the <cite>src</cite> directory and running</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
+</pre></div>
+</div>
+<p>and then going to <code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN/admin</span></code>.  You will probably
+need to allow access to port 80 using the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">iptables</span> <span class="o">-</span><span class="n">t</span> <span class="n">nat</span> <span class="o">-</span><span class="n">A</span> <span class="n">PREROUTING</span> <span class="o">-</span><span class="n">p</span> <span class="n">tcp</span> <span class="o">--</span><span class="n">dport</span> <span class="mi">80</span> <span class="o">-</span><span class="n">j</span> <span class="n">REDIRECT</span> <span class="o">--</span><span class="n">to</span><span class="o">-</span><span class="n">port</span> <span class="mi">8080</span>
+</pre></div>
+</div>
+<p>and then instead run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
+</pre></div>
+</div>
+<p>On Linux, we support starting Crowdsourcer as a daemon.  For this to
+work, copy <code class="docutils literal notranslate"><span class="pre">config/daemons_config.py.example</span></code> to
+<code class="docutils literal notranslate"><span class="pre">config/daemons_config.py</span></code> and add an entry to the daemons list
+describing on which port(s) you want Crowdsourcer to run (or just use
+the <code class="docutils literal notranslate"><span class="pre">default</span></code> configuration already provided).  Make sure that the
+Python package <code class="docutils literal notranslate"><span class="pre">python-daemon</span></code>, as described in
+<code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, is installed, as this is a requirement for
+daemonization. Crowdsourcer can be started with <code class="docutils literal notranslate"><span class="pre">./daemons</span> <span class="pre">start</span>
+<span class="pre">CONFIGNAME</span></code> or stopped with <code class="docutils literal notranslate"><span class="pre">./daemons</span> <span class="pre">stop</span> <span class="pre">CONFIGNAME</span></code>.  You can
+get help for these commands with <code class="docutils literal notranslate"><span class="pre">./daemons</span> <span class="pre">help</span></code>.</p>
+<p>While this is already sufficient for using Crowdsourcer, we recommend
+using <a class="reference external" href="http://nginx.org/">nginx</a> for serving static content and load balancing across
+multiple Python processes.  We already have a daemon configuration
+called <code class="docutils literal notranslate"><span class="pre">a</span></code> which assumes nginx is set up as a load-balancing proxy.
+To be able to use it, first <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">nginx</span></code>.  Then
+create a new file called <code class="docutils literal notranslate"><span class="pre">/etc/nginx/sites-available/crowdsourcer-a</span></code>
+with the following content:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>upstream crowdsourcer_a {
+         server 127.0.0.1:8101;
+         server 127.0.0.1:8102;
+}
+
+server {
+       charset uft-8;
+
+       include mime.types;
+       listen 80;
+       server_name www.crowdsourcr.org; # REPLACE THIS APPROPRIATELY
+
+       client_max_body_size 30m;
+
+       location ^~  {
+                expires max;
+                add_header Cache-Control public;
+                root /home/kmill/news_crowdsourcer; # REPLACE THIS APPROPRIATELY
+       }
+
+       location ~ /.* {
+                proxy_pass_header Server;
+                proxy_set_header Host $http_host;
+                proxy_connect_timeout 3600;
+                proxy_send_timeout 3600;
+                proxy_read_timeout 3600;
+                send_timeout 3600;
+                proxy_buffering off;
+                proxy_redirect off;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Scheme $scheme;
+                proxy_pass http://crowdsourcer_a;
+       }
+}
+</pre></div>
+</div>
+<p>Next, run the following command to enable this configuration for
+nginx:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">available</span><span class="o">/</span><span class="n">crowdsourcer</span><span class="o">-</span><span class="n">a</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">enabled</span><span class="o">/</span><span class="n">crowdsourcer</span><span class="o">-</span><span class="n">a</span>
+</pre></div>
+</div>
+<p>and reload nginx:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">nginx</span> <span class="n">reload</span>
+</pre></div>
+</div>
+<p>From the Crowdsourcer directory, you can start up the <code class="docutils literal notranslate"><span class="pre">a</span></code>
+configuration with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">daemons</span> <span class="n">start</span> <span class="n">a</span>
+</pre></div>
+</div>
+<p>This completes the Linux installation.</p>
+</div>
+<div class="section" id="windows">
+<h2>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<p>First, you will need to download the Crowdsourcer application and put
+it somewhere such as <code class="docutils literal notranslate"><span class="pre">C:/news_crowdsourcer</span></code>.  Depending on the
+location of the Crowdsourcer repository, it may be helpful to first
+install <a class="reference external" href="http://git-scm.com/">git</a> for windows.</p>
+<p>It may be necessary to open port 80 in the Windows firewall, when
+using Windows Server for instance.  See
+<a class="reference external" href="http://windows.microsoft.com/en-us/windows/open-port-windows-firewall">http://windows.microsoft.com/en-us/windows/open-port-windows-firewall</a>
+for guidance.</p>
+<p>Install Python 3.  Make sure and enable the setting to place Python
+in the system path.  Otherwise, you will need to modify the
+Crowdsourcer startup script with the location of your Python.</p>
+<p>Install the Python packaging system <a class="reference external" href="https://pip.pypa.io/en/latest/installing.html">pip</a>.  You will be running
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">get-pip.py</span></code>, which is a good test of your python
+installation, too.</p>
+<p>With pip installed, now Python libraries may be installed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">tornado</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">pymongo</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">boto3</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">docutils</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">validators</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">future</span><span class="o">-</span><span class="n">fstrings</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">jsonpickle</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">xmltodict</span>
+</pre></div>
+</div>
+<p>Install <a class="reference external" href="http://www.mongodb.org/">MongoDB</a>.  To set up the database, go into Mongo’s <code class="docutils literal notranslate"><span class="pre">bin</span></code>
+directory with the command promt and run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">md</span> \<span class="n">data</span>\<span class="n">db</span>
+</pre></div>
+</div>
+<p>After this, you need to start <code class="docutils literal notranslate"><span class="pre">mongod</span></code>, which is also in the <code class="docutils literal notranslate"><span class="pre">bin</span></code>
+directory.</p>
+<p>To set up Crowdsourcer itself, copy <code class="docutils literal notranslate"><span class="pre">config/app_config.py.example</span></code>
+to <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code> and modify the settings.  Crowdsourcer
+uses Google OAuth2 for authentication, so you need to get Google
+OAuth2 keys from their <a class="reference external" href="https://console.developers.google.com/">developer console</a>.  The configuration file
+(or <a class="reference internal" href="#google-configuration">Google configuration</a> below) has more details about this.  Put
+your Google account into the list of superadmins so that you can
+administrate the administrators for Crowdsourcer.</p>
+<p>At this point, it should be possible to start Crowdsourcer by entering
+the <cite>src</cite> directory and running</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
+</pre></div>
+</div>
+<p>and then going to <code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN/admin</span></code>.</p>
+<p>However, it is better to be using nginx as a proxy for load balancing
+and for serving static content.</p>
+<p>Download a zip package of <a class="reference external" href="http://nginx.org/">nginx</a> for Windows and unzip it into a
+directory such as <code class="docutils literal notranslate"><span class="pre">C:/nginx</span></code> (we will assume this is where you
+placed it for the rest of the guide).  Then, open
+<code class="docutils literal notranslate"><span class="pre">C:/nginx/conf/nginx.conf</span></code> and replace the server directive with the
+following (modifying the marked things appropriately):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>upstream crowdsourcer_a {
+         server 127.0.0.1:8101;
+         server 127.0.0.1:8102;
+}
+
+server {
+       charset uft-8;
+
+       include mime.types;
+       listen 80;
+       server_name www.crowdsourcr.org; # REPLACE THIS APPROPRIATELY
+
+       client_max_body_size 30m;
+
+       location ^~  {
+                expires max;
+                add_header Cache-Control public;
+                root C:/news_crowdsourcer; # REPLACE THIS APPROPRIATELY
+       }
+
+       location ~ /.* {
+                proxy_pass_header Server;
+                proxy_set_header Host $http_host;
+                proxy_connect_timeout 3600;
+                proxy_send_timeout 3600;
+                proxy_read_timeout 3600;
+                send_timeout 3600;
+                proxy_buffering off;
+                proxy_redirect off;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Scheme $scheme;
+                proxy_pass http://crowdsourcer_a;
+       }
+}
+</pre></div>
+</div>
+<p>To start nginx, run <code class="docutils literal notranslate"><span class="pre">start</span> <span class="pre">nginx</span></code> from the nginx directory (and see
+<a class="reference external" href="http://nginx.org/en/docs/windows.html">http://nginx.org/en/docs/windows.html</a> for more information about
+reloading or stopping nginx)</p>
+<p>Then, with nginx set up like this, running <code class="docutils literal notranslate"><span class="pre">start_a.bat</span></code> from the
+Crowdsourcer package will start up two processes in two windows.</p>
+<p>This completes the Windows installation.</p>
+</div>
+<div class="section" id="google-configuration">
+<span id="id3"></span><h2>Google configuration<a class="headerlink" href="#google-configuration" title="Permalink to this headline">¶</a></h2>
+<p>This was briefly described in each of these sections, but it may be
+useful if the details are elaborated upon here.  Crowdsourcer uses
+OAuth2 for authentication.  This means that you need to have a Google
+account to administer your Crowdsourcer installation and that you need
+an OAuth client ID from Google.</p>
+<p>There is a brief description for getting the OAuth client ID in
+<code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.  In detail, first go to
+<a class="reference external" href="https://console.developers.google.com">https://console.developers.google.com</a> and create a new project.  It
+does not matter what it is called.  Once this is created, go to
+“Credentials.”  There should be a button which says
+“Create Credentials”. Click it, then select “OAuth Client ID”. You will
+be prompted to first set up your OAuth consent screen. Enter the minimal
+amount of information that will let you pass to the next screen. On
+the next screen select “Web application”, choose a name and click
+“Create”.  Enter information similar to that in the following image,
+replacing the domain appropriately.  Note carefully the trailing
+slash in the “Authorized Redirect URI” and the <code class="docutils literal notranslate"><span class="pre">http</span></code> rather
+than <code class="docutils literal notranslate"><span class="pre">https</span></code>. Authentication will not work if either of these
+are missing.</p>
+<div class="figure align-center">
+<img alt="Example configuration for an OAuth client id for Crowdsourcer." src="../_images/crowdsourcer_google_oauth.png" />
+</div>
+<p>After creating the client ID, copy the “Client ID” and “Client secret”
+under “Client ID for web application” (and <em>not</em> the “Compute Engine
+and App Engine”) into <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.  This should complete
+the configuration for Google OAuth2 authentication.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Microsoft Research.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>XML Format &#8212; Crowdsourcr 2.0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Administration" href="admin.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Crowdsourcr</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running.html">Running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin.html">Administration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">XML Format</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">XML Format</a><ul>
+<li><a class="reference internal" href="#modules">Modules</a></li>
+<li><a class="reference internal" href="#questions">Questions</a><ul>
+<li><a class="reference internal" href="#numeric-questions">Numeric questions</a></li>
+<li><a class="reference internal" href="#text-questions">Text questions</a></li>
+<li><a class="reference internal" href="#categorical-questions">Categorical questions</a></li>
+<li><a class="reference internal" href="#nested-categorical-questions">Nested categorical questions</a></li>
+<li><a class="reference internal" href="#scale-questions">Scale questions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conditional-questions">Conditional Questions</a></li>
+<li><a class="reference internal" href="#bonus">Bonus</a><ul>
+<li><a class="reference internal" href="#specifying-a-bonus">Specifying a bonus</a></li>
+<li><a class="reference internal" href="#bonus-schemes">Bonus schemes</a></li>
+<li><a class="reference internal" href="#bonus-calculation">Bonus calculation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="admin.html" title="Previous Chapter: Administration"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Administration</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/usage/xmlformat.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">XML Format</a><ul>
+<li><a class="reference internal" href="#modules">Modules</a></li>
+<li><a class="reference internal" href="#questions">Questions</a><ul>
+<li><a class="reference internal" href="#numeric-questions">Numeric questions</a></li>
+<li><a class="reference internal" href="#text-questions">Text questions</a></li>
+<li><a class="reference internal" href="#categorical-questions">Categorical questions</a></li>
+<li><a class="reference internal" href="#nested-categorical-questions">Nested categorical questions</a></li>
+<li><a class="reference internal" href="#scale-questions">Scale questions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conditional-questions">Conditional Questions</a></li>
+<li><a class="reference internal" href="#bonus">Bonus</a><ul>
+<li><a class="reference internal" href="#specifying-a-bonus">Specifying a bonus</a></li>
+<li><a class="reference internal" href="#bonus-schemes">Bonus schemes</a></li>
+<li><a class="reference internal" href="#bonus-calculation">Bonus calculation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<form action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="xml-format">
+<h1>XML Format<a class="headerlink" href="#xml-format" title="Permalink to this headline">¶</a></h1>
+<p>This section describes the structure of the XML file used for
+describing an experiment (see <a class="reference internal" href="admin.html#admin-upload"><span class="std std-ref">Upload</span></a> for how to upload the XML file
+to Crowdsourcer).</p>
+<p>The main structure of the XML file is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">xml</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">modules</span><span class="o">&gt;</span>
+    <span class="o">...</span> <span class="n">module</span> <span class="n">definitions</span> <span class="o">...</span>
+  <span class="o">&lt;/</span><span class="n">modules</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">tasks</span><span class="o">&gt;</span>
+    <span class="o">...</span> <span class="n">task</span> <span class="n">definitions</span> <span class="o">...</span>
+  <span class="o">&lt;/</span><span class="n">tasks</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">hits</span><span class="o">&gt;</span>
+    <span class="o">...</span> <span class="n">hit</span> <span class="n">definitions</span> <span class="o">...</span>
+  <span class="o">&lt;/</span><span class="n">hits</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">documents</span><span class="o">&gt;</span>
+    <span class="o">...</span> <span class="n">document</span> <span class="n">definitions</span> <span class="o">...</span>
+  <span class="o">&lt;/</span><span class="n">documents</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">xml</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">documents</span></code> section is optional if it is empty, otherwise the
+first three are required.</p>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
+<p>A module has an internal name, a visible header, and a list of
+questions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">module_name</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">header</span><span class="o">&gt;</span><span class="n">Visible</span> <span class="n">Module</span> <span class="n">Header</span><span class="o">&lt;/</span><span class="n">header</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">questions</span><span class="o">&gt;</span>
+    <span class="o">...</span> <span class="n">question</span> <span class="n">definitions</span> <span class="o">...</span>
+  <span class="o">&lt;/</span><span class="n">questions</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">module</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="questions">
+<h2>Questions<a class="headerlink" href="#questions" title="Permalink to this headline">¶</a></h2>
+<p>There are a few types of questions which have been defined.  The
+general format for a question definition is</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">question</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">varname</span><span class="o">&gt;</span><span class="n">internal_variable_name</span><span class="o">&lt;/</span><span class="n">varname</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">questiontext</span><span class="o">&gt;</span><span class="n">Visible</span> <span class="n">question</span> <span class="n">text</span><span class="o">&lt;/</span><span class="n">questiontext</span><span class="o">&gt;</span>
+  <span class="p">(</span><span class="o">&lt;</span><span class="n">helptext</span><span class="o">&gt;</span><span class="n">Optional</span> <span class="n">help</span> <span class="n">text</span><span class="o">&lt;/</span><span class="n">helptext</span><span class="o">&gt;</span><span class="p">)</span>
+  <span class="o">&lt;</span><span class="n">valuetype</span><span class="o">&gt;</span><span class="n">some_value_type</span><span class="o">&lt;/</span><span class="n">valuetype</span><span class="o">&gt;</span>
+  <span class="o">...</span>
+<span class="o">&lt;/</span><span class="n">question</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The variable name is for determining how the answer is recorded into
+the response data.  The value type determines how the question is
+rendered.</p>
+<div class="section" id="numeric-questions">
+<h3>Numeric questions<a class="headerlink" href="#numeric-questions" title="Permalink to this headline">¶</a></h3>
+<p>A numeric question (value type <code class="docutils literal notranslate"><span class="pre">numeric</span></code>) displays as a text box
+that only accepts a number.  An example:</p>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_numeric.png" src="../_images/crowdsourcer_numeric.png" />
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;question&gt;
+  &lt;varname&gt;age&lt;/varname&gt;
+  &lt;valuetype&gt;numeric&lt;/valuetype&gt;
+  &lt;questiontext&gt;What is your age?&lt;/questiontext&gt;
+  &lt;helptext&gt;This is your age in years.&lt;/helptext&gt;
+&lt;/question&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="text-questions">
+<h3>Text questions<a class="headerlink" href="#text-questions" title="Permalink to this headline">¶</a></h3>
+<p>A text question (value type <code class="docutils literal notranslate"><span class="pre">text</span></code>) displays as a text box that
+accepts any non-empty textual content.  An example:</p>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_text.png" src="../_images/crowdsourcer_text.png" />
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;question&gt;
+  &lt;varname&gt;thoughts&lt;/varname&gt;
+  &lt;valuetype&gt;text&lt;/valuetype&gt;
+  &lt;questiontext&gt;What were your overall perceptions of the survey?
+    Which questions were most confusing? You may also submit any
+    other comments that you may have.&lt;/questiontext&gt;
+  &lt;helptext&gt;We want to better understand the strenghts and weaknesses
+    of our survey in order to improve it for future workers. Your
+    answer to this question will not influence your
+    payment.&lt;/helptext&gt;
+ &lt;/question&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="categorical-questions">
+<h3>Categorical questions<a class="headerlink" href="#categorical-questions" title="Permalink to this headline">¶</a></h3>
+<p>A categorical question (value type <code class="docutils literal notranslate"><span class="pre">categorical</span></code>) displays as a set
+of radio buttons that accepts exactly one response.  An example:</p>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_categorical.png" src="../_images/crowdsourcer_categorical.png" />
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;question&gt;
+  &lt;varname&gt;married&lt;/varname&gt;
+  &lt;questiontext&gt;Are you married?&lt;/questiontext&gt;
+  &lt;helptext&gt;Please answer metaphorically.&lt;/helptext&gt;
+  &lt;valuetype&gt;categorical&lt;/valuetype&gt;
+  &lt;content&gt;
+    &lt;categories&gt;
+      &lt;category&gt;
+        &lt;text&gt;Yes&lt;/text&gt;
+        &lt;value&gt;yes&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;No&lt;/text&gt;
+        &lt;value&gt;no&lt;/value&gt;
+      &lt;/category&gt;
+    &lt;/categories&gt;
+  &lt;/content&gt;
+&lt;/question&gt;
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">text</span></code> element holds what is shown to the worker, and the
+<code class="docutils literal notranslate"><span class="pre">value</span></code> element holds what is recorded to the database for that
+categorical response.</p>
+</div>
+<div class="section" id="nested-categorical-questions">
+<h3>Nested categorical questions<a class="headerlink" href="#nested-categorical-questions" title="Permalink to this headline">¶</a></h3>
+<p>For some questions, it is better to show categorical options
+hierarchically.  The syntax is exactly the same for <code class="docutils literal notranslate"><span class="pre">categorical</span></code>
+questions, except that the <code class="docutils literal notranslate"><span class="pre">text</span></code> elements hold <code class="docutils literal notranslate"><span class="pre">|</span></code>-separated
+options.  The responses will be shown in a tree-like fashion.  An example:</p>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_categorical_nested.png" src="../_images/crowdsourcer_categorical_nested.png" />
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;question&gt;
+  &lt;varname&gt;level_category&lt;/varname&gt;
+  &lt;valuetype&gt;categorical&lt;/valuetype&gt;
+  &lt;questiontext&gt;What is this category?&lt;/questiontext&gt;
+  &lt;content&gt;
+    &lt;categories&gt;
+      &lt;category&gt;
+        &lt;text&gt;Hard|Science|Interesting&lt;/text&gt;
+        &lt;value&gt;hard_science_interesting&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;Hard|Law&lt;/text&gt;
+        &lt;value&gt;hard_law&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;Hard|Science|Difficult&lt;/text&gt;
+        &lt;value&gt;hard_science_difficult&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;Hard|Science|Boring&lt;/text&gt;
+        &lt;value&gt;hard_science_boring&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;Soft|Animals&lt;/text&gt;
+        &lt;value&gt;soft&lt;/value&gt;
+      &lt;/category&gt;
+    &lt;/categories&gt;
+  &lt;/content&gt;
+&lt;/question&gt;
+</pre></div>
+</div>
+<p>It is possible to have optional specificity.  For example, if we added
+a category with text <code class="docutils literal notranslate"><span class="pre">Soft|Animals|Teddy</span> <span class="pre">Bear</span></code> to the above
+definition, then a user could answer either <code class="docutils literal notranslate"><span class="pre">Soft|Animals</span></code> or the
+sub-category <code class="docutils literal notranslate"><span class="pre">Soft|Animals|Teddy</span> <span class="pre">Bear</span></code>.</p>
+</div>
+<div class="section" id="scale-questions">
+<h3>Scale questions<a class="headerlink" href="#scale-questions" title="Permalink to this headline">¶</a></h3>
+<p>For some categorical questions, the options are along a scale that is
+best presented horizontally.  This is specified using the
+<code class="docutils literal notranslate"><span class="pre">horizontal</span></code> layout in the <code class="docutils literal notranslate"><span class="pre">options</span></code> element for the question.  An
+example:</p>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_scale.png" src="../_images/crowdsourcer_scale.png" />
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;question&gt;
+  &lt;varname&gt;bias&lt;/varname&gt;
+  &lt;valuetype&gt;categorical&lt;/valuetype&gt;
+  &lt;questiontext&gt;How biased is this?&lt;/questiontext&gt;
+  &lt;options&gt;
+    &lt;layout&gt;horizontal&lt;/layout&gt;
+    &lt;lowLabel&gt;Conservative&lt;/lowLabel&gt;
+    &lt;highLabel&gt;Liberal&lt;/highLabel&gt;
+    &lt;outsideCategories&gt;N/A&lt;/outsideCategories&gt;
+    &lt;outsideCategories&gt;Unsure&lt;/outsideCategories&gt;
+  &lt;/options&gt;
+  &lt;content&gt;
+    &lt;categories&gt;
+      &lt;category&gt;
+        &lt;text&gt;1&lt;/text&gt;
+        &lt;value&gt;1&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;2&lt;/text&gt;
+        &lt;value&gt;2&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;3&lt;/text&gt;
+        &lt;value&gt;3&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;4&lt;/text&gt;
+        &lt;value&gt;4&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;5&lt;/text&gt;
+        &lt;value&gt;5&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;6&lt;/text&gt;
+        &lt;value&gt;6&lt;/value&gt;
+      &lt;/category&gt;
+    &lt;/categories&gt;
+  &lt;/content&gt;
+&lt;/question&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="conditional-questions">
+<h2>Conditional Questions<a class="headerlink" href="#conditional-questions" title="Permalink to this headline">¶</a></h2>
+<p>The display of questions can be made conditional on the answer to other
+questions by specifying a <code class="docutils literal notranslate"><span class="pre">&lt;condition&gt;</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;question&gt;
+  &lt;varname&gt;article_type_categorial&lt;/varname&gt;
+  &lt;questiontext&gt;What kind of article is this?&lt;/questiontext&gt;
+  &lt;valuetype&gt;categorical&lt;/valuetype&gt;
+  &lt;content&gt;
+    &lt;categories&gt;
+      &lt;category&gt;
+        &lt;text&gt;News article&lt;/text&gt;
+        &lt;value&gt;news&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;Editorial&lt;/text&gt;
+        &lt;value&gt;editorial&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;Other&lt;/text&gt;
+        &lt;value&gt;other&lt;/value&gt;
+      &lt;/category&gt;
+    &lt;/categories&gt;
+  &lt;/content&gt;
+&lt;/question&gt;
+&lt;question&gt;
+  &lt;varname&gt;article_type_other&lt;/varname&gt;
+  &lt;questiontext&gt;What other kind is it?&lt;/questiontext&gt;
+  &lt;valuetype&gt;text&lt;/valuetype&gt;
+  &lt;condition&gt;article_type_categorial==other&lt;/condition&gt;
+&lt;/question&gt;
+</pre></div>
+</div>
+<p>The condition must be either an equality (<code class="docutils literal notranslate"><span class="pre">==</span></code>) or an inequality
+(<code class="docutils literal notranslate"><span class="pre">!=</span></code>) with the <code class="docutils literal notranslate"><span class="pre">varname</span></code> of another question on the left-hand
+side and a valid <code class="docutils literal notranslate"><span class="pre">value</span></code> for that question on the right-hand
+side.</p>
+<p>When specified, the question will only be shown to Turkers if the condition
+is satisfied.</p>
+</div>
+<div class="section" id="bonus">
+<h2>Bonus<a class="headerlink" href="#bonus" title="Permalink to this headline">¶</a></h2>
+<p>Crowdsourcer can automatically award bonuses conditional on agreement
+between Turkers on each task. This allows one to reward Turkers for good
+performance in multiple entry tasks.</p>
+<p>Internally crowdsourcer uses <code class="docutils literal notranslate"><span class="pre">bonus</span> <span class="pre">points</span></code> as a currency, which are
+translated into a dollar amount after the conclusion of a run. The maximal
+dollar bonus payment can be specified in the admin interface. After a run
+is finished crowdsourcer will tally up the number of bonus points awarded
+for each question and the number of bonus points that could have been
+awarded, divide the two and pay out a bonus that’s proportional to the
+share of bonus points actually awarded.</p>
+<div class="section" id="specifying-a-bonus">
+<h3>Specifying a bonus<a class="headerlink" href="#specifying-a-bonus" title="Permalink to this headline">¶</a></h3>
+<p>Bonuses can be specified on a per-question basis by adding a <code class="docutils literal notranslate"><span class="pre">&lt;bonus&gt;</span></code>
+element to the XML file. By default the maximal number of bonus
+points awarded per question which has an associated <code class="docutils literal notranslate"><span class="pre">&lt;bonus&gt;</span></code> will be
+one. This can be changed by adding a <code class="docutils literal notranslate"><span class="pre">&lt;bonuspoints&gt;</span></code> element.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;question&gt;
+  &lt;varname&gt;article_type_categorial&lt;/varname&gt;
+  &lt;questiontext&gt;What kind of article is this?&lt;/questiontext&gt;
+  &lt;valuetype&gt;categorical&lt;/valuetype&gt;
+  &lt;content&gt;
+    &lt;categories&gt;
+      &lt;category&gt;
+        &lt;text&gt;News article&lt;/text&gt;
+        &lt;value&gt;news&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;Editorial&lt;/text&gt;
+        &lt;value&gt;editorial&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;Other&lt;/text&gt;
+        &lt;value&gt;other&lt;/value&gt;
+      &lt;/category&gt;
+    &lt;/categories&gt;
+  &lt;/content&gt;
+&lt;/question&gt;
+&lt;question&gt;
+  &lt;varname&gt;article_type_other&lt;/varname&gt;
+  &lt;questiontext&gt;What other kind is it?&lt;/questiontext&gt;
+  &lt;valuetype&gt;text&lt;/valuetype&gt;
+  &lt;bonus&gt;threshold:50&lt;/bonus&gt;
+  &lt;bonuspoints&gt;2&lt;/bonuspoints&gt;
+&lt;/question&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="bonus-schemes">
+<h3>Bonus schemes<a class="headerlink" href="#bonus-schemes" title="Permalink to this headline">¶</a></h3>
+<p>Two kinds of bonus schemes are available:</p>
+<ul class="simple">
+<li><p>linear: a number of bonus points that’s a linear function of the share
+of other Turkers who gave the same answer to the task. To use this scheme
+add <code class="docutils literal notranslate"><span class="pre">&lt;bonus&gt;linear&lt;/bonus&gt;</span></code> to the XML specification</p></li>
+<li><p>threshold: an all-or-nothing scheme where the bonus is awarded only if
+the share of Turkers who gave the same answer to the task (weakly
+exceeds a threshold. To use this scheme add
+<code class="docutils literal notranslate"><span class="pre">&lt;bonus&gt;threshold:50&lt;/bonus&gt;</span></code> to the XML specification.</p></li>
+</ul>
+</div>
+<div class="section" id="bonus-calculation">
+<h3>Bonus calculation<a class="headerlink" href="#bonus-calculation" title="Permalink to this headline">¶</a></h3>
+<p>As described above, crowdsourcer will tally up the number of bonus
+points awarded for each question according to the specified scheme,
+tally up the number of bonus points that could have been awarded,
+divide the two and pay out a bonus that’s proportional to the
+share of bonus points actually awarded.</p>
+<p>Bonuses will never be awarded for conditional questions whose condition
+is not satisfied. However, these questions will enter the calculation of
+potential bonus points.</p>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Microsoft Research.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

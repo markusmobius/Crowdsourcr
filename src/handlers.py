@@ -565,27 +565,3 @@ class CSVDownloadHandler(BaseHandler):
         self.set_header("Content-Disposition", "attachment; filename={}".format(zip_name))
 
         self.finish(f.getvalue())
-
-class DocumentationHandler(BaseHandler) :
-    """Serves reStructuredText files from the /doc directory.  If
-    there is no such file, redirects into /static."""
-    def get(self, path) :
-        base_doc_path = os.path.realpath(Settings.DOC_PATH)
-        full_path = os.path.realpath(os.path.join(base_doc_path, *path.split("/")))
-        
-        if os.path.commonprefix([base_doc_path, full_path]) != base_doc_path :
-            raise tornado.web.HTTPError(403)
-
-        if os.path.isdir(full_path) :
-            full_path = os.path.join(full_path, "index.rst")
-
-        if not os.path.isfile(full_path) :
-            self.redirect("/static/" + path)
-            raise tornado.web.HTTPError(404)
-
-        import docutils.core
-        with open(full_path, "r") as fin :
-            result = docutils.core.publish_string(fin.read(), writer_name="html")
-
-        self.set_header('Content-Type', 'text/html')
-        self.finish(result)

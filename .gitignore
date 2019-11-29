@@ -3,5 +3,6 @@
 tmp/*
 log/*
 pid/*
+doc_sphinx/_build
 config/app_config.py
 config/daemons_config.py

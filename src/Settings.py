@@ -5,6 +5,7 @@ DEBUG = False # sets tornado debug mode. don't use when using command line argum
 DIRNAME = os.path.dirname(__file__)
 ROOT_PATH = os.path.join(DIRNAME, '..')
 STATIC_PATH = os.path.join(DIRNAME, '..', 'static')
+DOC_PATH = os.path.join(DIRNAME, '..', 'doc')
 TEMPLATE_PATH = os.path.join(DIRNAME, '..', 'template')
 TMP_PATH = os.path.join(DIRNAME, '..', 'tmp')
 LOG_PATH = os.path.join(DIRNAME, '..', 'log')
