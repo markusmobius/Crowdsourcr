@@ -55,7 +55,7 @@
 						<p class="card-text">
 							<div id="admin-login-info"></div>
 							<div id="admin-server-info"></div>
-							<div id="admin-superadmin" style="display: none;">You are a superadmin. <a href="/superadmin">Administer admins</a></div>
+							<div id="admin-superadmin" style="display: none;">You are a superadmin. <a href="#superAdminModal" data-toggle="modal">Administer admins</a></div>
 							<div id="admin-task-info"></div>
 							<div id="admin-turk-info"></div>
 							<div id="admin-hit-info"></div>
@@ -202,7 +202,36 @@
   </div>
 </div>
 
+<div class="modal fade" id="superAdminModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">	 	 
+        <h5 class="modal-title">Manage Administrators</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+	  
+	  
+	
+      <div class="modal-body">
+			<ul class="list-group" id="administrator-all-list">
+			</ul>      
+			
+			  <div class="form-group">
+				<label for="newAdmin">Add administrator (by Gmail)</label>
+				<input type="text" class="form-control" id="newAdmin" placeholder="Google account email">
+			  </div>
+			  <button class="btn btn-success" id="addAdmin">Add admin</button>
+	  </div>
   
+	  
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+	  
+	</div>		
+  </div>
 </div>
 
 
