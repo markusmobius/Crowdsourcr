@@ -46,9 +46,20 @@
               evt.preventDefault();
               window.location.href = '/admin/bonusinfo/';
           });
+
+$('#addAdmin').click(function(evt) {
+	  evt.preventDefault();
+	  var new_admin_email = $("#newAdmin").val();
+	  $("#newAdmin").val('');
+	  $.post('/admin/new', {data : JSON.stringify({email : new_admin_email})}, function() {
+	    reloadAdminList();
+	  });
+});
+
           
           getStatus(true);
           getHITs();
+		  reloadAdminList();
       }
       
       function getHITs() {
@@ -297,3 +308,28 @@
               }
           });
       }
+
+function removeAdminHandler(email) {
+  return function (e) {
+    e.preventDefault();
+	  $.post('/admin/remove', {data : JSON.stringify({email : email})}, function () {
+	    reloadAdminList();
+	  });
+  };
+}
+
+function reloadAdminList() {
+  $.get('/admin/all', function(data) {
+	  var adminList = $('#administrator-all-list');
+	  adminList.empty();
+	  for (var i = 0; i < data.length; i++) {
+	    var anchor_holder = $(document.createElement('a')).attr('href', '#').html(data[i]);
+      anchor_holder.on("click", function (e) { e.preventDefault(); });
+	    var remove_link = $(document.createElement('a')).attr('href', '#').html('&times;');
+	    remove_link.on("click", removeAdminHandler(data[i]));
+	    anchor_holder.append(" ").append(remove_link);
+      adminList.append($(document.createElement('li')).addClass('list-group-item').append(anchor_holder));
+	  }
+  });
+}
+
