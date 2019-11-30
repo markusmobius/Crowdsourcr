@@ -10,8 +10,8 @@ Crowdsourcer is an application for conducting survey-like experiments
 online, especially when used in conjunction with Amazon Mechanical
 Turk.
 
-Surveys are designed as XML files. A set of tasks are bundled as a HIT that can be posted on Mechanical Turk. The XML survey format allows for multiple-data entry 
-and bonuses paid to workers depending on how well they do compare to others. The XML format also allows for conditional questions.
+Surveys are designed as XML files. A set of tasks are bundled as a HIT that can be posted on Mechanical Turk. The XML survey format allows for data entry by multiple workers (defined programmatically) 
+and worker bonuses based on the level of agreement with other workers. The XML format also allows for conditional questions.
 
 The following is an example from one real experiment asking Turkers to evaluate news articles:
 
@@ -24,7 +24,7 @@ The following is an example from one real experiment asking Turkers to evaluate 
    
    usage/installation
    usage/running
-   usage/model
+   usage/concepts
    usage/admin
    usage/xmlformat
 

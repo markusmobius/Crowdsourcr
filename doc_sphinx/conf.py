@@ -51,11 +51,11 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #import sphinxbootstrap4theme
 #html_theme = 'sphinxbootstrap4theme'
 #html_theme_path = [sphinxbootstrap4theme.get_path()]
-import sphinx_bootstrap_theme
-html_theme = 'bootstrap'
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+#import sphinx_bootstrap_theme
+#html_theme = 'bootstrap'
+#html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+html_theme = "pandas_sphinx_theme"
 html_sidebars = {'**': ['localtoc.html', 'searchbox.html']}
-
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

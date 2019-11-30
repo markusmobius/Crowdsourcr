@@ -12,14 +12,20 @@ multiple processes and for serving static content.
 .. _Tornado: https://www.tornadoweb.org/
 .. _nginx: http://nginx.org/
 
-Linux
------
+For both Linux and Windows you need Python 3 and ``pip``. Make sure that Python 3 is the default Python installation (for example, by ensuring that your Python installation appears first in the PATH environment variable).
 
-For this section, we will assume an Ubuntu installation.
+Install the following Python libraries:
+::
 
-Make sure that Python 3 and ``pip`` are installed.
+ pip install tornado
+ pip install pymongo
+ pip install boto3
+ pip install validators
+ pip install future-fstrings
+ pip install jsonpickle
+ pip install xmltodict
 
-Then, either install the requirements as described in ``requirements.txt``, or just run
+On Linux you can also simply run the ``requirements.txt`` file:
 ::
 
   sudo pip install -r requirements.txt
@@ -28,7 +34,15 @@ If you want to modify the documentation you also need to install the boostrap th
 
 ::
 
-  sudo pip install sphinx_bootstrap_theme
+  sudo pip install git+https://github.com/pandas-dev/pandas-sphinx-theme.git@master
+
+Modify the rst files under ``doc_sphinx/usage`` and then compile the new documentation by running the ``create_documentation`` file in root directory.
+
+
+Linux
+-----
+
+For this section, we will assume an Ubuntu installation.
 
 Make sure MongoDB_ is installed and running. If it is not, follow the instructions at 
 `<http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/>`_.
@@ -133,26 +147,6 @@ This completes the Linux installation.
 
 Windows
 -------
-
-Install the latest version of Python 3 including pip. Make sure that the python executable is in the PATH variable (and prior to any Python 2 installation). 
-
-Install the following Python libraries:
-::
-
- pip install tornado
- pip install pymongo
- pip install boto3
- pip install validators
- pip install future-fstrings
- pip install jsonpickle
- pip install xmltodict
-
-If you want to modify the documentation you also need to install the boostrap theme for sphinx:
-
-::
-
-  sudo pip install sphinx_bootstrap_theme
-
 
 Install MongoDB_.  To set up the database, go into Mongo's ``bin``
 directory with the command promt and run
