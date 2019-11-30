@@ -5,7 +5,7 @@ Once Crowdsourcer is installed and running, there are two important
 URLs.  The first is
 ::
 
-  http://YOUR.DOMAIN/doc/
+  http://YOUR.DOMAIN
 
 which has this online documentation for Crowdsourcer, and the other is
 ::
