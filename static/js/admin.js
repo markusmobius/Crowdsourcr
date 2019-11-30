@@ -11,10 +11,6 @@
               uploadXML();
           });
           
-          $('#begin-recruiting-button').click(function(evt) {
-              evt.preventDefault();
-              beginRecruiting();
-          });
           
           $('#admin-begin-run').click(function(evt) {
               evt.preventDefault();
@@ -55,6 +51,55 @@ $('#addAdmin').click(function(evt) {
 	    reloadAdminList();
 	  });
 });
+
+          $('#openEditModalButton').click(function(evt) {
+				$('#editHITparameters').show();
+				$('#editHITparameters-submitting').hide();
+				$('#editHitPayment').val($('#staticHitPayment').val());
+				$('#editBonusPayment').val($('#staticBonusPayment').val());
+				$('#editHitTitle').val($('#staticHitTitle').val());
+				$('#editHitDescription').val($('#staticHitDescription').val());
+				$('#editHitKeywords').val($('#staticHitKeywords').val());
+				$('#editHitWarning').hide();
+						$('#beginEditHitModal').modal('show');		
+		  });	
+				
+			
+          $('#editHITparameters').click(function(evt) {
+              evt.preventDefault();
+			  var mturk_info = {hitpayment : parseFloat($('#editHitPayment').val()),
+                            title : $('#editHitTitle').val(),
+                            description : $('#editHitDescription').val(),
+                            keywords : $('#editHitKeywords').val(),
+                            bonus : parseFloat($('#editBonusPayment').val())};	
+			console.log(mturk_info);
+			for (var key in mturk_info) {
+              if (mturk_info.hasOwnProperty(key) && !mturk_info[key]) {
+					$('#editHitWarning').show();
+                  return;
+              }
+            }
+			$('#editHitWarning').hide();
+			$('#editHITparameters').hide();
+			$('#editHITparameters-submitting').show();
+			$.post('/admin/recruit/',{data : JSON.stringify(mturk_info)}, function(data) {
+					$.get('/admin/info/' + nocache(), function(data) {
+					try {
+						updateStatus(data,true);
+						$('#editHITparameters').show();
+						$('#editHITparameters-submitting').hide();
+						$('#beginEditHitModal').modal('hide');		
+					}finally {}});				
+			});
+          });
+
+
+
+	  // Add the following code if you want the name of the file appear on select
+	  $(".custom-file-input").on("change", function() {	
+		var fileName = $(this).val().split("\\").pop();
+		$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+      });
 
           
           getStatus(true);
@@ -132,13 +177,11 @@ $('#addAdmin').click(function(evt) {
                       } else {
                           $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
                           if (updateTurkInfo) {
-                              var mturk_form = $('#admin-mturk-cred-form');
-                              mturk_form.find('input[name="hit_payment"]:first').val(data.turkinfo.hitpayment);
-                              mturk_form.find('input[name="hit_title"]:first').val(data.turkinfo.title);
-                              var textarea = mturk_form.find('textarea[name="hit_description"]:first').val(data.turkinfo.description);
-                              window.setTimeout(function () { textarea.trigger("scroll"); }, 0);
-                              mturk_form.find('input[name="hit_keywords"]:first').val(data.turkinfo.keywords);
-                              mturk_form.find('input[name="hit_bonus"]:first').val(data.turkinfo.bonus);
+								$('#staticHitPayment').val(data.turkinfo.hitpayment);
+								$('#staticBonusPayment').val(data.turkinfo.bonus);
+								$('#staticHitTitle').val(data.turkinfo.title);
+								$('#staticHitDescription').val(data.turkinfo.description);
+								$('#staticHitKeywords').val(data.turkinfo.keywords);							  
                           }
                           if (data.turkinfo.running) {
                               var amazonLink = data.turkinfo.admin_host + "/mturk/manageHIT?HITId=" + data.turkinfo.hitid;
@@ -251,36 +294,14 @@ $('#addAdmin').click(function(evt) {
               $h.slideDown();
           });
       }
-      
-      function beginRecruiting(callback) {
-          var form_elem = $('#admin-mturk-cred-form');
-          var mturk_info = {hitpayment : parseFloat(form_elem.find('input[name="hit_payment"]:first').val()),
-                            title : form_elem.find('input[name="hit_title"]').val(),
-                            description : form_elem.find('textarea[name="hit_description"]').val(),
-                            keywords : form_elem.find('input[name="hit_keywords"]').val(),
-                            bonus : form_elem.find('input[name="hit_bonus"]').val()};
-          for (var key in mturk_info) {
-              if (mturk_info.hasOwnProperty(key) && !mturk_info[key]) {
-                  alert('You must specify all fields.');
-                  return;
-              }
-          }
-          $.post('/admin/recruit/', {data : JSON.stringify(mturk_info)}, callback);
-      }
-      
-	  // Add the following code if you want the name of the file appear on select
-	  $(".xml-upload-file").on("change", function() {	
-		var fileName = $(this).val().split("\\").pop();
-		$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-      });
-
+            
       function uploadXML() {
-          $('#upload-btn').attr("disabled", true);
+          $('#upload-btn').hide();
+          $('#upload-btn-loading').show();		  
           $("#xml-upload-error").hide();
           $("#xml-upload-success").hide();
           var data = new FormData();
           data.append('file', $('#xml-upload-file')[0].files[0]);
-          $("#xml-upload-message").text("Uploading...").fadeIn();
           $.ajax({
               url: '/admin/xmlupload/',
               data: data,
@@ -289,8 +310,8 @@ $('#addAdmin').click(function(evt) {
               processData: false,
               type: 'POST',
               success: function(data){
-                  $('#upload-btn').attr("disabled", false);
-                  $("#xml-upload-message").hide();
+				  $('#upload-btn').show();
+				  $('#upload-btn-loading').hide();		  
                   if (data.success !== undefined) {
                       var $succ = $("#xml-upload-success");
                       $succ.text("Successfully uploaded.")
@@ -304,7 +325,8 @@ $('#addAdmin').click(function(evt) {
                   getHITs();
               },
               error: function () {
-                  $('#upload-btn').attr("disabled", false);
+				  $('#upload-btn').show();
+				  $('#upload-btn-loading').hide();		  
               }
           });
       }

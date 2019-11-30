@@ -40,7 +40,7 @@
     <a class="nav-link" id="profile-tab" data-toggle="tab" href="#survey" role="tab" aria-controls="survey" aria-selected="false">Survey tasks</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#turk" role="tab" aria-controls="turk" aria-selected="false">HIT parameters</a>
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#turk" role="tab" aria-controls="turk" aria-selected="false">cHIT parameters</a>
   </li>
   </ul>
 </div>
@@ -84,14 +84,22 @@
 					<div class="card-body">
 						<p class="card-text">
 							<div class="form-group">
-								<label for="xml-upload-file">XML File </label>
+								<label>XML Survey File </label>
 								<div class="custom-file">
 								<input type="file" id="xml-upload-file" class="custom-file-input">
 								<label class="custom-file-label" for="xml-upload-file">No file selected</label>
 								</div>		  
+								<div class="alert alert-success" role="alert" id="xml-upload-success" style="display:none">
+								</div>
+								<div class="alert alert-danger" role="alert" id="xml-upload-error"  style="display:none">
+								</div>
 							</div>
 							<div class="btn-group" role="group" aria-label="XML upload control">
 								<button type="button" class="btn btn-success" id="upload-btn">Upload XML</button>
+		<button class="btn btn-success" type="button" id="upload-btn-loading" style="display:none" disabled>
+		<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+		Uploading XML...
+		</button>		
 								<button type="button" class="btn btn-secondary" id="download-data-btn">Download data</button>
 								<button type="button" class="btn btn-secondary" id="download-bonusinfo-btn" >Download bonus</button>												
 							</div>						
@@ -116,43 +124,62 @@
 						cHIT Parameters
 					</div>				
 					<div class="card-body" id="admin-mturk-cred-form">
-						<p class="card-text">
-							<p>Set AWS key and secret in the app_config.py file. Your account information can be found <a target="_blank" href="https://portal.aws.amazon.com/gp/aws/securityCredentials">here.</a></p>
-	    <div class="form-group">
-	      <label>Payment per HIT</label>
-	      <div class="input-group">
-		<span class="input-group-addon">$</span>
-		<input type="text" class="form-control" name="hit_payment">
-	      </div>
-	    </div>
-	    <div class="form-group">
-	      <label>Bonus Payment</label>
-	      <div class="input-group">
-		<span class="input-group-addon">$</span>
-		<input type="text" class="form-control" name="hit_bonus">
-	      </div>
-	    </div>
-	    <div class="form-group">
-	      <label>HIT Title</label>
-	      <input type="text" class="form-control" name="hit_title" placeholder="A short title">
-	    </div>
-	    <div class="form-group">
-	      <label>HIT Description</label>
-	      <textarea class="form-control" name="hit_description" placeholder="A short description"></textarea>
-	    </div>
-      <div class="form-group">
-        <label>HIT Keywords</label>
-        <input type="text" class="form-control" name="hit_keywords" placeholder="Comma-separated keywords"></input>
-      </div>
-	    <button id="begin-recruiting-button" type="submit" class="btn btn-success">Update Turk Info</button>
-						</p>
-					</div>				
-				</div>				
+					    <p class="card-text">Set AWS key and secret in the app_config.py file. Your account information can be found <a target="_blank" href="https://portal.aws.amazon.com/gp/aws/securityCredentials">here.</a></p>
+		
+<div class="container" id="staticHitForm">	
+		
+<div class="form-group row">
+<div class="col-md-3"><label  for="staticHitPayment" class="col-form-label">Payment per cHIT</label></div>
+<div class="col-md-9">		<div class="input-group mb-3">
+		<div class="input-group-prepend">
+		<span class="input-group-text">$</span>
+		</div>
+		<input type="text" id="staticHitPayment" readonly class="form-control-plaintext" aria-label="cHIT payment" placeholder="not yet set">
+		</div></div>
+</div>
+
+<div class="form-group row">
+<div class="col-md-3"><label  for="staticBonusPayment" class="col-form-label">Bonus Payment</label></div>
+<div class="col-md-9">		<div class="input-group mb-3">
+		<div class="input-group-prepend">
+		<span class="input-group-text">$</span>
+		</div>
+		<input type="text" id="staticBonusPayment" readonly class="form-control-plaintext" aria-label="Bonus payment" placeholder="not yet set">
+		</div></div>
+</div>
+
+<div class="form-group row">
+<div class="col-md-3"><label  for="staticHitTitle" class="col-form-label">cHIT title</label></div>
+<div class="col-md-9">
+		<input type="text" id="staticHitTitle" readonly class="form-control-plaintext" aria-label="cHIT title" placeholder="not yet set">
+		</div>
+</div>
+
+<div class="form-group row">
+<div class="col-md-3"><label  for="staticHitDescription" class="col-form-label">cHIT description</label></div>
+<div class="col-md-9">
+		<textarea type="text"  id="staticHitDescription" readonly class="form-control-plaintext" aria-label="cHIT description" placeholder="not yet set"></textarea>
+		</div>
+</div>
+
+<div class="form-group row">
+<div class="col-md-3"><label  for="staticHitKeywords" class="col-form-label">cHIT keywords</label></div>
+<div class="col-md-9">
+		<input type="text" id="staticHitKeywords" readonly class="form-control-plaintext" aria-label="cHIT keywords" placeholder="not yet set">
+		</div>
+</div>
+
+<button type="submit" class="btn btn-success" id="openEditModalButton">Edit cHIT parameters</button>
+
+</div>				
+</div>						
+</div>
+	
   </div>
 </div>
 </div>
 </div>
-  
+</div>  
 
 <div class="modal fade" id="beginRunModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -233,6 +260,84 @@
 	</div>		
   </div>
 </div>
+
+
+<div class="modal fade" id="beginEditHitModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">	 	 
+        <h5 class="modal-title">Edit cHIT Parameters</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+	 	  
+	
+      <div class="modal-body">
+	  
+<div class="container" id="dynamicHitForm">	
+		
+<div class="form-group row">
+<div class="col-md-3"><label  for="editHitPayment" class="col-form-label">Payment per cHIT</label></div>
+<div class="col-md-9">		<div class="input-group mb-3">
+		<div class="input-group-prepend">
+		<span class="input-group-text">$</span>
+		</div>
+		<input type="text" id="editHitPayment" class="form-control-plaintext" aria-label="cHIT payment" placeholder="not yet set">
+		</div></div>
+</div>
+
+<div class="form-group row">
+<div class="col-md-3"><label  for="editBonusPayment" class="col-form-label">Bonus Payment</label></div>
+<div class="col-md-9">		<div class="input-group mb-3">
+		<div class="input-group-prepend">
+		<span class="input-group-text">$</span>
+		</div>
+		<input type="text" id="editBonusPayment" class="form-control-plaintext" aria-label="Bonus payment" placeholder="not yet set">
+		</div></div>
+</div>
+
+<div class="form-group row">
+<div class="col-md-3"><label  for="editHitTitle" class="col-form-label">cHIT title</label></div>
+<div class="col-md-9">
+		<input type="text" id="editHitTitle" class="form-control-plaintext" aria-label="cHIT title" placeholder="not yet set">
+		</div>
+</div>
+
+<div class="form-group row">
+<div class="col-md-3"><label  for="editHitDescription" class="col-form-label">cHIT description</label></div>
+<div class="col-md-9">
+		<textarea type="text"  id="editHitDescription" class="form-control-plaintext" aria-label="cHIT description" placeholder="not yet set"></textarea>
+		</div>
+</div>
+
+<div class="form-group row">
+<div class="col-md-3"><label  for="editHitKeywords" class="col-form-label">cHIT keywords</label></div>
+<div class="col-md-9">
+		<input type="text" id="editHitKeywords" class="form-control-plaintext" aria-label="cHIT keywords" placeholder="not yet set">
+		</div>
+</div>
+</div>				
+
+<div id="editHitWarning" class="alert alert-warning" role="alert" style="display:none">
+  You must specify all fields.
+</div>	  
+	  </div>
+  
+	  
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" id="editHITparameters">Submit cHIT parameters</button>
+		<button class="btn btn-success" type="button" id="editHITparameters-submitting" style="display:none" disabled>
+		<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+		Submitting cHIT parameters ...
+		</button>		
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>		
+      </div>
+	  
+	</div>		
+  </div>
+</div>
+
 
 
     <div class="footer" role="contentinfo">

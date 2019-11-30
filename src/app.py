@@ -57,7 +57,6 @@ class Application(tornado.web.Application):
         app_handlers = [
             #(r'/', handlers.MainHandler),
             (r'/', tornado.web.RedirectHandler, {"url" : "/doc"}),
-            (r'/help/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='help.html')),
             (r'/doc/(.*)', tornado.web.StaticFileHandler, dict(path=settings['doc_path'], default_filename='index.html')),
             (r'/help/(README.md)', tornado.web.StaticFileHandler, dict(path=settings['root_path'], default_filename='README.md')),
 #            (r'/types/?()', tornado.web.StaticFileHandler, dict(path=settings['static_path'], default_filename='types.html')),
