@@ -5,10 +5,12 @@ class MTurkConnectionController(object):
     def __init__(self, db):
         self.db = db
         self.db.mturkconnections.ensure_index('email', unique=True)
+
     def create(self, d):
         mtconn = MTurkConnection(**d)
         self.update(mtconn)
         return mtconn
+        
     def update(self, mtconn):
         # self.db.mturkconnections.update({'email' : mtconn.email}, 
         #                                 {'$set' : mtconn.serialize()},
@@ -16,9 +18,12 @@ class MTurkConnectionController(object):
         self.db.mturkconnections.update({}, 
                                         {'$set' : mtconn.serialize()},
                                         upsert=True )
+        print(mtconn.serialize())
+
     def get_hit_id(self) :
         d = self.db.mturkconnections.find_one({})
         return d['hitid'] if d else None
+
     def get_by_email(self, email=None, environment="development"):
         #d = self.db.mturkconnections.find_one({'email' : email})
         d = self.db.mturkconnections.find_one({})
