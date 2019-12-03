@@ -190,30 +190,37 @@
     </style>
   </head>
   <body>
-    <div class="header-container">
-      <div class="header-title abs-center"><h3>News Crowdsourcer v1.0</h3></div>
-    </div>
+  
+ 
     <div class="loading-holder narrow-center">
       <div style="margin: 40px;">
 	      <img src="/static/img/ajax-loader.gif" class="centering" /><br><br>
 	      <p class="centering">Loading HIT...</p>
 	      <p class="centering">It may take up to 1 minute to retrieve this HIT.</p>
       </div>
-    </div>
+    </div>	
 	
-	
-    <div class="login-content narrow-center" style="display:none;">
-      <form id="worker-login-form">
-	      <h4> Please input your worker id to ensure you are paid upon completing this HIT.</h4>
-	      <p> It is important that your worker id is input correctly. If you don't know your worker id, <a href="https://www.mturk.com/mturk/dashboard"> you can find it here. </a> )</p>
+	<div class="row">
+		<div class="col-lg-4"></div>
+		<div class="col-lg-4">
+	<div id="login-panel" class="login-content panel panel-default" style="display:none;">
+		<div class="panel-heading">mTurk Worker Login</div>
+		<div class="panel-body">
+	      <p> Please input your worker id to ensure you are paid upon completing this HIT.</p>
+	      <p> It is important that your worker id is input correctly. If you don't know your worker id, you can fint it <a target="_blank" href="https://www.mturk.com/mturk/dashboard">here</a>.	
+		</div>
 	      <div class="input-group">
 	        <input type="text" class="form-control" placeholder="Worker ID" />
 	        <span class="input-group-btn">
             <button id="worker-login-submit" class="btn btn-success" type="submit">Begin HIT</button>
 	        </span>
 	      </div>
-      </form>
-    </div>
+	</div>
+		</div>
+		<div class="col-lg-4"></div>
+	</div>
+	
+	
     <div class="content-main" style="display:none;">
       <div class="clear-header splitscreen-full">
 	      <div id="hit-content" class="splitscreen-content"></div>
