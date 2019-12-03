@@ -324,6 +324,19 @@ var Question = Model.extend({
 	      } else {
 	          return true;
 	      }
+    },
+    renderHelpText : function() {
+	      var self = this;
+	      if (this.helptext) {
+	          this.el.find('.help:first').popover({ placement : 'bottom',
+						                                      title : undefined,
+						                                      content : self.helptext,
+						                                      trigger : 'manual',
+						                                      html: true });
+	          this.el.find('.help:first').click(function() {
+		            $(this).popover('toggle');
+	          });
+	      }
     }
 });
 
@@ -335,6 +348,7 @@ var TextQuestion = Question.extend({
     renderDisplay : function() {
         this.el.empty();
         var q = this.el.html(_.template(this.display_template, this.serializeForDisplay()));
+	      this.renderHelpText();
     },
     validate : function () {
         return this.response() != "";
@@ -368,6 +382,7 @@ var NumericQuestion = Question.extend({
     renderDisplay : function() {
         this.el.empty();
         this.el.html(_.template(this.display_template, this.serializeForDisplay()));
+	      this.renderHelpText();
     },
     validate : function () {
         return this.response() && !isNaN(+this.response());
@@ -420,6 +435,7 @@ var CategoricalQuestion = Question.extend({
               }
             this.el.html(_.template(t, this.serializeForDisplay()));
 	      }
+	      this.renderHelpText();
     },
     isNested : function() {
 	      return _.some(this.content, function(c) {

@@ -53,7 +53,7 @@ function showWithData(task, modules) {
     var iframe = $('<iframe src="about:blank" frameborder="0" border="0" cellspacing="0"/>');
     $('#hit-content').empty().append(iframe);
     _.defer(function () {
-		iframe.contents()[0].write('<head><link rel="stylesheet" href="/static/css/main.css"/><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script></head>');
+		iframe.contents()[0].write('<head><link rel="stylesheet" href="/static/css/bootstrap3.min.css"/><script src="/static/js/jquery-3.4.1.min.js"></script><script src="/static/js/bootstrap3.min.js"></script></head>');
         iframe.contents()[0].write(task.content);
     });
     currentTypeGroup = new CTypeGroup();
@@ -157,8 +157,6 @@ function requestNextTask(response) {
 
 function onLoad() {
     ping();
-
-	$('.help').tooltip({});
 
     $('#return-hit').click(function(e) {
 	      e.preventDefault();
