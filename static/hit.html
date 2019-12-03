@@ -8,13 +8,23 @@
     <script src="/static/js/jquery-3.4.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>	
 	<script src="/static/js/popper.min.js"></script>	
-    <script src="/static/js/underscore.min.js"></script>
+    <script src="/static/js/underscore_1.5.1.min.js"></script>
     <script src="/static/js/autoexpand.js"></script>
     <script src="/static/js/mixins.js"></script>
     <script src="/static/js/simplemodels.js"></script>
     <script src="/static/js/hit.js"></script>	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<style>
+      #hit-content iframe {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      border-style: none;
+      }	
+	</style>
   </head>
+
 
 <body>
 
@@ -31,8 +41,31 @@
 		  </div>
             <button id="worker-login-submit" class="btn btn-success" type="submit">Begin HIT</button>		  
 		</div>				
-	</div>			
-</div>
+</div>			
+
+<div class="card" style="width: 21.5em;margin:0 auto;display:none" id="turk-verify-content">
+	<div class="card-header">
+						Thanks for completing this HIT! 
+	</div>				
+		<div class="card-body">
+	      <p class="card-text"> You should now return to mturk and submit the following code to receive payment:</p>
+		  
+		  <div class="form-group">
+			<input type="text" id="secret-code" readonly class="form-control" aria-label="secret code">
+		  </div>
+            <button id="secret-code-copy" class="btn btn-light" type="submit">Copy code</button>		  
+		</div>				
+</div>			
+
+<div class="card" style="width: 21.5em;margin:0 auto;display:none" id="turk-no-hits">
+	<div class="card-header">
+						No HITs
+	</div>				
+		<div class="card-body">
+	      <p class="card-text"> Sorry, you are not eligible for this HIT.</p>		  
+		</div>				
+</div>			
+
 
 
 <div class="d-md-flex h-md-100 align-items-center" id="survey-panel">
@@ -40,15 +73,14 @@
 <!-- First Half -->
 
 <div class="col-md-6 p-0 h-md-100">
-<div id="contentWindow">
+<div id="hit-content">
 </div>
 </div>
 
 <!-- Second Half -->
 
 <div class="col-md-6 p-0 h-md-100">
-<div id="questionWindow">
-</div>
+<ul id="hit-modules" style="list-style-type: none;;padding:0;margin:0;"></ul><br>
 </div>
     
 </div>
@@ -69,14 +101,14 @@
 
 	      <fieldset class="ctype-when-visible">
 	        <legend data-prop="header"></legend>
-	        <ul class="question-display-container"></ul>
+	        <ul class="question-display-container" style="list-style-type: none;padding:0;margin:0;"></ul>
 	      </fieldset>
       </form>
     </script>
 
     <script type="text/template" id="numericquestion-display-template">
       <div class="form-group">
-	      <label> 
+	      <label style="font-weight:bold"> 
 	        <%= questiontext %> 
 	        <% if (helptext) { %><div class="help">?</div><% } %>
 	      </label>
@@ -86,7 +118,7 @@
 
     <script type="text/template" id="textquestion-display-template">
       <div class="form-group">
-	      <label> 
+	      <label style="font-weight:bold"> 
 	        <%= questiontext %> 
 	        <% if (helptext) { %><div class="help">?</div><% } %>
 	      </label>
@@ -96,21 +128,22 @@
     
     <script type="text/template" id="catquestion-display-template">
       <div class="form-group">
-	      <label> 
+	      <label style="font-weight:bold"> 
 	        <%= questiontext %> 
 	        <% if (helptext) { %><div class="help">?</div><% } %>
 	      </label>
-	      <% _.each(content, function(choice) { %> <div class="radio"><label><input type="radio" name="<%= varname %>" value="<%= choice.value %>"/><%= choice.text %></label></div> <% }); %>
+	      <% _.each(content, function(choice) { %> <div class="form-check"><input class="form-check-input" type="radio" name="<%= varname %>" value="<%= choice.value %>" id="<%= varname %>:<%= choice.value %>"/><label class="form-check-label" for="<%= varname %>:<%= choice.value %>"><%= choice.text %></label></div> <% }); %>
       </div>
     </script>
 
+
     <script type="text/template" id="catquestiondropdown-display-template">
       <div class="form-group">
-	      <label> 
+	      <label style="font-weight:bold"> 
 	        <%= questiontext %> 
 	        <% if (helptext) { %><div class="help">?</div><% } %>
 	      </label>
-		  <select name="<%= varname %>">
+		  <select class="form-control" name="<%= varname %>">
 		  <option value="">Please make a selection</option>
 	      <% _.each(content, function(choice) { %> <option value="<%= choice.value %>"><%= choice.text %></option> <% }); %>
 		  </select>
@@ -119,8 +152,8 @@
     
     <script type="text/template" id="catquestionsideways-display-template">
       <div class="form-group">
-	      <label> <%= questiontext %> </label>
-	      <table class="radio-table">
+	      <label style="font-weight:bold"> <%= questiontext %> </label>
+	      <table class="table">
 	        <tr>
 	          <% if (options.lowLabel) { %><th></th><% } %>
 	          <% _.each(content, function(choice) { %>
@@ -135,13 +168,13 @@
 	        <tr>
 	          <% if (options.lowLabel) { %><td><%= options.lowLabel %></td><% } %>
 	          <% _.each(content, function(choice) { %>
-  	        <td><input id="<%= varname + "_" + choice.value %>" type="radio" name="<%= varname %>" value="<%= choice.value %>"/></td>
+  	        <td><input id="<%= varname + "_" + choice.value %>" class="form-check-input" type="radio" name="<%= varname %>" value="<%= choice.value %>"/></td>
 	          <% }); %>
 	          <% if (options.highLabel) { %><td><%= options.highLabel %></td><% } %>
 	          <% if (options.outsideCategories) { %>
 	          <th><div style="display: block; width: 2em;"></div></th>
 	          <% _.each(options.outsideCategories, function(cat) { %>
-  	        <td><input id="<%= varname + "_" + cat %>" type="radio" name="<%= varname %>" value="<%= cat %>"/></td>
+  	        <td><input id="<%= varname + "_" + cat %>" class="form-check-input" type="radio" name="<%= varname %>" value="<%= cat %>"/></td>
 	          <% }); %>
 	          <% } %>
 	        </tr>
@@ -149,15 +182,16 @@
     </script>
 
     <script type="text/template" id="catquestionsnested-display-template">
-      <% if (n <= 1) { %> <label> <%= questiontext %> </label> <% } %>
+      <% if (n <= 1) { %> <label style="font-weight:bold"> <%= questiontext %> </label> <% } %>
          <% var hidden = n > 1 ? 'style="display:none;"' : ''; %>
 	    <div class="form-group" nesting-level="<%= n %>" <%= hidden %>>
 	      <% for (choice in content) { %> 
 	      <%     if (choice === '__val__') continue; %>
 	      <%     var val = content[choice].hasOwnProperty('__val__') ? content[choice]['__val__'] : ''; %>
 	      <div class="radio">
-	        <label>
-	          <input type="radio" nesting-level="<%= n %>" name="<%= '__' + varname + '__' + n %>" value="<%= val %>"/><%= choice %>
+	        <input class="form-check-input" type="radio" nesting-level="<%= n %>" name="<%= '__' + varname + '__' + n %>" value="<%= val %>" id="<%= '__' + varname + '__' + n %>:<%= val %>"/>
+			<label class="form-check-label" for="<%= '__' + varname + '__' + n %>:<%= val %>">
+	          <%= choice %>
 	        </label>
 	        <% if (!content[choice].hasOwnProperty('__val__')) { %>
 	        <%= generator(content[choice], template, n, questiontext, varname) %>
