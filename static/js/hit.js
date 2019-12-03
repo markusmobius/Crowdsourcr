@@ -48,14 +48,13 @@ function scrollToBottom($div) {
 var currentTypeGroup = null;
 
 function showWithData(task, modules) {
-    $('#survey-panel').show();
-    $('#login-card').hide();
+    $('.content-main').show();
+    $('.login-content').hide();
     var iframe = $('<iframe src="about:blank" frameborder="0" border="0" cellspacing="0"/>');
     $('#hit-content').empty().append(iframe);
     _.defer(function () {
-		iframe.contents()[0].write('<head><meta charset="utf-8" /><link rel="stylesheet" href="/static/css/bootstrap.min.css" type="text/css"/><script src="/static/js/jquery-3.4.1.min.js"></script><script src="/static/js/bootstrap.min.js"></script></head><body>');
+		iframe.contents()[0].write('<head><link rel="stylesheet" href="/static/css/main.css"/><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script></head>');
         iframe.contents()[0].write(task.content);
-		iframe.contents()[0].write('</body>');
     });
     currentTypeGroup = new CTypeGroup();
     $('#hit-modules').empty();
@@ -113,19 +112,20 @@ function requestNextTask(response) {
     if (forcedId !== undefined) {
         getData['force'] = true;
         getData['hitid'] = forcedId;
-        getData['workerid'] = $('#workerID').val();
+        getData['workerid'] = $('#worker-login-form').find('input:first').val();
     }
     $.post('/HIT/view/', getData, function(data) {
 	      $('.loading-holder').hide();
+
 	      if (data.no_hits) {
-	          $('#survey-panel').hide();
-	          $('#login-card').hide();
-	          $('#turk-verify-content').hide();
+	          $('.content-main').hide();
+	          $('.login-content').hide();
+	          $('.turk-verify-content').hide();
 	          if (data.unfinished_hits && (Date.now() - hitLoadingTime) < 45000) {
 		            $('.loading-holder').show();
 		            setTimeout(requestNextTask, 5000);
 	          } else {
-		            $('#turk-no-hits').show();
+		            $('.turk-no-hits').show();
 	          }
 	          return;
 	      }
@@ -134,20 +134,20 @@ function requestNextTask(response) {
 	          if (data.reforce) {
                 haveUsedForcedHit = false;
             }
-	          $('#login-card').show();
-            $('#login-card').find('input').focus();
+	          $('.login-content').show();
+            $('.login-content').find('input').focus();
 	          return;
 	      }
 	      
-	      $('#survey-panel').show();
-	      $('#login-card').hide();
+	      $('.content-main').show();
+	      $('.login-content').hide();
 
 	      if (data.reload_for_first_task) {
 	          requestNextTask();
 	      } else if (data.completed_hit) {
-	          $('#survey-panel').hide();
-	          $('#login-card').hide();
-	          $('#secret-code').val(data.verify_code);
+	          $('.content-main').hide();
+	          $('.login-content').hide();
+	          $('.turk-verify-content').show().find('.secret-code').html(data.verify_code);
 	      } else {
             $('#hit-progress').text("You are on task " + (+data.task_num + 1) + " of " + data.num_tasks  + ".");
             showWithData(data.task, data.modules);
@@ -157,6 +157,8 @@ function requestNextTask(response) {
 
 function onLoad() {
     ping();
+
+	$('.help').tooltip({});
 
     $('#return-hit').click(function(e) {
 	      e.preventDefault();
@@ -181,7 +183,7 @@ function onLoad() {
 
     $('#worker-login-submit').click(function(evt) {
 	      evt.preventDefault();
-	      $.post('/worker/login/', {'workerid' : $('#workerID').val()}, requestNextTask);
+	      $.post('/worker/login/', {'workerid' : $('#worker-login-form').find('input:first').val()}, requestNextTask);
     });
 
     $('body').on('click', function (e) {
@@ -193,14 +195,6 @@ function onLoad() {
         }
     });
 
-	$('#secret-code-copy').click(function(evt) {
-		var copyText = document.getElementById("secret-code");
-		copyText.select();
-		copyText.setSelectionRange(0, 99999); /*For mobile devices*/
-		/* Copy the text inside the text field */
-		document.execCommand("copy");		
-    });
-	
     requestNextTask();
 }
 
@@ -219,14 +213,9 @@ function serializeModules() {
 }
 
 function registerModule(i, data, dest) {
-	console.log(data);
     var module_container = $(document.createElement('div'));
-	console.log("hello1");
     var module = module_container.CType(currentTypeGroup, data);
-	console.log("hello2");
-	console.log(module);
     module.renderDisplay();
-	console.log("hello3");	
     dest.append($(document.createElement('li')).html(module_container));
     if (i == 0) {
         currentTypeGroup.showType(module);
