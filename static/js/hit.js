@@ -49,7 +49,7 @@ var currentTypeGroup = null;
 
 function showWithData(task, modules) {
     $('.content-main').show();
-    $('.login-content').hide();
+    $('#login-panel').hide();
     var iframe = $('<iframe src="about:blank" frameborder="0" border="0" cellspacing="0"/>');
     $('#hit-content').empty().append(iframe);
     _.defer(function () {
@@ -112,14 +112,14 @@ function requestNextTask(response) {
     if (forcedId !== undefined) {
         getData['force'] = true;
         getData['hitid'] = forcedId;
-        getData['workerid'] = $('#worker-login-form').find('input:first').val();
+        getData['workerid'] = $('#login-panel').find('input:first').val();
     }
     $.post('/HIT/view/', getData, function(data) {
 	      $('.loading-holder').hide();
 
 	      if (data.no_hits) {
 	          $('.content-main').hide();
-	          $('.login-content').hide();
+	          $('#login-panel').hide();
 	          $('.turk-verify-content').hide();
 	          if (data.unfinished_hits && (Date.now() - hitLoadingTime) < 45000) {
 		            $('.loading-holder').show();
@@ -134,19 +134,19 @@ function requestNextTask(response) {
 	          if (data.reforce) {
                 haveUsedForcedHit = false;
             }
-	          $('.login-content').show();
-            $('.login-content').find('input').focus();
+	          $('#login-panel').show();
+            $('#login-panel').find('input').focus();
 	          return;
 	      }
 	      
 	      $('.content-main').show();
-	      $('.login-content').hide();
+	      $('#login-panel').hide();
 
 	      if (data.reload_for_first_task) {
 	          requestNextTask();
 	      } else if (data.completed_hit) {
 	          $('.content-main').hide();
-	          $('.login-content').hide();
+	          $('#login-panel').hide();
 	          $('.turk-verify-content').show().find('.secret-code').html(data.verify_code);
 	      } else {
             $('#hit-progress').text("You are on task " + (+data.task_num + 1) + " of " + data.num_tasks  + ".");
@@ -181,7 +181,7 @@ function onLoad() {
 
     $('#worker-login-submit').click(function(evt) {
 	      evt.preventDefault();
-	      $.post('/worker/login/', {'workerid' : $('#worker-login-form').find('input:first').val()}, requestNextTask);
+	      $.post('/worker/login/', {'workerid' : $('#login-panel').find('input:first').val()}, requestNextTask);
     });
 
     $('body').on('click', function (e) {
