@@ -2,7 +2,7 @@
 # http://*/superadmin/
 
 superadmins = [
-    "ralph.waldo.emerson@gmail.com"
+    "GMAIL@gmail.com"
 ]
 
 # Get these from https://console.developers.google.com under APIs &
@@ -10,11 +10,11 @@ superadmins = [
 # "http://$YOUR_DOMAIN/admin/login/" (note the final forward slash).
 # See the documentation for more information.
 google = {
-    "client_id" : "this-is-your-id.apps.googleusercontent.com",
-    "client_secret" : "thisIsYourClientSecret"
+    "client_id" : "ID.apps.googleusercontent.com",
+    "client_secret" : "SECRET"
 }
 
 aws={
-    "access_key" : "this-is-your-aws access_key",
-    "access_secret" : "this-is-your-aws-access_key"
+    "access_key" : "KEY",
+    "access_secret" : "SECRET"
 }
