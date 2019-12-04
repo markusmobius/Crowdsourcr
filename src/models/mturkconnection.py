@@ -204,7 +204,7 @@ class MTurkConnection:
             self.running = False
             return paid_bonus
         loop = asyncio.get_running_loop()
-        paid_bonus = await loop.run_in_executor(None, end_run_sync,self, bonus, already_paid) 
+        paid_bonus = await loop.run_in_executor(None, end_run_sync, self, bonus, already_paid) 
         return paid_bonus
 
     def get_payments_to_make(self):
@@ -238,7 +238,8 @@ class MTurkConnection:
                 npayments += 1
             except:
                 continue
-        print("Successfully made %d of %d payments" % (npayments, len(assignment_ids)))
+        if len(assignment_ids) > 0:
+            print("Successfully made %d of %d payments" % (npayments, len(assignment_ids)))
 
     def delete_hit(self):
         try:

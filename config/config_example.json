@@ -7,8 +7,8 @@
 	},
 
 	"port" : 8080,
-	"db_name" : "news_crowdsourcing"
-	"make_payments" : true
+	"db_name" : "news_crowdsourcing",
+	"make_payments" : true,
 
 	"aws" : {
 		"access_key" : "KEY",

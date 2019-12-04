@@ -76,7 +76,7 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
 
 def normalize_bonus_info(worker_bonus_info) :
     worker_bonus_percent = { a : 
-                            {'pct' : worker_bonus_info[a]['earned'] / (worker_bonus_info[a]['possible'] + 0.0001),
+                            {'pct' : 0 if worker_bonus_info[a]['possible'] == 0 else (worker_bonus_info[a]['earned'] / worker_bonus_info[a]['possible']),
                              'earn' : worker_bonus_info[a]['earned'],
                              'poss' : worker_bonus_info[a]['possible'],
                              'exp' : worker_bonus_info[a]['exp']}
