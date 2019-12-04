@@ -18,7 +18,6 @@ def populate_config(filename):
 
     import json
     with open("../config/"+filename) as json_file: 
-        print(filename)
         data = json.load(json_file)
         superadmins=data["superadmins"]
         google=data["google"]
