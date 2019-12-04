@@ -24,7 +24,6 @@ define('daemonize', default=False, help="set whether this process should run as 
 
 sys.path.insert(0, Settings.CONFIG_PATH)
 import app_config
-app_config.populate_config(options.config)
 sys.path.pop(0)
 
 import controllers
@@ -168,6 +167,7 @@ def main():
     if os.name == 'nt':
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     tornado.options.parse_command_line()
+    app_config.populate_config(options.config)
     if options.daemonize :
         start_as_daemon()
     else :
