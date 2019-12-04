@@ -47,8 +47,8 @@ For this section, we will assume an Ubuntu installation.
 Make sure MongoDB_ is installed and running. If it is not, follow the instructions at 
 `<http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/>`_.
 
-To set up Crowdsourcr itself, copy ``config/app_config.py.example``
-to ``config/app_config.py`` and modify the settings.  Crowdsourcr
+To set up Crowdsourcr itself, copy ``config/config_example.json``
+to ``config/MY_CONFIG_FILENAME.json`` (choose ``config.json`` if you do not want to specify the config filename during startup) and modify the settings.  Crowdsourcr
 uses Google OAuth2 for authentication, so you need to get Google
 OAuth2 keys from their `developer console
 <https://console.developers.google.com/>`_.  The configuration file
@@ -56,20 +56,20 @@ OAuth2 keys from their `developer console
 your Google account into the list of superadmins so that you can
 administrate the administrators for Crowdsourcr.
 
-You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in ``config/app_config.py``.
+You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in your config JSON.
 
 At this point, it should be possible to start Crowdsourcr by entering
 the `src` directory and running
 ::
 
- python app.py --port=80
+ python app.py
 
-and then going to ``http://YOUR.DOMAIN/admin``. If you cannot access the website you need to open port 80 on the Ubuntu firewall.
+and then going to ``http://YOUR.DOMAIN:YOUR_PORT/admin``. If you cannot access the website you need to open port 80 on the Ubuntu firewall.
 
 Note, that Crowdsourcr will by default only run in the MTurk sandbox mode. If you want to post jobs to MTurk use instead:
 ::
 
- python app.py --port=80 --environment=production
+ python app.py --environment=production
 
 On Linux, we support starting Crowdsourcr as a daemon.  For this to
 work, copy ``config/daemons_config.py.example`` to
@@ -157,8 +157,8 @@ directory with the command promt and run
 After this, you need to start ``mongod``, which is also in the ``bin``
 directory.
 
-To set up Crowdsourcr itself, copy ``config/app_config.py.example``
-to ``config/app_config.py`` and modify the settings.  Crowdsourcr
+To set up Crowdsourcr itself, copy ``config/config_example.json``
+to ``config/MY_CONFIG_FILENAME.json`` (choose ``config.json`` if you do not want to specify the config filename during startup) and modify the settings.  Crowdsourcr
 uses Google OAuth2 for authentication, so you need to get Google
 OAuth2 keys from their `developer console
 <https://console.developers.google.com/>`_.  The configuration file
@@ -166,20 +166,22 @@ OAuth2 keys from their `developer console
 your Google account into the list of superadmins so that you can
 administrate the administrators for Crowdsourcr.
 
-You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in ``config/app_config.py``.
+Specify the port and the database name under which Crowdsourcr should run. You can run several surveys in parallel on the same machine by specifying distinct port/database names.
+
+You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in your JSON file.
 
 At this point, it should be possible to start Crowdsourcr by entering
 the `src` directory and running
 ::
 
- python app.py --port=80
+ python app.py
 
-and then going to ``http://YOUR.DOMAIN/admin``.
+and then going to ``http://YOUR.DOMAIN:YOUR_PORT/admin``.
 
 Note, that Crowdsourcr will by default only run in the MTurk sandbox mode. If you want to post jobs to MTurk use instead:
 ::
 
- python app.py --port=80 --environment=production
+ python app.py --environment=production
 
 For optimal speed, you can use nginx as a proxy for load balancing
 and for serving static content.
@@ -246,9 +248,7 @@ OAuth2 for authentication.  This means that you need to have a Google
 account to administer your Crowdsourcr installation and that you need
 an OAuth client ID from Google.
 
-There is a brief description for getting the OAuth client ID in
-``config/app_config.py``.  In detail, first go to
-https://console.developers.google.com and create a new project.  It
+First go to https://console.developers.google.com and create a new project.  It
 does not matter what it is called.  Once this is created, go to
 "Credentials."  There should be a button which says
 "Create Credentials". Click it, then select "OAuth Client ID". You will
@@ -266,5 +266,5 @@ are missing.
 
 After creating the client ID, copy the "Client ID" and "Client secret"
 under "Client ID for web application" (and *not* the "Compute Engine
-and App Engine") into ``config/app_config.py``.  This should complete
+and App Engine") into your config JSON.  This should complete
 the configuration for Google OAuth2 authentication.

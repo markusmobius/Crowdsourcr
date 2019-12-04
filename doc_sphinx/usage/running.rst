@@ -16,8 +16,7 @@ where ``python`` may be ``python3`` if Python 2 is also installed. Note, that Cr
 
 This is a description of the options ``app.py`` accepts:
 
---port=NUM  Tells Crowdsourcr which port number to listen on.  Each
-            process *must* listen on a different port.
+--config=CONFIG_FILENAME  Filename for JSON file that contains the basic configuration settings such as Google authentication, AWS key and secret, port and database. Default is ``config.json``.
 --environment=MODE  Options are ``development`` and ``production``.
                     When in ``development`` (the default), HITs are
                     posted to Amazon's sandbox.
@@ -25,15 +24,6 @@ This is a description of the options ``app.py`` accepts:
                      Crowdsourcr will quit immediately after this
                      operation.  ``REALLYREALLY`` should be the
                      literal string ``REALLYREALLY``.
---db_name=NAME  Sets which MongoDB database this process should use.
-                This is useful when running multiple experiments on
-                the same machine. Defaults to ``news_crowdsourcing``.
---make_payments=BOOL  Options are either ``True`` or ``False``, defaults to ``False``.
-                      Only one process per load-balanced set should
-                      have ``True`` set.  This sets whether the
-                      process is responsible for accepting worker
-                      responses.  The ``daemons`` script handles this
-                      automatically.
 --daemonize=BOOL  Options are either ``True`` or ``False``, defaults to ``False``.
                   This only works in Linux, and it runs Crowdsourcr
                   in the background.  It will kill other daemonized
