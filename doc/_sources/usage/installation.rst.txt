@@ -3,7 +3,7 @@
 Installation
 ============
 
-Crowdsourcer is a Python_ program that uses MongoDB_ and the Tornado_
+Crowdsourcr is a Python_ program that uses MongoDB_ and the Tornado_
 library.  Optionally, it may use nginx_ for load balancing across
 multiple processes and for serving static content.
 
@@ -47,18 +47,18 @@ For this section, we will assume an Ubuntu installation.
 Make sure MongoDB_ is installed and running. If it is not, follow the instructions at 
 `<http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/>`_.
 
-To set up Crowdsourcer itself, copy ``config/app_config.py.example``
-to ``config/app_config.py`` and modify the settings.  Crowdsourcer
+To set up Crowdsourcr itself, copy ``config/app_config.py.example``
+to ``config/app_config.py`` and modify the settings.  Crowdsourcr
 uses Google OAuth2 for authentication, so you need to get Google
 OAuth2 keys from their `developer console
 <https://console.developers.google.com/>`_.  The configuration file
 (or `Google configuration`_ below) has more details about this.  Put
 your Google account into the list of superadmins so that you can
-administrate the administrators for Crowdsourcer.
+administrate the administrators for Crowdsourcr.
 
 You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in ``config/app_config.py``.
 
-At this point, it should be possible to start Crowdsourcer by entering
+At this point, it should be possible to start Crowdsourcr by entering
 the `src` directory and running
 ::
 
@@ -71,27 +71,27 @@ Note, that Crowdsourcr will by default only run in the MTurk sandbox mode. If yo
 
  python app.py --port=80 --environment=production
 
-On Linux, we support starting Crowdsourcer as a daemon.  For this to
+On Linux, we support starting Crowdsourcr as a daemon.  For this to
 work, copy ``config/daemons_config.py.example`` to
 ``config/daemons_config.py`` and add an entry to the daemons list
-describing on which port(s) you want Crowdsourcer to run (or just use
+describing on which port(s) you want Crowdsourcr to run (or just use
 the ``default`` configuration already provided).  Make sure that the
 Python package ``python-daemon``, as described in
 ``requirements.txt``, is installed, as this is a requirement for
-daemonization. Crowdsourcer can be started with ``./daemons start
+daemonization. Crowdsourcr can be started with ``./daemons start
 CONFIGNAME`` or stopped with ``./daemons stop CONFIGNAME``.  You can
 get help for these commands with ``./daemons help``.
 
-While this is already sufficient for using Crowdsourcer, we recommend
+While this is already sufficient for using Crowdsourcr, we recommend
 using nginx_ for serving static content and load balancing across
 multiple Python processes.  We already have a daemon configuration
 called ``a`` which assumes nginx is set up as a load-balancing proxy.
 To be able to use it, first ``sudo apt-get install nginx``.  Then
-create a new file called ``/etc/nginx/sites-available/crowdsourcer-a``
+create a new file called ``/etc/nginx/sites-available/Crowdsourcr-a``
 with the following content:
 ::
 
- upstream crowdsourcer_a {
+ upstream Crowdsourcr_a {
           server 127.0.0.1:8101;
           server 127.0.0.1:8102;
  }
@@ -108,7 +108,7 @@ with the following content:
         location ^~  {
                  expires max;
                  add_header Cache-Control public;
-                 root /home/kmill/crowdsourcer; # REPLACE THIS APPROPRIATELY
+                 root /home/kmill/Crowdsourcr; # REPLACE THIS APPROPRIATELY
         }
  
         location ~ /.* {
@@ -122,7 +122,7 @@ with the following content:
                  proxy_redirect off;
                  proxy_set_header X-Real-IP $remote_addr;
                  proxy_set_header X-Scheme $scheme;
-                 proxy_pass http://crowdsourcer_a;
+                 proxy_pass http://Crowdsourcr_a;
         }
  }
 
@@ -130,14 +130,14 @@ Next, run the following command to enable this configuration for
 nginx:
 ::
 
-  sudo ln -s /etc/nginx/sites-available/crowdsourcer-a /etc/nginx/sites-enabled/crowdsourcer-a
+  sudo ln -s /etc/nginx/sites-available/Crowdsourcr-a /etc/nginx/sites-enabled/Crowdsourcr-a
 
 and reload nginx:
 ::
 
   sudo service nginx reload
 
-From the Crowdsourcer directory, you can start up the ``a``
+From the Crowdsourcr directory, you can start up the ``a``
 configuration with
 ::
 
@@ -157,18 +157,18 @@ directory with the command promt and run
 After this, you need to start ``mongod``, which is also in the ``bin``
 directory.
 
-To set up Crowdsourcer itself, copy ``config/app_config.py.example``
-to ``config/app_config.py`` and modify the settings.  Crowdsourcer
+To set up Crowdsourcr itself, copy ``config/app_config.py.example``
+to ``config/app_config.py`` and modify the settings.  Crowdsourcr
 uses Google OAuth2 for authentication, so you need to get Google
 OAuth2 keys from their `developer console
 <https://console.developers.google.com/>`_.  The configuration file
 (or `Google configuration`_ below) has more details about this.  Put
 your Google account into the list of superadmins so that you can
-administrate the administrators for Crowdsourcer.
+administrate the administrators for Crowdsourcr.
 
 You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in ``config/app_config.py``.
 
-At this point, it should be possible to start Crowdsourcer by entering
+At this point, it should be possible to start Crowdsourcr by entering
 the `src` directory and running
 ::
 
@@ -191,7 +191,7 @@ placed it for the rest of the guide).  Then, open
 following (modifying the marked things appropriately):
 ::
 
- upstream crowdsourcer_a {
+ upstream Crowdsourcr_a {
           server 127.0.0.1:8101;
           server 127.0.0.1:8102;
  }
@@ -208,7 +208,7 @@ following (modifying the marked things appropriately):
         location ^~  {
                  expires max;
                  add_header Cache-Control public;
-                 root C:/news_crowdsourcer; # REPLACE THIS APPROPRIATELY
+                 root C:/news_Crowdsourcr; # REPLACE THIS APPROPRIATELY
         }
  
         location ~ /.* {
@@ -222,7 +222,7 @@ following (modifying the marked things appropriately):
                  proxy_redirect off;
                  proxy_set_header X-Real-IP $remote_addr;
                  proxy_set_header X-Scheme $scheme;
-                 proxy_pass http://crowdsourcer_a;
+                 proxy_pass http://Crowdsourcr_a;
         }
  }
 
@@ -231,7 +231,7 @@ http://nginx.org/en/docs/windows.html for more information about
 reloading or stopping nginx)
 
 Then, with nginx set up like this, running ``start_a.bat`` from the
-Crowdsourcer package will start up two processes in two windows.
+Crowdsourcr package will start up two processes in two windows.
 
 This completes the Windows installation.
 
@@ -241,9 +241,9 @@ Google configuration
 --------------------
 
 This was briefly described in each of these sections, but it may be
-useful if the details are elaborated upon here.  Crowdsourcer uses
+useful if the details are elaborated upon here.  Crowdsourcr uses
 OAuth2 for authentication.  This means that you need to have a Google
-account to administer your Crowdsourcer installation and that you need
+account to administer your Crowdsourcr installation and that you need
 an OAuth client ID from Google.
 
 There is a brief description for getting the OAuth client ID in
@@ -261,7 +261,7 @@ as authorized redirect URI.  Note carefully the trailing slash in the "Authorize
 are missing.
 
 .. figure:: ../doc_img/crowdsourcer_google_oauth.png
-   :alt: Example configuration for an OAuth client id for Crowdsourcer.
+   :alt: Example configuration for an OAuth client id for Crowdsourcr.
    :align: center
 
 After creating the client ID, copy the "Client ID" and "Client secret"

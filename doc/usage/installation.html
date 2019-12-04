@@ -140,7 +140,7 @@
                 
   <div class="section" id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>Crowdsourcer is a <a class="reference external" href="https://www.python.org/">Python</a> program that uses <a class="reference external" href="http://www.mongodb.org/">MongoDB</a> and the <a class="reference external" href="https://www.tornadoweb.org/">Tornado</a>
+<p>Crowdsourcr is a <a class="reference external" href="https://www.python.org/">Python</a> program that uses <a class="reference external" href="http://www.mongodb.org/">MongoDB</a> and the <a class="reference external" href="https://www.tornadoweb.org/">Tornado</a>
 library.  Optionally, it may use <a class="reference external" href="http://nginx.org/">nginx</a> for load balancing across
 multiple processes and for serving static content.</p>
 <p>For both Linux and Windows you need Python 3 and <code class="docutils literal notranslate"><span class="pre">pip</span></code>. Make sure that Python 3 is the default Python installation (for example, by ensuring that your Python installation appears first in the PATH environment variable).</p>
@@ -168,15 +168,15 @@ multiple processes and for serving static content.</p>
 <p>For this section, we will assume an Ubuntu installation.</p>
 <p>Make sure <a class="reference external" href="http://www.mongodb.org/">MongoDB</a> is installed and running. If it is not, follow the instructions at
 <a class="reference external" href="http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/">http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/</a>.</p>
-<p>To set up Crowdsourcer itself, copy <code class="docutils literal notranslate"><span class="pre">config/app_config.py.example</span></code>
-to <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code> and modify the settings.  Crowdsourcer
+<p>To set up Crowdsourcr itself, copy <code class="docutils literal notranslate"><span class="pre">config/app_config.py.example</span></code>
+to <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code> and modify the settings.  Crowdsourcr
 uses Google OAuth2 for authentication, so you need to get Google
 OAuth2 keys from their <a class="reference external" href="https://console.developers.google.com/">developer console</a>.  The configuration file
 (or <a class="reference internal" href="#google-configuration">Google configuration</a> below) has more details about this.  Put
 your Google account into the list of superadmins so that you can
-administrate the administrators for Crowdsourcer.</p>
+administrate the administrators for Crowdsourcr.</p>
 <p>You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.</p>
-<p>At this point, it should be possible to start Crowdsourcer by entering
+<p>At this point, it should be possible to start Crowdsourcr by entering
 the <cite>src</cite> directory and running</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span>
 </pre></div>
@@ -186,24 +186,24 @@ the <cite>src</cite> directory and running</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
 </pre></div>
 </div>
-<p>On Linux, we support starting Crowdsourcer as a daemon.  For this to
+<p>On Linux, we support starting Crowdsourcr as a daemon.  For this to
 work, copy <code class="docutils literal notranslate"><span class="pre">config/daemons_config.py.example</span></code> to
 <code class="docutils literal notranslate"><span class="pre">config/daemons_config.py</span></code> and add an entry to the daemons list
-describing on which port(s) you want Crowdsourcer to run (or just use
+describing on which port(s) you want Crowdsourcr to run (or just use
 the <code class="docutils literal notranslate"><span class="pre">default</span></code> configuration already provided).  Make sure that the
 Python package <code class="docutils literal notranslate"><span class="pre">python-daemon</span></code>, as described in
 <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, is installed, as this is a requirement for
-daemonization. Crowdsourcer can be started with <code class="docutils literal notranslate"><span class="pre">./daemons</span> <span class="pre">start</span>
+daemonization. Crowdsourcr can be started with <code class="docutils literal notranslate"><span class="pre">./daemons</span> <span class="pre">start</span>
 <span class="pre">CONFIGNAME</span></code> or stopped with <code class="docutils literal notranslate"><span class="pre">./daemons</span> <span class="pre">stop</span> <span class="pre">CONFIGNAME</span></code>.  You can
 get help for these commands with <code class="docutils literal notranslate"><span class="pre">./daemons</span> <span class="pre">help</span></code>.</p>
-<p>While this is already sufficient for using Crowdsourcer, we recommend
+<p>While this is already sufficient for using Crowdsourcr, we recommend
 using <a class="reference external" href="http://nginx.org/">nginx</a> for serving static content and load balancing across
 multiple Python processes.  We already have a daemon configuration
 called <code class="docutils literal notranslate"><span class="pre">a</span></code> which assumes nginx is set up as a load-balancing proxy.
 To be able to use it, first <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">nginx</span></code>.  Then
-create a new file called <code class="docutils literal notranslate"><span class="pre">/etc/nginx/sites-available/crowdsourcer-a</span></code>
+create a new file called <code class="docutils literal notranslate"><span class="pre">/etc/nginx/sites-available/Crowdsourcr-a</span></code>
 with the following content:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>upstream crowdsourcer_a {
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>upstream Crowdsourcr_a {
          server 127.0.0.1:8101;
          server 127.0.0.1:8102;
 }
@@ -220,7 +220,7 @@ server {
        location ^~  {
                 expires max;
                 add_header Cache-Control public;
-                root /home/kmill/crowdsourcer; # REPLACE THIS APPROPRIATELY
+                root /home/kmill/Crowdsourcr; # REPLACE THIS APPROPRIATELY
        }
 
        location ~ /.* {
@@ -234,21 +234,21 @@ server {
                 proxy_redirect off;
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Scheme $scheme;
-                proxy_pass http://crowdsourcer_a;
+                proxy_pass http://Crowdsourcr_a;
        }
 }
 </pre></div>
 </div>
 <p>Next, run the following command to enable this configuration for
 nginx:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">available</span><span class="o">/</span><span class="n">crowdsourcer</span><span class="o">-</span><span class="n">a</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">enabled</span><span class="o">/</span><span class="n">crowdsourcer</span><span class="o">-</span><span class="n">a</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">available</span><span class="o">/</span><span class="n">Crowdsourcr</span><span class="o">-</span><span class="n">a</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">enabled</span><span class="o">/</span><span class="n">Crowdsourcr</span><span class="o">-</span><span class="n">a</span>
 </pre></div>
 </div>
 <p>and reload nginx:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">nginx</span> <span class="n">reload</span>
 </pre></div>
 </div>
-<p>From the Crowdsourcer directory, you can start up the <code class="docutils literal notranslate"><span class="pre">a</span></code>
+<p>From the Crowdsourcr directory, you can start up the <code class="docutils literal notranslate"><span class="pre">a</span></code>
 configuration with</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">daemons</span> <span class="n">start</span> <span class="n">a</span>
 </pre></div>
@@ -264,15 +264,15 @@ directory with the command promt and run</p>
 </div>
 <p>After this, you need to start <code class="docutils literal notranslate"><span class="pre">mongod</span></code>, which is also in the <code class="docutils literal notranslate"><span class="pre">bin</span></code>
 directory.</p>
-<p>To set up Crowdsourcer itself, copy <code class="docutils literal notranslate"><span class="pre">config/app_config.py.example</span></code>
-to <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code> and modify the settings.  Crowdsourcer
+<p>To set up Crowdsourcr itself, copy <code class="docutils literal notranslate"><span class="pre">config/app_config.py.example</span></code>
+to <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code> and modify the settings.  Crowdsourcr
 uses Google OAuth2 for authentication, so you need to get Google
 OAuth2 keys from their <a class="reference external" href="https://console.developers.google.com/">developer console</a>.  The configuration file
 (or <a class="reference internal" href="#google-configuration">Google configuration</a> below) has more details about this.  Put
 your Google account into the list of superadmins so that you can
-administrate the administrators for Crowdsourcer.</p>
+administrate the administrators for Crowdsourcr.</p>
 <p>You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.</p>
-<p>At this point, it should be possible to start Crowdsourcer by entering
+<p>At this point, it should be possible to start Crowdsourcr by entering
 the <cite>src</cite> directory and running</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span>
 </pre></div>
@@ -289,7 +289,7 @@ directory such as <code class="docutils literal notranslate"><span class="pre">C
 placed it for the rest of the guide).  Then, open
 <code class="docutils literal notranslate"><span class="pre">C:/nginx/conf/nginx.conf</span></code> and replace the server directive with the
 following (modifying the marked things appropriately):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>upstream crowdsourcer_a {
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>upstream Crowdsourcr_a {
          server 127.0.0.1:8101;
          server 127.0.0.1:8102;
 }
@@ -306,7 +306,7 @@ server {
        location ^~  {
                 expires max;
                 add_header Cache-Control public;
-                root C:/news_crowdsourcer; # REPLACE THIS APPROPRIATELY
+                root C:/news_Crowdsourcr; # REPLACE THIS APPROPRIATELY
        }
 
        location ~ /.* {
@@ -320,7 +320,7 @@ server {
                 proxy_redirect off;
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Scheme $scheme;
-                proxy_pass http://crowdsourcer_a;
+                proxy_pass http://Crowdsourcr_a;
        }
 }
 </pre></div>
@@ -329,15 +329,15 @@ server {
 <a class="reference external" href="http://nginx.org/en/docs/windows.html">http://nginx.org/en/docs/windows.html</a> for more information about
 reloading or stopping nginx)</p>
 <p>Then, with nginx set up like this, running <code class="docutils literal notranslate"><span class="pre">start_a.bat</span></code> from the
-Crowdsourcer package will start up two processes in two windows.</p>
+Crowdsourcr package will start up two processes in two windows.</p>
 <p>This completes the Windows installation.</p>
 </div>
 <div class="section" id="google-configuration">
 <span id="id3"></span><h2>Google configuration<a class="headerlink" href="#google-configuration" title="Permalink to this headline">¶</a></h2>
 <p>This was briefly described in each of these sections, but it may be
-useful if the details are elaborated upon here.  Crowdsourcer uses
+useful if the details are elaborated upon here.  Crowdsourcr uses
 OAuth2 for authentication.  This means that you need to have a Google
-account to administer your Crowdsourcer installation and that you need
+account to administer your Crowdsourcr installation and that you need
 an OAuth client ID from Google.</p>
 <p>There is a brief description for getting the OAuth client ID in
 <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.  In detail, first go to
@@ -353,7 +353,7 @@ replacing the domain appropriately. If you want to do local testing add <code cl
 as authorized redirect URI.  Note carefully the trailing slash in the “Authorized Redirect URI” and the <code class="docutils literal notranslate"><span class="pre">http</span></code> rather than <code class="docutils literal notranslate"><span class="pre">https</span></code>. Authentication will not work if either of these
 are missing.</p>
 <div class="figure align-center">
-<img alt="Example configuration for an OAuth client id for Crowdsourcer." src="../_images/crowdsourcer_google_oauth.png" />
+<img alt="Example configuration for an OAuth client id for Crowdsourcr." src="../_images/crowdsourcer_google_oauth.png" />
 </div>
 <p>After creating the client ID, copy the “Client ID” and “Client secret”
 under “Client ID for web application” (and <em>not</em> the “Compute Engine

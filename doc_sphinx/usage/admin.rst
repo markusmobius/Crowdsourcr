@@ -1,22 +1,22 @@
 Administration
 ==============
 
-Once Crowdsourcer is installed and running, there are two important
+Once Crowdsourcr is installed and running, there are two important
 URLs.  The first is
 ::
 
   http://YOUR.DOMAIN
 
-which has this online documentation for Crowdsourcer, and the other is
+which has this online documentation for Crowdsourcr, and the other is
 ::
 
   http://YOUR.DOMAIN/admin/
 
 which is the main administrative panel.  You will be redirected to
-Google for authentication.  Crowdsourcer asks for your identity so
+Google for authentication.  Crowdsourcr asks for your identity so
 that it can record who begins and ends HITs for accountability.
 
-You may find that Crowdsourcer does not let you see the Admin panel.
+You may find that Crowdsourcr does not let you see the Admin panel.
 If this happens, check ``config/app_config.py`` to see that your
 Google account is indeed in the superadmins list.  Worse, you may find
 that Google is not wanting to authenticate.  If this happens, make
@@ -29,57 +29,66 @@ You can get to the admin panel using the URL similar to
 ``http://YOUR.DOMAIN/admin/``.  When there is a Mechanical Turk run,
 the interface will look something like the following:
 
-.. figure:: ../doc_img/crowdsourcer_admin_example_scaled.png
+.. figure:: ../doc_img/crowdsourcer_admin_main.png
    :align: center
 
-Status
-++++++
+The admin page has three tabs:
 
-.. figure:: ../doc_img/crowdsourcer_admin_status_example.png
-   :align: center
+- The status tab (default view) allows management of administrators and an overview of loaded cHITs and Amazon Turk progress.
+- The survey tab allows upload of new surveys and download of data.
+- The cHit tab describes the Amazon Turk task as well as reward and bonus info.
 
-The status is in the upper left corner of the interface.  It tells you
-whether the system is running in ``development`` or ``production``
-mode, whether you are a superadmin (and a link to the `Superadmin
-panel`_), how many cHITs and tasks are loaded and completed,
-information about your Mechanical Turk account (if one has been
-entered), as well as the HIT id for the current HIT (if one is
+We describe the three tabs in detail below.
+
+Status Tab
+++++++++++
+
+The status tab tells you whether the system is running in ``development`` or ``production``
+mode, whether you are a superadmin (and a link to the `Superadmin panel`_), how many cHITs and tasks are loaded and completed,
+information about your Mechanical Turk account (if valid account credentials were provided in the configuration file), as well as the HIT id for the current HIT (if one is
 currently running).
 
-If a Mechanical Turk account has been provided in the Recruit_
-interface, then there will be one of two buttons: "Begin Run" or "End
-Run."
+Whenever surveys are uploaded and posted to Amazon Turk, an entry is recorded in the Events area.  These events are persisted between sessions and jobs.
+
+If a Mechanical Turk account has been provided in ``config/app_config.py`` the task tab will show one of two buttons: "Begin Run" or "End Run."
 
 Begin Run
-  Publishes a HIT on Amazon Mechanical Turk with the information
-  provided under Recruit_.  The cHITs shown in HITs_ will be assigned
-  to the MTurk workers as they visit your Crowdsourcer
-  installation. The published HIT will have exactly as many
-  assignments as there are uncompleted cHITs.  Beginning a run does
-  not clear the database of prior responses; this is accomplished by
+  Publishes a HIT on Amazon Mechanical Turk.  The cHITs shown at the bottom of the `Survey Tab`_ will be assigned
+  to the MTurk workers as they visit your Crowdsourcr installation. The published HIT will have exactly as many
+  assignments as there are uncompleted cHITs.  Beginning a run does not clear the database of prior responses; this is accomplished by
   uploading an XML file again.
 
 End Run
   Expires the HIT on Amazon Mechanical Turk and computes and pays out
   bonuses (if applicable).
 
-In both cases, an event will be recorded and show up in the Events_
-area.
+In both cases, an event will be recorded and show up in the events area at the bottom of the status tab.
 
-.. _admin upload:
+Superadmin panel
+----------------
 
-Upload
-++++++
-
-.. figure:: ../doc_img/crowdsourcer_admin_upload_example.png
+.. figure:: ../doc_img/crowdsourcer_admin_manage_admins.png
    :align: center
 
-The format for a Crowdsourcer run description is XML as described in
-this document.
+If you are a superadmin, a link with the text "Administer admins" will
+appear in the status area of the admin panel.  This modal popup lets you add
+Google accounts which should be able to access the admin panel.
+Whenever a superadmins visits the admin panel, they are automatically
+added to the list of admins.
+
+.. _survey_tab:
+
+Survey Tab
+++++++++++
+
+.. figure:: ../doc_img/crowdsourcer_admin_surveytab.png
+   :align: center
+
+The format for a Crowdsourcr run description is XML as described in :ref:`xml-format`.
 
 Upload XML
-  If there is no ongoing run, then this button will be enabled.
-  Select a Crowdsourcer XML file and click "Upload XML" to upload a
+  If there is no ongoing run on Amazon Turk, then this button will be enabled.
+  Select a Crowdsourcr XML file and click "Upload XML" to upload a
   job description.  This operation will also clear all prior results
   from the database, so make sure to use the following download
   buttons *before* uploading a new XML file.
@@ -96,44 +105,9 @@ Download bonus info
 
 Note that the only way to run an experiment again is to re-upload the
 XML, as this is the only way to clear the database (except for using
-the ``--drop`` option, described above).
+the ``--drop`` option, described in section :ref:`running`).
 
-Recruit
-+++++++
-
-.. figure:: ../doc_img/crowdsourcer_admin_recruit_example.png
-   :align: center
-
-To be able to publish a HIT onto Amazon Mechanical Turk, you must
-enter the Access Key and the Secret Key for your account, as well as
-how much you want to pay per HIT, a title, a description, and some
-keywords for the HIT.  After changing this information, you must click
-"Update Turk Info" for the change to take effect.
-
-All admins share the same Mechanical Turk information, and all admins
-can see the access key and secret key for the account.
-
-While there is an ongoing run, clicking "Update Turk Info" will not
-change the posted description on Mechanical Turk.  It is not wise to
-click this button while there is an ongoing run because this has been
-untested.
-
-Events
-++++++
-
-.. figure:: ../doc_img/crowdsourcer_admin_events_example.png
-   :align: center
-
-Whenever runs are begun or ended, an entry is recorded in the Events
-area.  These events are persisted between sessions and jobs.
-
-HITs
-++++
-
-.. figure:: ../doc_img/crowdsourcer_admin_hits_example.png
-   :align: center
-
-When an XML file has been uploaded, this area is populated with all of
+When an XML file has been uploaded, the bottom area of the survey tabis populated with all of
 the cHITs described in that file.  When an MTurk worker accepts the
 published HIT, they are directed to ``http://YOUR.DOMAIN/HIT/``, where
 they are assigned one of these cHITs.
@@ -158,14 +132,33 @@ this cHIT unless the system automatically releases the assignment
 because it goes "stale").  The URL for these "Show HIT" links can be
 given to anyone if you want them to take a particular cHIT.
 
-Superadmin panel
-----------------
 
-.. figure:: ../doc_img/crowdsourcer_superadmin_example.png
+cHIT Tab
+++++++++
+
+.. figure:: ../doc_img/crowdsourcer_admin_hittab.png
    :align: center
 
-If you are a superadmin, a link with the text "Administer admins" will
-appear in the status area of the admin panel.  This panel lets you add
-Google accounts which should be able to access the admin panel.
-Whenever a superadmins visits the admin panel, they are automatically
-added to the list of admins.
+To be able to publish a HIT onto Amazon Mechanical Turk, you must have
+entered the Access Key and the Secret Key for your account into ``config/app_config.py``.
+
+Click the "Edit cHIT parameters" button to open a modal where you can 
+modify how a cHIT is advertised as an Amazon Turk HIT. While there is an ongoing Amazon Turk run the edit cHIT run will be disabled.
+
+You can specifically modify the following parameters:
+
+- base reward 
+- bonus amount
+- HIT title 
+- HIT description
+- HIT keywords
+
+The bonus amount determines the maximum bonus a worker receives:
+
+- A worker can earn "bonus points" for certain tasks. The bonus points are defined in the XML of the survey and details are described in section :ref:`bonus`.
+- A question will earn maximum bonus points if all other workers who answered the question provided the same answer.
+- A worker can earn partial which is increasing with the number of other workers who provide the same answer (details are defined in section :ref:`bonus`).
+- Crowdsourcr calculates the share of bonus points earned among total possible points.
+- This shares is multiplied by the bonus amount in the cHIT Tab and determines the actual bonus paid to a worker.
+
+Note, that if questions are assigned to only one worker in the XML then the bonus will always be zero.

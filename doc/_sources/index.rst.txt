@@ -6,7 +6,7 @@
 Welcome to Crowdsourcr!
 =======================================
 
-Crowdsourcer is an application for conducting survey-like experiments
+Crowdsourcr is an application for conducting survey-like experiments
 online, especially when used in conjunction with Amazon Mechanical
 Turk.
 
