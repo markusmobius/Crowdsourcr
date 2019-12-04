@@ -146,9 +146,8 @@ described in the <a class="reference internal" href="installation.html#installat
 <p>where <code class="docutils literal notranslate"><span class="pre">python</span></code> may be <code class="docutils literal notranslate"><span class="pre">python3</span></code> if Python 2 is also installed. Note, that Crowdsourcr only runs under Python 3.</p>
 <p>This is a description of the options <code class="docutils literal notranslate"><span class="pre">app.py</span></code> accepts:</p>
 <dl class="option-list">
-<dt><kbd><span class="option">--port=<var>NUM</var></span></kbd></dt>
-<dd><p>Tells Crowdsourcr which port number to listen on.  Each
-process <em>must</em> listen on a different port.</p>
+<dt><kbd><span class="option">--config=<var>CONFIG_FILENAME</var></span></kbd></dt>
+<dd><p>Filename for JSON file that contains the basic configuration settings such as Google authentication, AWS key and secret, port and database. Default is <code class="docutils literal notranslate"><span class="pre">config.json</span></code>.</p>
 </dd>
 <dt><kbd><span class="option">--environment=<var>MODE</var></span></kbd></dt>
 <dd><p>Options are <code class="docutils literal notranslate"><span class="pre">development</span></code> and <code class="docutils literal notranslate"><span class="pre">production</span></code>.
@@ -160,19 +159,6 @@ posted to Amazon’s sandbox.</p>
 Crowdsourcr will quit immediately after this
 operation.  <code class="docutils literal notranslate"><span class="pre">REALLYREALLY</span></code> should be the
 literal string <code class="docutils literal notranslate"><span class="pre">REALLYREALLY</span></code>.</p>
-</dd>
-<dt><kbd><span class="option">--db_name=<var>NAME</var></span></kbd></dt>
-<dd><p>Sets which MongoDB database this process should use.
-This is useful when running multiple experiments on
-the same machine. Defaults to <code class="docutils literal notranslate"><span class="pre">news_crowdsourcing</span></code>.</p>
-</dd>
-<dt><kbd><span class="option">--make_payments=<var>BOOL</var></span></kbd></dt>
-<dd><p>Options are either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.
-Only one process per load-balanced set should
-have <code class="docutils literal notranslate"><span class="pre">True</span></code> set.  This sets whether the
-process is responsible for accepting worker
-responses.  The <code class="docutils literal notranslate"><span class="pre">daemons</span></code> script handles this
-automatically.</p>
 </dd>
 <dt><kbd><span class="option">--daemonize=<var>BOOL</var></span></kbd></dt>
 <dd><p>Options are either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.

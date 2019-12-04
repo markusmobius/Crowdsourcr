@@ -152,10 +152,6 @@
         </li>
     
         <li class="nav-item toc-entry toc-h2">
-            <a href="#id2" class="nav-link">Tasks</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
             <a href="#chits" class="nav-link">cHits</a><ul class="nav section-nav flex-column">
                 
         <li class="nav-item toc-entry toc-h3">
@@ -424,51 +420,6 @@ example:</p>
 </div>
 <div class="section" id="tasks">
 <h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;question&gt;
-  &lt;varname&gt;bias&lt;/varname&gt;
-  &lt;valuetype&gt;categorical&lt;/valuetype&gt;
-  &lt;questiontext&gt;How biased is this?&lt;/questiontext&gt;
-  &lt;options&gt;
-    &lt;layout&gt;horizontal&lt;/layout&gt;
-    &lt;lowLabel&gt;Conservative&lt;/lowLabel&gt;
-    &lt;highLabel&gt;Liberal&lt;/highLabel&gt;
-    &lt;outsideCategories&gt;N/A&lt;/outsideCategories&gt;
-    &lt;outsideCategories&gt;Unsure&lt;/outsideCategories&gt;
-  &lt;/options&gt;
-  &lt;content&gt;
-    &lt;categories&gt;
-      &lt;category&gt;
-        &lt;text&gt;1&lt;/text&gt;
-        &lt;value&gt;1&lt;/value&gt;
-      &lt;/category&gt;
-      &lt;category&gt;
-        &lt;text&gt;2&lt;/text&gt;
-        &lt;value&gt;2&lt;/value&gt;
-      &lt;/category&gt;
-      &lt;category&gt;
-        &lt;text&gt;3&lt;/text&gt;
-        &lt;value&gt;3&lt;/value&gt;
-      &lt;/category&gt;
-      &lt;category&gt;
-        &lt;text&gt;4&lt;/text&gt;
-        &lt;value&gt;4&lt;/value&gt;
-      &lt;/category&gt;
-      &lt;category&gt;
-        &lt;text&gt;5&lt;/text&gt;
-        &lt;value&gt;5&lt;/value&gt;
-      &lt;/category&gt;
-      &lt;category&gt;
-        &lt;text&gt;6&lt;/text&gt;
-        &lt;value&gt;6&lt;/value&gt;
-      &lt;/category&gt;
-    &lt;/categories&gt;
-  &lt;/content&gt;
-&lt;/question&gt;
-</pre></div>
-</div>
-</div>
-<div class="section" id="id2">
-<h2>Tasks<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>Each task consists of a document that is shown on the left screen and a set of modules that are shown on the right.</p>
 <div class="figure align-center">
 <img alt="An example task." src="../_images/crowdsourcer_task_example_news_scaled1.png" />
@@ -709,7 +660,7 @@ notinset{$workerid,excludedemographics}
 <p>The parser for conditions is the same as for <a class="reference internal" href="#task-condition"><span class="std std-ref">Task Conditions</span></a>. However, variable definitions are simplified and only use the variable name because conditions only apply within the context of a module.</p>
 </div>
 <div class="section" id="bonus">
-<span id="id3"></span><h2>Bonus<a class="headerlink" href="#bonus" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2>Bonus<a class="headerlink" href="#bonus" title="Permalink to this headline">¶</a></h2>
 <p>Crowdsourcr can automatically award bonuses conditional on agreement
 between Turkers on each question. This allows one to reward Turkers for good
 performance in multiple entry tasks.</p>

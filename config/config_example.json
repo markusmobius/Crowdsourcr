@@ -1,0 +1,17 @@
+{
+	"superadmins" : ["GMAIL@gmail.com"],
+
+	"google" : {
+		"client_id" : "ID.apps.googleusercontent.com",
+		"client_secret" : "SECRET"
+	},
+
+	"port" : 8080,
+	"db_name" : "news_crowdsourcing"
+	"make_payments" : true
+
+	"aws" : {
+		"access_key" : "KEY",
+		"access_secret" : "SECRET"
+	}	
+}

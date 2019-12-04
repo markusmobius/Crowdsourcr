@@ -244,52 +244,6 @@ example:
  </question>
 
 
-Tasks
------
-
-::
-
- <question>
-   <varname>bias</varname>
-   <valuetype>categorical</valuetype>
-   <questiontext>How biased is this?</questiontext>
-   <options>
-     <layout>horizontal</layout>
-     <lowLabel>Conservative</lowLabel>
-     <highLabel>Liberal</highLabel>
-     <outsideCategories>N/A</outsideCategories>
-     <outsideCategories>Unsure</outsideCategories>
-   </options>
-   <content>
-     <categories>
-       <category>
-         <text>1</text>
-         <value>1</value>
-       </category>
-       <category>
-         <text>2</text>
-         <value>2</value>
-       </category>
-       <category>
-         <text>3</text>
-         <value>3</value>
-       </category>
-       <category>
-         <text>4</text>
-         <value>4</value>
-       </category>
-       <category>
-         <text>5</text>
-         <value>5</value>
-       </category>
-       <category>
-         <text>6</text>
-         <value>6</value>
-       </category>
-     </categories>
-   </content>
- </question>
-
 
 Tasks
 -----

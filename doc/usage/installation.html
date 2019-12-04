@@ -168,22 +168,22 @@ multiple processes and for serving static content.</p>
 <p>For this section, we will assume an Ubuntu installation.</p>
 <p>Make sure <a class="reference external" href="http://www.mongodb.org/">MongoDB</a> is installed and running. If it is not, follow the instructions at
 <a class="reference external" href="http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/">http://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/</a>.</p>
-<p>To set up Crowdsourcr itself, copy <code class="docutils literal notranslate"><span class="pre">config/app_config.py.example</span></code>
-to <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code> and modify the settings.  Crowdsourcr
+<p>To set up Crowdsourcr itself, copy <code class="docutils literal notranslate"><span class="pre">config/config_example.json</span></code>
+to <code class="docutils literal notranslate"><span class="pre">config/MY_CONFIG_FILENAME.json</span></code> (choose <code class="docutils literal notranslate"><span class="pre">config.json</span></code> if you do not want to specify the config filename during startup) and modify the settings.  Crowdsourcr
 uses Google OAuth2 for authentication, so you need to get Google
 OAuth2 keys from their <a class="reference external" href="https://console.developers.google.com/">developer console</a>.  The configuration file
 (or <a class="reference internal" href="#google-configuration">Google configuration</a> below) has more details about this.  Put
 your Google account into the list of superadmins so that you can
 administrate the administrators for Crowdsourcr.</p>
-<p>You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.</p>
+<p>You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in your config JSON.</p>
 <p>At this point, it should be possible to start Crowdsourcr by entering
 the <cite>src</cite> directory and running</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<p>and then going to <code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN/admin</span></code>. If you cannot access the website you need to open port 80 on the Ubuntu firewall.</p>
+<p>and then going to <code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN:YOUR_PORT/admin</span></code>. If you cannot access the website you need to open port 80 on the Ubuntu firewall.</p>
 <p>Note, that Crowdsourcr will by default only run in the MTurk sandbox mode. If you want to post jobs to MTurk use instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
 </pre></div>
 </div>
 <p>On Linux, we support starting Crowdsourcr as a daemon.  For this to
@@ -264,22 +264,23 @@ directory with the command promt and run</p>
 </div>
 <p>After this, you need to start <code class="docutils literal notranslate"><span class="pre">mongod</span></code>, which is also in the <code class="docutils literal notranslate"><span class="pre">bin</span></code>
 directory.</p>
-<p>To set up Crowdsourcr itself, copy <code class="docutils literal notranslate"><span class="pre">config/app_config.py.example</span></code>
-to <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code> and modify the settings.  Crowdsourcr
+<p>To set up Crowdsourcr itself, copy <code class="docutils literal notranslate"><span class="pre">config/config_example.json</span></code>
+to <code class="docutils literal notranslate"><span class="pre">config/MY_CONFIG_FILENAME.json</span></code> (choose <code class="docutils literal notranslate"><span class="pre">config.json</span></code> if you do not want to specify the config filename during startup) and modify the settings.  Crowdsourcr
 uses Google OAuth2 for authentication, so you need to get Google
 OAuth2 keys from their <a class="reference external" href="https://console.developers.google.com/">developer console</a>.  The configuration file
 (or <a class="reference internal" href="#google-configuration">Google configuration</a> below) has more details about this.  Put
 your Google account into the list of superadmins so that you can
 administrate the administrators for Crowdsourcr.</p>
-<p>You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.</p>
+<p>Specify the port and the database name under which Crowdsourcr should run. You can run several surveys in parallel on the same machine by specifying distinct port/database names.</p>
+<p>You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in your JSON file.</p>
 <p>At this point, it should be possible to start Crowdsourcr by entering
 the <cite>src</cite> directory and running</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<p>and then going to <code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN/admin</span></code>.</p>
+<p>and then going to <code class="docutils literal notranslate"><span class="pre">http://YOUR.DOMAIN:YOUR_PORT/admin</span></code>.</p>
 <p>Note, that Crowdsourcr will by default only run in the MTurk sandbox mode. If you want to post jobs to MTurk use instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">80</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">production</span>
 </pre></div>
 </div>
 <p>For optimal speed, you can use nginx as a proxy for load balancing
@@ -339,9 +340,7 @@ useful if the details are elaborated upon here.  Crowdsourcr uses
 OAuth2 for authentication.  This means that you need to have a Google
 account to administer your Crowdsourcr installation and that you need
 an OAuth client ID from Google.</p>
-<p>There is a brief description for getting the OAuth client ID in
-<code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.  In detail, first go to
-<a class="reference external" href="https://console.developers.google.com">https://console.developers.google.com</a> and create a new project.  It
+<p>First go to <a class="reference external" href="https://console.developers.google.com">https://console.developers.google.com</a> and create a new project.  It
 does not matter what it is called.  Once this is created, go to
 “Credentials.”  There should be a button which says
 “Create Credentials”. Click it, then select “OAuth Client ID”. You will
@@ -357,7 +356,7 @@ are missing.</p>
 </div>
 <p>After creating the client ID, copy the “Client ID” and “Client secret”
 under “Client ID for web application” (and <em>not</em> the “Compute Engine
-and App Engine”) into <code class="docutils literal notranslate"><span class="pre">config/app_config.py</span></code>.  This should complete
+and App Engine”) into your config JSON.  This should complete
 the configuration for Google OAuth2 authentication.</p>
 </div>
 </div>

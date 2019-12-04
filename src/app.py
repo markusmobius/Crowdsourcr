@@ -17,15 +17,14 @@ import Settings
 
 from tornado.options import define, options
  
-define('port', default=8080, help="run on the given port", type=int)
+define('config', default="config.json", help="JSON file with config parameters such as Google authentication, AWS mTurl parameters, port and database", type=str)
 define('environment', default="development", help="server environment", type=str)
 define('drop', default="", help="pass REALLYREALLY to drop the db", type=str)
-define('db_name', default='news_crowdsourcing', help='name of mongodb database to use', type=str)
-define('make_payments', default=False, help='set whether this process should make turk payments', type=bool)
 define('daemonize', default=False, help="set whether this process should run as a daemon (linux/unix-only)", type=bool)
 
 sys.path.insert(0, Settings.CONFIG_PATH)
 import app_config
+app_config.populate_config(options.config)
 sys.path.pop(0)
 
 import controllers
@@ -35,8 +34,8 @@ def random256() :
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
  
 class Application(tornado.web.Application):
-    def __init__(self, environment, db_name, drop, make_payments):
-        self.db = pymongo.MongoClient()[db_name]
+    def __init__(self, environment, drop):
+        self.db = pymongo.MongoClient()[app_config.db_name]
         if drop == "REALLYREALLY" :
             clear_db(self.db)
             print("Cleared.")
@@ -102,7 +101,7 @@ class Application(tornado.web.Application):
         self.mturkconnection_controller = controllers.MTurkConnectionController(self.db)
         self.event_controller = controllers.EventController(self.db)
 
-        if make_payments :
+        if app_config.make_payments :
             self.ensure_automatic_make_payments()
     
     @property
@@ -130,12 +129,10 @@ class Application(tornado.web.Application):
 
 def start() :
     application = Application(environment=options.environment,
-                              db_name=options.db_name,
-                              drop=options.drop,
-                              make_payments=options.make_payments)
+                              drop=options.drop)
     http_server = tornado.httpserver.HTTPServer(application)
     try :
-        http_server.listen(options.port)
+        http_server.listen(app_config.port)
     except :
         traceback.print_exc()
         os._exit(1) # since it otherwise hangs
@@ -150,9 +147,9 @@ def start() :
 def start_as_daemon() :
     import daemon
     import pid
-    log_file = 'tornado.%s.log' % options.port
+    log_file = 'tornado.%s.log' % app_config.port
     log = open(os.path.join(Settings.LOG_PATH, log_file), 'a+')
-    pidfile_path = os.path.join(Settings.PIDFILE_PATH, '%d.pid' % options.port)
+    pidfile_path = os.path.join(Settings.PIDFILE_PATH, '%d.pid' % app_config.port)
     pid.check(pidfile_path)
     with daemon.DaemonContext(stdout=log, stderr=log, working_directory='.') :
         pid.write(pidfile_path)

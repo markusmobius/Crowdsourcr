@@ -4,5 +4,7 @@ tmp/*
 log/*
 pid/*
 doc_sphinx/_build/*
-config/app_config.py
+config/*.json
 config/daemons_config.py
+
+!config/config_example.json
