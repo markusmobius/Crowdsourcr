@@ -148,6 +148,28 @@
         </li>
     
         <li class="nav-item toc-entry toc-h2">
+            <a href="#tasks" class="nav-link">Tasks</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#id2" class="nav-link">Tasks</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#chits" class="nav-link">cHits</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#data-download" class="nav-link">Data Download</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#task-conditions" class="nav-link">Task Conditions</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
             <a href="#conditional-questions" class="nav-link">Conditional Questions</a>
         </li>
     
@@ -178,10 +200,10 @@
               <div>
                 
   <div class="section" id="xml-format">
-<h1>XML Format<a class="headerlink" href="#xml-format" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>XML Format<a class="headerlink" href="#xml-format" title="Permalink to this headline">¶</a></h1>
 <p>This section describes the structure of the XML file used for
-describing an experiment (see <a class="reference internal" href="admin.html#admin-upload"><span class="std std-ref">Upload</span></a> for how to upload the XML file
-to Crowdsourcer).</p>
+describing an experiment (see <a class="reference internal" href="admin.html#survey-tab"><span class="std std-ref">Survey Tab</span></a> for how to upload the XML file
+to Crowdsourcr).</p>
 <p>The main structure of the XML file is as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">xml</span><span class="o">&gt;</span>
   <span class="o">&lt;</span><span class="n">modules</span><span class="o">&gt;</span>
@@ -193,13 +215,16 @@ to Crowdsourcer).</p>
   <span class="o">&lt;</span><span class="n">hits</span><span class="o">&gt;</span>
     <span class="o">...</span> <span class="n">hit</span> <span class="n">definitions</span> <span class="o">...</span>
   <span class="o">&lt;/</span><span class="n">hits</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">sets</span><span class="o">&gt;</span>
+    <span class="o">...</span> <span class="nb">set</span> <span class="n">definitions</span> <span class="o">...</span>
+  <span class="o">&lt;/</span><span class="n">sets</span><span class="o">&gt;</span>
   <span class="o">&lt;</span><span class="n">documents</span><span class="o">&gt;</span>
     <span class="o">...</span> <span class="n">document</span> <span class="n">definitions</span> <span class="o">...</span>
   <span class="o">&lt;/</span><span class="n">documents</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">xml</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">documents</span></code> section is optional if it is empty, otherwise the
+<p>The <code class="docutils literal notranslate"><span class="pre">documents</span></code> and <code class="docutils literal notranslate"><span class="pre">sets</span></code> sections are optional if it is empty, otherwise the
 first three are required.</p>
 <div class="section" id="modules">
 <h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
@@ -397,55 +422,301 @@ example:</p>
 </div>
 </div>
 </div>
+<div class="section" id="tasks">
+<h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;question&gt;
+  &lt;varname&gt;bias&lt;/varname&gt;
+  &lt;valuetype&gt;categorical&lt;/valuetype&gt;
+  &lt;questiontext&gt;How biased is this?&lt;/questiontext&gt;
+  &lt;options&gt;
+    &lt;layout&gt;horizontal&lt;/layout&gt;
+    &lt;lowLabel&gt;Conservative&lt;/lowLabel&gt;
+    &lt;highLabel&gt;Liberal&lt;/highLabel&gt;
+    &lt;outsideCategories&gt;N/A&lt;/outsideCategories&gt;
+    &lt;outsideCategories&gt;Unsure&lt;/outsideCategories&gt;
+  &lt;/options&gt;
+  &lt;content&gt;
+    &lt;categories&gt;
+      &lt;category&gt;
+        &lt;text&gt;1&lt;/text&gt;
+        &lt;value&gt;1&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;2&lt;/text&gt;
+        &lt;value&gt;2&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;3&lt;/text&gt;
+        &lt;value&gt;3&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;4&lt;/text&gt;
+        &lt;value&gt;4&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;5&lt;/text&gt;
+        &lt;value&gt;5&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;6&lt;/text&gt;
+        &lt;value&gt;6&lt;/value&gt;
+      &lt;/category&gt;
+    &lt;/categories&gt;
+  &lt;/content&gt;
+&lt;/question&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>Tasks<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Each task consists of a document that is shown on the left screen and a set of modules that are shown on the right.</p>
+<div class="figure align-center">
+<img alt="An example task." src="../_images/crowdsourcer_task_example_news_scaled1.png" />
+</div>
+<p>The sample XML file <code class="docutils literal notranslate"><span class="pre">simple_question_conditional_hit.xml</span></code> has the following three tasks:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">tasks</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">task</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">content</span><span class="o">&gt;</span><span class="n">screening</span><span class="o">.</span><span class="n">html</span><span class="o">&lt;/</span><span class="n">content</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">taskid</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">taskid</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">modules</span><span class="o">&gt;</span><span class="n">screening</span><span class="o">&lt;/</span><span class="n">modules</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">task</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">task</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">content</span><span class="o">&gt;</span><span class="n">spelling</span><span class="o">.</span><span class="n">html</span><span class="o">&lt;/</span><span class="n">content</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">taskid</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">taskid</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">modules</span><span class="o">&gt;</span><span class="n">spelling</span><span class="o">&lt;/</span><span class="n">modules</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">task</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">task</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">content</span><span class="o">&gt;</span><span class="n">demographics</span><span class="o">.</span><span class="n">html</span><span class="o">&lt;/</span><span class="n">content</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">taskid</span><span class="o">&gt;</span><span class="mi">3</span><span class="o">&lt;/</span><span class="n">taskid</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">modules</span><span class="o">&gt;</span><span class="n">demographics</span><span class="o">&lt;/</span><span class="n">modules</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">task</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">tasks</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>In this example, every task has just one associated module. The <code class="docutils literal notranslate"><span class="pre">complex_modules.xml</span></code> survey shows an example where tasks have several modules. This XML file generates the screenshot above.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">content</span></code> value refers to a document that is defined under <code class="docutils literal notranslate"><span class="pre">documents</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;documents&gt;
+  &lt;document&gt;
+    &lt;name&gt;screening.html&lt;/name&gt;
+    &lt;content&gt;&lt;![CDATA[
+    &lt;p&gt;On this page we screen you.&lt;/p&gt;
+    ]]&gt;&lt;/content&gt;
+  &lt;/document&gt;
+  &lt;document&gt;
+    &lt;name&gt;spelling.html&lt;/name&gt;
+    &lt;content&gt;&lt;![CDATA[
+    &lt;p&gt;Please answer these questions.&lt;/p&gt;
+    ]]&gt;&lt;/content&gt;
+  &lt;/document&gt;
+  &lt;document&gt;
+    &lt;name&gt;demographics.html&lt;/name&gt;
+    &lt;content&gt;&lt;![CDATA[
+    &lt;p&gt;On this page we ask questions about yourself.&lt;/p&gt;
+    ]]&gt;&lt;/content&gt;
+  &lt;/document&gt;
+&lt;/documents&gt;
+</pre></div>
+</div>
+<p>Any HTML content can be provided under the content property (you can even use it to load external images through <code class="docutils literal notranslate"><span class="pre">&lt;img</span> <span class="pre">src=&quot;http://my_other_domain/my_image.png&quot;&gt;</span></code>) but you need to encapsulate your HTML in a CDATA tag in order to produce valid XML.
+The <code class="docutils literal notranslate"><span class="pre">complex_modules.xml</span></code> survey provides an example of very rich content panels.</p>
+</div>
+<div class="section" id="chits">
+<h2>cHits<a class="headerlink" href="#chits" title="Permalink to this headline">¶</a></h2>
+<p>A cHIT is a collection of tasks. This is what the Turk worker will see when clicking the link in the Amazon interface. Your cHIT will have as many pages as there are tasks. <code class="docutils literal notranslate"><span class="pre">simple_question_conditional_hit.xml</span></code> defines 3 cHITs each consisting of three tasks.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;hits&gt;
+  &lt;hit&gt;
+    &lt;hitid&gt;1&lt;/hitid&gt;
+    &lt;tasks&gt;1 2 3&lt;/tasks&gt;
+        &lt;taskconditions&gt;
+                      &lt;taskcondition&gt;
+                              &lt;taskid&gt;2&lt;/taskid&gt;
+                              &lt;condition&gt;
+                              &lt;![CDATA[
+                              1*screening*smart+1*screening*kidding+1*screening*sum10+1*screening*sum15+1*screening*biggerthan&gt;=4
+                              ]]&gt;
+                              &lt;/condition&gt;
+                      &lt;/taskcondition&gt;
+                      &lt;taskcondition&gt;
+                              &lt;taskid&gt;3&lt;/taskid&gt;
+                              &lt;condition&gt;
+                              &lt;![CDATA[
+                              notinset{$workerid,excludedemographics}
+                              ]]&gt;
+                              &lt;/condition&gt;
+                      &lt;/taskcondition&gt;
+        &lt;/taskconditions&gt;
+  &lt;/hit&gt;
+  &lt;hit&gt;
+    &lt;hitid&gt;2&lt;/hitid&gt;
+    &lt;tasks&gt;1 2 3&lt;/tasks&gt;
+  &lt;/hit&gt;
+  &lt;hit&gt;
+    &lt;hitid&gt;3&lt;/hitid&gt;
+    &lt;tasks&gt;1 2 3&lt;/tasks&gt;
+  &lt;/hit&gt;
+&lt;/hits&gt;
+</pre></div>
+</div>
+<p>In this example, the three tasks 1 to 3 are assigned to three cHITs. This implies triple data entry which makes workers potentially eligilble for a bonus payment (see <a class="reference internal" href="#bonus"><span class="std std-ref">Bonus</span></a> ).</p>
+<div class="section" id="data-download">
+<h3>Data Download<a class="headerlink" href="#data-download" title="Permalink to this headline">¶</a></h3>
+<p>When you download data in the administrator’s <a class="reference internal" href="admin.html#survey-tab"><span class="std std-ref">Survey Tab</span></a> every question will be coded by <code class="docutils literal notranslate"><span class="pre">task_id</span></code>, <code class="docutils literal notranslate"><span class="pre">module_name</span></code> and <code class="docutils literal notranslate"><span class="pre">varname</span></code>. Example:</p>
+<div class="figure align-center">
+<img alt="Data download example." src="../_images/crowdsourcer_download.png" />
+</div>
+</div>
+<div class="section" id="task-conditions">
+<span id="task-condition"></span><h3>Task Conditions<a class="headerlink" href="#task-conditions" title="Permalink to this headline">¶</a></h3>
+<p>You can define task conditions on the HIT level which determine which dynamically determine which particular task the worker will see. Consider the cHIT with hid ID 1 in <code class="docutils literal notranslate"><span class="pre">simple_question_conditional_hit.xml</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;hit&gt;
+  &lt;hitid&gt;1&lt;/hitid&gt;
+  &lt;tasks&gt;1 2 3&lt;/tasks&gt;
+      &lt;taskconditions&gt;
+                    &lt;taskcondition&gt;
+                            &lt;taskid&gt;2&lt;/taskid&gt;
+                            &lt;condition&gt;
+                            &lt;![CDATA[
+                            1*screening*smart+1*screening*kidding+1*screening*sum10+1*screening*sum15+1*screening*biggerthan&gt;=4
+                            ]]&gt;
+                            &lt;/condition&gt;
+                    &lt;/taskcondition&gt;
+                    &lt;taskcondition&gt;
+                            &lt;taskid&gt;3&lt;/taskid&gt;
+                            &lt;condition&gt;
+                            &lt;![CDATA[
+                            notinset{$workerid,excludedemographics}
+                            ]]&gt;
+                            &lt;/condition&gt;
+                    &lt;/taskcondition&gt;
+      &lt;/taskconditions&gt;
+&lt;/hit&gt;
+</pre></div>
+</div>
+<p>In this cHIT tasks 1 is a screening task, task 2 is the actual worker task we are interested in and task 3 collects demographic data on the worker.</p>
+<ul class="simple">
+<li><p>We don’t want the worker to do the worker task (and potentially collect a bonus) if she does badly in the screen task. This is accomplished through the first condition</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;condition&gt;
+&lt;![CDATA[
+1*screening*smart+1*screening*kidding+1*screening*sum10+1*screening*sum15+1*screening*biggerthan&gt;=4
+]]&gt;
+&lt;/condition&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>We also do not want the worker to complete the demographic survey if she previously filled it out. This is accomplished through the second condition:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;condition&gt;
+&lt;![CDATA[
+notinset{$workerid,excludedemographics}
+]]&gt;
+&lt;/condition&gt;
+</pre></div>
+</div>
+<p>Set conditions rely on sets to be defined in the XML like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">sets</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nb">set</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">excludedemographics</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+              <span class="o">&lt;</span><span class="n">members</span><span class="o">&gt;</span><span class="n">mm</span> <span class="n">lilia</span><span class="o">&lt;/</span><span class="n">members</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="nb">set</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">sets</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>A couple of comments on the syntax of the conditions are in order:</p>
+<ul class="simple">
+<li><p>You have to refer to variables by using their full path which consists of task id, module name and variable name. Separate the three parts of the full variable name with the ‘*’ character.</p></li>
+<li><p>Encapsulate the condition in a CDATA tag to ensure valid XML.</p></li>
+<li><dl class="simple">
+<dt>There are 3 types of basic boolean conditions:</dt><dd><ul>
+<li><dl class="simple">
+<dt>Equality (<code class="docutils literal notranslate"><span class="pre">==</span></code>) and inequality (<code class="docutils literal notranslate"><span class="pre">!=</span></code>) such as <code class="docutils literal notranslate"><span class="pre">1*screening*smart==1</span></code>.</dt><dd><ul>
+<li><dl class="simple">
+<dt>Arithmetic sums of variables as long as the values are integers (non-integer values will be ignored at runtime). You can apply equality (<code class="docutils literal notranslate"><span class="pre">==</span></code>), inequality (<code class="docutils literal notranslate"><span class="pre">!=</span></code>)</dt><dd><p>and the arithmetic comparisons greater or equal (<code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>) and less or equal (<code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>).</p>
+</dd>
+</dl>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">inset</span></code> and <code class="docutils literal notranslate"><span class="pre">notinset</span></code> operators which check whether a variable is contained in a set (in this case <code class="docutils literal notranslate"><span class="pre">excludedemographics</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$workerid</span></code> is a special variable which indicates the ID of the worker.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>You can concatenate any type of basic boolean condition using the AND operator <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> and the OR operator <code class="docutils literal notranslate"><span class="pre">|</span></code>. You can also use brackets to nest conditions.</p></li>
+</ul>
+<p>The syntax parser will check while uploading the XML that all conditions are valid (except for summation errors due to variables taking non-integer values).</p>
+</div>
+</div>
 <div class="section" id="conditional-questions">
 <h2>Conditional Questions<a class="headerlink" href="#conditional-questions" title="Permalink to this headline">¶</a></h2>
-<p>The display of questions can be made conditional on the answer to other
-questions by specifying a <code class="docutils literal notranslate"><span class="pre">&lt;condition&gt;</span></code>:</p>
+<p>The display of questions can be made conditional on the answer to other  questions by specifying a <code class="docutils literal notranslate"><span class="pre">&lt;condition&gt;</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;question&gt;
-  &lt;varname&gt;article_type_categorial&lt;/varname&gt;
-  &lt;questiontext&gt;What kind of article is this?&lt;/questiontext&gt;
+  &lt;varname&gt;spelling&lt;/varname&gt;
+  &lt;bonus&gt;threshold:50&lt;/bonus&gt;
+  &lt;questiontext&gt;Please indicate which spelling is correct:&lt;/questiontext&gt;
   &lt;valuetype&gt;categorical&lt;/valuetype&gt;
   &lt;content&gt;
     &lt;categories&gt;
       &lt;category&gt;
-        &lt;text&gt;News article&lt;/text&gt;
-        &lt;value&gt;news&lt;/value&gt;
+        &lt;text&gt;Rhythm&lt;/text&gt;
+        &lt;value&gt;0&lt;/value&gt;
       &lt;/category&gt;
       &lt;category&gt;
-        &lt;text&gt;Editorial&lt;/text&gt;
-        &lt;value&gt;editorial&lt;/value&gt;
+        &lt;text&gt;Rythm&lt;/text&gt;
+        &lt;value&gt;1&lt;/value&gt;
       &lt;/category&gt;
       &lt;category&gt;
-        &lt;text&gt;Other&lt;/text&gt;
+        &lt;text&gt;Other spelling&lt;/text&gt;
         &lt;value&gt;other&lt;/value&gt;
       &lt;/category&gt;
     &lt;/categories&gt;
   &lt;/content&gt;
 &lt;/question&gt;
 &lt;question&gt;
-  &lt;varname&gt;article_type_other&lt;/varname&gt;
-  &lt;questiontext&gt;What other kind is it?&lt;/questiontext&gt;
+  &lt;varname&gt;spelling_other&lt;/varname&gt;
+              &lt;condition&gt;
+                  &lt;![CDATA[
+                  spelling==other
+                  ]]&gt;
+                  &lt;/condition&gt;
+  &lt;bonus&gt;threshold:50&lt;/bonus&gt;
+              &lt;bonuspoints&gt;2&lt;/bonuspoints&gt;
+  &lt;questiontext&gt;Please specify the spelling.&lt;/questiontext&gt;
   &lt;valuetype&gt;text&lt;/valuetype&gt;
-  &lt;condition&gt;article_type_categorial==other&lt;/condition&gt;
+&lt;/question&gt;
+&lt;question&gt;
+  &lt;varname&gt;letterc&lt;/varname&gt;
+  &lt;questiontext&gt;What does the letter C stand for?&lt;/questiontext&gt;
+  &lt;valuetype&gt;categorical&lt;/valuetype&gt;
+  &lt;content&gt;
+    &lt;categories&gt;
+      &lt;category&gt;
+        &lt;text&gt;C is for cookie&lt;/text&gt;
+        &lt;value&gt;cookie&lt;/value&gt;
+      &lt;/category&gt;
+      &lt;category&gt;
+        &lt;text&gt;C is for car&lt;/text&gt;
+        &lt;value&gt;car&lt;/value&gt;
+      &lt;/category&gt;
+    &lt;/categories&gt;
+  &lt;/content&gt;
 &lt;/question&gt;
 </pre></div>
 </div>
-<p>The condition must be either an equality (<code class="docutils literal notranslate"><span class="pre">==</span></code>) or an inequality
-(<code class="docutils literal notranslate"><span class="pre">!=</span></code>) with the <code class="docutils literal notranslate"><span class="pre">varname</span></code> of another question on the left-hand
-side and a valid <code class="docutils literal notranslate"><span class="pre">value</span></code> for that question on the right-hand
-side.</p>
-<p>When specified, the question will only be shown to Turkers if the condition
-is satisfied.</p>
+<p>The parser for conditions is the same as for <a class="reference internal" href="#task-condition"><span class="std std-ref">Task Conditions</span></a>. However, variable definitions are simplified and only use the variable name because conditions only apply within the context of a module.</p>
 </div>
 <div class="section" id="bonus">
-<h2>Bonus<a class="headerlink" href="#bonus" title="Permalink to this headline">¶</a></h2>
-<p>Crowdsourcer can automatically award bonuses conditional on agreement
-between Turkers on each task. This allows one to reward Turkers for good
+<span id="id3"></span><h2>Bonus<a class="headerlink" href="#bonus" title="Permalink to this headline">¶</a></h2>
+<p>Crowdsourcr can automatically award bonuses conditional on agreement
+between Turkers on each question. This allows one to reward Turkers for good
 performance in multiple entry tasks.</p>
-<p>Internally crowdsourcer uses <code class="docutils literal notranslate"><span class="pre">bonus</span> <span class="pre">points</span></code> as a currency, which are
+<p>Internally Crowdsourcr uses <code class="docutils literal notranslate"><span class="pre">bonus</span> <span class="pre">points</span></code> as a currency, which are
 translated into a dollar amount after the conclusion of a run. The maximal
 dollar bonus payment can be specified in the admin interface. After a run
-is finished crowdsourcer will tally up the number of bonus points awarded
+is finished Crowdsourcr will tally up the number of bonus points awarded
 for each question and the number of bonus points that could have been
 awarded, divide the two and pay out a bonus that’s proportional to the
 share of bonus points actually awarded.</p>
@@ -501,7 +772,7 @@ exceeds a threshold. To use this scheme add
 </div>
 <div class="section" id="bonus-calculation">
 <h3>Bonus calculation<a class="headerlink" href="#bonus-calculation" title="Permalink to this headline">¶</a></h3>
-<p>As described above, crowdsourcer will tally up the number of bonus
+<p>As described above, Crowdsourcr will tally up the number of bonus
 points awarded for each question according to the specified scheme,
 tally up the number of bonus points that could have been awarded,
 divide the two and pay out a bonus that’s proportional to the

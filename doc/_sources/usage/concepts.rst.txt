@@ -1,7 +1,7 @@
 Concepts
 ========
 
-Confusingly, Crowdsourcer overloads the word HIT ("human intelligence
+Confusingly, Crowdsourcr overloads the word HIT ("human intelligence
 task").  There is the HIT in Amazon Mechanical Turk, which is a single
 entry that is published for workers to see.  This appears as something
 like the following, at least in the Amazon Mechanical Turk Requester
@@ -11,11 +11,19 @@ interface:
    :align: center
 
 For each assignment in the MTurk HIT, there is a corresponding HIT in
-Crowdsourcer, also known as a cHIT (for "Crowdsourcer HIT").  As
+Crowdsourcr, also known as a cHIT (for "Crowdsourcr HIT").  As
 workers follow the link in the HIT, they are assigned one of the cHITs
 that has been assigned to no one else yet.  The Admin interface tends
 to call cHITs a "HIT," but hopefully there won't be too much
 confusion.
+
+After accepting your HIT on Amazon and clicking on the associated crowdsourcr link a worker is directed to a login where she has to enter her worker id:
+
+.. figure:: ../doc_img/crowdsourcer_worker_login.png
+   :alt: Worker login.
+   :align: center
+
+This ID is used to later pay the worker's reward as well a bonus (if applicable).
 
 Each cHIT has a number of tasks.  Tasks happen in sequence, and a task
 is shown to the worker as a single screen.  The screen is divided into

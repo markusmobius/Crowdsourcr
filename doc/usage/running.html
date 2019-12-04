@@ -135,19 +135,19 @@
               <div>
                 
   <div class="section" id="running">
-<h1>Running<a class="headerlink" href="#running" title="Permalink to this headline">¶</a></h1>
-<p>In this section, we summarize the ways in which Crowdsourcer can be
+<span id="id1"></span><h1>Running<a class="headerlink" href="#running" title="Permalink to this headline">¶</a></h1>
+<p>In this section, we summarize the ways in which Crowdsourcr can be
 invoked on both Linux and Windows.  Some of the basics are already
 described in the <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> section.</p>
-<p>The Crowdsourcer program is in the <code class="docutils literal notranslate"><span class="pre">src</span></code> directory and is invoked by</p>
+<p>The Crowdsourcr program is in the <code class="docutils literal notranslate"><span class="pre">src</span></code> directory and is invoked by</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">app</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>where <code class="docutils literal notranslate"><span class="pre">python</span></code> may be <code class="docutils literal notranslate"><span class="pre">python2.7</span></code> if Python 3 is also installed.</p>
+<p>where <code class="docutils literal notranslate"><span class="pre">python</span></code> may be <code class="docutils literal notranslate"><span class="pre">python3</span></code> if Python 2 is also installed. Note, that Crowdsourcr only runs under Python 3.</p>
 <p>This is a description of the options <code class="docutils literal notranslate"><span class="pre">app.py</span></code> accepts:</p>
 <dl class="option-list">
 <dt><kbd><span class="option">--port=<var>NUM</var></span></kbd></dt>
-<dd><p>Tells Crowdsourcer which port number to listen on.  Each
+<dd><p>Tells Crowdsourcr which port number to listen on.  Each
 process <em>must</em> listen on a different port.</p>
 </dd>
 <dt><kbd><span class="option">--environment=<var>MODE</var></span></kbd></dt>
@@ -157,7 +157,7 @@ posted to Amazon’s sandbox.</p>
 </dd>
 <dt><kbd><span class="option">--drop=<var>REALLYREALLY</var></span></kbd></dt>
 <dd><p>This clears all of the data in the databases.
-Crowdsourcer will quit immediately after this
+Crowdsourcr will quit immediately after this
 operation.  <code class="docutils literal notranslate"><span class="pre">REALLYREALLY</span></code> should be the
 literal string <code class="docutils literal notranslate"><span class="pre">REALLYREALLY</span></code>.</p>
 </dd>
@@ -167,7 +167,7 @@ This is useful when running multiple experiments on
 the same machine. Defaults to <code class="docutils literal notranslate"><span class="pre">news_crowdsourcing</span></code>.</p>
 </dd>
 <dt><kbd><span class="option">--make_payments=<var>BOOL</var></span></kbd></dt>
-<dd><p>Options are either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+<dd><p>Options are either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.
 Only one process per load-balanced set should
 have <code class="docutils literal notranslate"><span class="pre">True</span></code> set.  This sets whether the
 process is responsible for accepting worker
@@ -176,9 +176,9 @@ automatically.</p>
 </dd>
 <dt><kbd><span class="option">--daemonize=<var>BOOL</var></span></kbd></dt>
 <dd><p>Options are either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.
-This only works in Linux, and it runs Crowdsourcer
+This only works in Linux, and it runs Crowdsourcr
 in the background.  It will kill other daemonized
-Crowdsourcer instances running on the same port.
+Crowdsourcr instances running on the same port.
 The log is stored in <code class="docutils literal notranslate"><span class="pre">log/tornado.PORTNUM.log</span></code>.</p>
 </dd>
 </dl>
@@ -186,7 +186,7 @@ The log is stored in <code class="docutils literal notranslate"><span class="pre
 <h2>Daemonizer<a class="headerlink" href="#daemonizer" title="Permalink to this headline">¶</a></h2>
 <p>The daemonizer works only under Linux.  It manages instances described
 in <code class="docutils literal notranslate"><span class="pre">config/daemons_config.py</span></code> running as a background process.  A
-benefit for running Crowdsourcer as a background process is that there
+benefit for running Crowdsourcr as a background process is that there
 is no need to fuss with multiple <code class="docutils literal notranslate"><span class="pre">screen</span></code> sessions for each process
 in a load-balanced set and that it stores the log in the filesystem.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">./daemons</span></code> script manages the daemons.  When run by itself, it
@@ -210,7 +210,7 @@ for more information.</p>
 <p>There is an example batch file in the root of the project called
 <code class="docutils literal notranslate"><span class="pre">start_a.bat</span></code>.  It is designed for use with the nginx configuration
 given above.  The batch file starts two Command Prompt windows, each
-with a running Crowdsourcer instance on a different port, one of which
+with a running Crowdsourcr instance on a different port, one of which
 being responsible for payments.</p>
 </div>
 </div>

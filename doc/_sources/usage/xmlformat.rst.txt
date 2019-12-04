@@ -1,9 +1,11 @@
+.. _xml-format:
+
 XML Format
 ==========
 
 This section describes the structure of the XML file used for
-describing an experiment (see :ref:`admin upload` for how to upload the XML file
-to Crowdsourcer).
+describing an experiment (see :ref:`survey_tab` for how to upload the XML file
+to Crowdsourcr).
 
 The main structure of the XML file is as follows:
 ::
@@ -18,12 +20,15 @@ The main structure of the XML file is as follows:
    <hits>
      ... hit definitions ...
    </hits>
+   <sets>
+     ... set definitions ...
+   </sets>
    <documents>
      ... document definitions ...
    </documents>
  </xml>
 
-The ``documents`` section is optional if it is empty, otherwise the
+The ``documents`` and ``sets`` sections are optional if it is empty, otherwise the
 first three are required.
 
 Modules
@@ -239,61 +244,323 @@ example:
  </question>
 
 
-Conditional Questions
----------------------
-
-The display of questions can be made conditional on the answer to other 
-questions by specifying a ``<condition>``:
+Tasks
+-----
 
 ::
 
  <question>
-   <varname>article_type_categorial</varname>
-   <questiontext>What kind of article is this?</questiontext>
+   <varname>bias</varname>
    <valuetype>categorical</valuetype>
+   <questiontext>How biased is this?</questiontext>
+   <options>
+     <layout>horizontal</layout>
+     <lowLabel>Conservative</lowLabel>
+     <highLabel>Liberal</highLabel>
+     <outsideCategories>N/A</outsideCategories>
+     <outsideCategories>Unsure</outsideCategories>
+   </options>
    <content>
      <categories>
        <category>
-         <text>News article</text>
-         <value>news</value>
+         <text>1</text>
+         <value>1</value>
        </category>
        <category>
-         <text>Editorial</text>
-         <value>editorial</value>
+         <text>2</text>
+         <value>2</value>
        </category>
        <category>
-         <text>Other</text>
-         <value>other</value>
+         <text>3</text>
+         <value>3</value>
+       </category>
+       <category>
+         <text>4</text>
+         <value>4</value>
+       </category>
+       <category>
+         <text>5</text>
+         <value>5</value>
+       </category>
+       <category>
+         <text>6</text>
+         <value>6</value>
        </category>
      </categories>
    </content>
  </question>
- <question>
-   <varname>article_type_other</varname>
-   <questiontext>What other kind is it?</questiontext>
-   <valuetype>text</valuetype>
-   <condition>article_type_categorial==other</condition>
- </question>
 
-The condition must be either an equality (``==``) or an inequality 
-(``!=``) with the ``varname`` of another question on the left-hand
-side and a valid ``value`` for that question on the right-hand
-side.
 
-When specified, the question will only be shown to Turkers if the condition
-is satisfied.
+Tasks
+-----
+
+Each task consists of a document that is shown on the left screen and a set of modules that are shown on the right. 
+
+.. figure:: ../doc_img/crowdsourcer_task_example_news_scaled.png
+   :alt: An example task.
+   :align: center
+
+The sample XML file ``simple_question_conditional_hit.xml`` has the following three tasks:
+
+::
+
+  <tasks>
+    <task>
+      <content>screening.html</content>
+      <taskid>1</taskid>
+      <modules>screening</modules>
+    </task>
+    <task>
+      <content>spelling.html</content>
+      <taskid>2</taskid>
+      <modules>spelling</modules>
+    </task>	
+    <task>
+      <content>demographics.html</content>
+      <taskid>3</taskid>
+      <modules>demographics</modules>
+    </task>	
+  </tasks>
+
+In this example, every task has just one associated module. The ``complex_modules.xml`` survey shows an example where tasks have several modules. This XML file generates the screenshot above.
+
+The ``content`` value refers to a document that is defined under ``documents``:
+
+::
+
+  <documents>
+    <document>
+      <name>screening.html</name>
+      <content><![CDATA[
+      <p>On this page we screen you.</p>
+      ]]></content>
+    </document>
+    <document>
+      <name>spelling.html</name>
+      <content><![CDATA[
+      <p>Please answer these questions.</p>
+      ]]></content>
+    </document>
+    <document>
+      <name>demographics.html</name>
+      <content><![CDATA[
+      <p>On this page we ask questions about yourself.</p>
+      ]]></content>
+    </document>
+  </documents>
+
+ 
+Any HTML content can be provided under the content property (you can even use it to load external images through ``<img src="http://my_other_domain/my_image.png">``) but you need to encapsulate your HTML in a CDATA tag in order to produce valid XML.
+The ``complex_modules.xml`` survey provides an example of very rich content panels.
+
+cHits
+-----
+
+A cHIT is a collection of tasks. This is what the Turk worker will see when clicking the link in the Amazon interface. Your cHIT will have as many pages as there are tasks. ``simple_question_conditional_hit.xml`` defines 3 cHITs each consisting of three tasks.
+
+::
+
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>1 2 3</tasks>
+	  <taskconditions>
+			<taskcondition>
+				<taskid>2</taskid>
+				<condition>
+				<![CDATA[
+				1*screening*smart+1*screening*kidding+1*screening*sum10+1*screening*sum15+1*screening*biggerthan>=4
+				]]>
+				</condition>
+			</taskcondition>
+			<taskcondition>
+				<taskid>3</taskid>
+				<condition>
+				<![CDATA[
+				notinset{$workerid,excludedemographics}
+				]]>
+				</condition>
+			</taskcondition>
+	  </taskconditions>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>1 2 3</tasks>
+    </hit>
+    <hit>
+      <hitid>3</hitid>
+      <tasks>1 2 3</tasks>
+    </hit>
+  </hits>
+
+In this example, the three tasks 1 to 3 are assigned to three cHITs. This implies triple data entry which makes workers potentially eligilble for a bonus payment (see :ref:`bonus` ).
+
+
+Data Download
++++++++++++++
+
+When you download data in the administrator's :ref:`survey_tab` every question will be coded by ``task_id``, ``module_name`` and ``varname``. Example:
+
+.. figure:: ../doc_img/crowdsourcer_download.png
+   :alt: Data download example.
+   :align: center
+
+
+.. _task-condition:
+
+Task Conditions
++++++++++++++++
+
+You can define task conditions on the HIT level which determine which dynamically determine which particular task the worker will see. Consider the cHIT with hid ID 1 in ``simple_question_conditional_hit.xml``:
+
+::
+
+    <hit>
+      <hitid>1</hitid>
+      <tasks>1 2 3</tasks>
+	  <taskconditions>
+			<taskcondition>
+				<taskid>2</taskid>
+				<condition>
+				<![CDATA[
+				1*screening*smart+1*screening*kidding+1*screening*sum10+1*screening*sum15+1*screening*biggerthan>=4
+				]]>
+				</condition>
+			</taskcondition>
+			<taskcondition>
+				<taskid>3</taskid>
+				<condition>
+				<![CDATA[
+				notinset{$workerid,excludedemographics}
+				]]>
+				</condition>
+			</taskcondition>
+	  </taskconditions>
+    </hit>
+
+In this cHIT tasks 1 is a screening task, task 2 is the actual worker task we are interested in and task 3 collects demographic data on the worker. 
+
+- We don't want the worker to do the worker task (and potentially collect a bonus) if she does badly in the screen task. This is accomplished through the first condition
+
+::
+
+				<condition>
+				<![CDATA[
+				1*screening*smart+1*screening*kidding+1*screening*sum10+1*screening*sum15+1*screening*biggerthan>=4
+				]]>
+				</condition>
+
+- We also do not want the worker to complete the demographic survey if she previously filled it out. This is accomplished through the second condition:
+
+::
+
+				<condition>
+				<![CDATA[
+				notinset{$workerid,excludedemographics}
+				]]>
+				</condition>
+
+Set conditions rely on sets to be defined in the XML like this:
+
+::
+
+  <sets>
+	<set>
+		<name>excludedemographics</name>
+		<members>mm lilia</members>
+	</set>
+  </sets>
+
+
+A couple of comments on the syntax of the conditions are in order:
+
+- You have to refer to variables by using their full path which consists of task id, module name and variable name. Separate the three parts of the full variable name with the '*' character.
+- Encapsulate the condition in a CDATA tag to ensure valid XML.
+- There are 3 types of basic boolean conditions: 
+      -  Equality (``==``) and inequality (``!=``) such as ``1*screening*smart==1``.
+	  -  Arithmetic sums of variables as long as the values are integers (non-integer values will be ignored at runtime). You can apply equality (``==``), inequality (``!=``) 
+		 and the arithmetic comparisons greater or equal (``>=``) and less or equal (``<=``).
+	  -  The ``inset`` and ``notinset`` operators which check whether a variable is contained in a set (in this case ``excludedemographics``).
+	  -  ``$workerid`` is a special variable which indicates the ID of the worker.
+- You can concatenate any type of basic boolean condition using the AND operator ``&`` and the OR operator ``|``. You can also use brackets to nest conditions. 
+
+The syntax parser will check while uploading the XML that all conditions are valid (except for summation errors due to variables taking non-integer values).
+
+	  
+Conditional Questions
+---------------------
+
+The display of questions can be made conditional on the answer to other  questions by specifying a ``<condition>``:
+
+::
+
+        <question>
+          <varname>spelling</varname>		 
+          <bonus>threshold:50</bonus>
+          <questiontext>Please indicate which spelling is correct:</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>Rhythm</text>
+                <value>0</value>
+              </category>
+              <category>
+                <text>Rythm</text>
+                <value>1</value>
+              </category>
+              <category>
+                <text>Other spelling</text>
+                <value>other</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>spelling_other</varname>
+		      <condition>
+			  <![CDATA[
+			  spelling==other
+			  ]]>
+			  </condition>
+          <bonus>threshold:50</bonus>
+		      <bonuspoints>2</bonuspoints>
+          <questiontext>Please specify the spelling.</questiontext>
+          <valuetype>text</valuetype>
+        </question>
+        <question>
+          <varname>letterc</varname>		 
+          <questiontext>What does the letter C stand for?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>C is for cookie</text>
+                <value>cookie</value>
+              </category>
+              <category>
+                <text>C is for car</text>
+                <value>car</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+
+The parser for conditions is the same as for :ref:`task-condition`. However, variable definitions are simplified and only use the variable name because conditions only apply within the context of a module.
+
+.. _bonus:
 
 Bonus
 ---------
 
-Crowdsourcer can automatically award bonuses conditional on agreement 
-between Turkers on each task. This allows one to reward Turkers for good
+Crowdsourcr can automatically award bonuses conditional on agreement 
+between Turkers on each question. This allows one to reward Turkers for good
 performance in multiple entry tasks.
 
-Internally crowdsourcer uses ``bonus points`` as a currency, which are 
+Internally Crowdsourcr uses ``bonus points`` as a currency, which are 
 translated into a dollar amount after the conclusion of a run. The maximal
 dollar bonus payment can be specified in the admin interface. After a run
-is finished crowdsourcer will tally up the number of bonus points awarded
+is finished Crowdsourcr will tally up the number of bonus points awarded
 for each question and the number of bonus points that could have been 
 awarded, divide the two and pay out a bonus that's proportional to the
 share of bonus points actually awarded.
@@ -356,7 +623,7 @@ Two kinds of bonus schemes are available:
 Bonus calculation
 +++++++++++++++++
 
-As described above, crowdsourcer will tally up the number of bonus
+As described above, Crowdsourcr will tally up the number of bonus
 points awarded for each question according to the specified scheme,
 tally up the number of bonus points that could have been awarded, 
 divide the two and pay out a bonus that's proportional to the
@@ -365,4 +632,3 @@ share of bonus points actually awarded.
 Bonuses will never be awarded for conditional questions whose condition
 is not satisfied. However, these questions will enter the calculation of
 potential bonus points.
-
