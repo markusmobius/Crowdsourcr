@@ -126,8 +126,11 @@ class AdminAllHandler(BaseHandler) :
 
 class GoogleLoginHandler(BaseHandler, tornado.auth.GoogleOAuth2Mixin):
     async def get(self):
+        protocol="http"
+        if ('X-Forwarded-Proto' in self.request.headers):
+            protocol=self.request.headers['X-Forwarded-Proto']       
         if self.get_argument('code', False):
-            redirect_uri=self.request.protocol+"://"+self.request.host+self.application.settings['login_url']
+            redirect_uri=protocol+"://"+self.request.host+self.application.settings['login_url']
             access = await self.get_authenticated_user(
                 redirect_uri=redirect_uri,
                 code=self.get_argument('code'))
@@ -137,9 +140,6 @@ class GoogleLoginHandler(BaseHandler, tornado.auth.GoogleOAuth2Mixin):
             self.set_secure_cookie('admin_name', user['name'])
             self.redirect('/admin/')
         else:
-            protocol="http"
-            if ('X-Forwarded-Proto' in self.request.headers):
-                protocol=self.request.headers['X-Forwarded-Proto']       
             redirect_uri=protocol+"://"+self.request.host+self.application.settings['login_url']
             await self.authorize_redirect(
                 redirect_uri=redirect_uri,
