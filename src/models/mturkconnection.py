@@ -45,7 +45,6 @@ class MTurkConnection:
             },
         }
         self.mturk_environment = environments["production"] if environment == 'production' else environments["sandbox"]
-        os.environ["HTTPS_PROXY"]="https://www.crowdsourcr.econlabs.org"
         self.client = boto3.client('mturk',
             endpoint_url = self.mturk_environment['endpoint'], 
             region_name = 'us-east-1', 
