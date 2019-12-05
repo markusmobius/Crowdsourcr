@@ -32,6 +32,7 @@ class MTurkConnectionController(object):
         else:
             d['email'] = email
             d['environment']=environment
+            print("HERERERE")
             return MTurkConnection.deserialize(d)
 
     async def begin_run_async(self, email=None, max_assignments=1, url="", environment="development"):
