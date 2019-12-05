@@ -25,7 +25,6 @@ class MTurkConnectionController(object):
         return d['hitid'] if d else None
 
     def get_by_email(self, email=None, environment="development"):
-        print(email)
         #d = self.db.mturkconnections.find_one({'email' : email})
         d = self.db.mturkconnections.find_one({})
         if not d:
