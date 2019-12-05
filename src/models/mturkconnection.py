@@ -58,14 +58,14 @@ class MTurkConnection:
     
     async def get_balance_async(self):
         def get_balance_sync(self):
-            #try:
-            balance = self.client.get_account_balance()['AvailableBalance']
-            print("Account balance: %s" % (balance))
-            #print("Account balance: %d" % (balance['AvailableBalance']))
-            #return balance
-            #except:
-            #    print("Problem getting account balance")
-            #    return None
+            try:
+                balance = self.client.get_account_balance()['AvailableBalance']
+                print("Account balance: %s" % (balance))
+                #print("Account balance: %d" % (balance['AvailableBalance']))
+                return balance
+            except:
+                print("Problem getting account balance")
+                return None
         loop = asyncio.get_running_loop()
         balance = await loop.run_in_executor(None, get_balance_sync, self) 
         return balance
