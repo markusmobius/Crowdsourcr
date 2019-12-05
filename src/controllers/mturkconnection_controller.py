@@ -25,6 +25,7 @@ class MTurkConnectionController(object):
         return d['hitid'] if d else None
 
     def get_by_email(self, email=None, environment="development"):
+        print(email)
         #d = self.db.mturkconnections.find_one({'email' : email})
         d = self.db.mturkconnections.find_one({})
         if not d:
@@ -32,7 +33,6 @@ class MTurkConnectionController(object):
         else:
             d['email'] = email
             d['environment']=environment
-            print("HERERERE")
             return MTurkConnection.deserialize(d)
 
     async def begin_run_async(self, email=None, max_assignments=1, url="", environment="development"):
