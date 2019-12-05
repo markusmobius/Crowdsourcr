@@ -129,6 +129,8 @@ class GoogleLoginHandler(BaseHandler, tornado.auth.GoogleOAuth2Mixin):
         protocol="http"
         if ('X-Forwarded-Proto' in self.request.headers):
             protocol=self.request.headers['X-Forwarded-Proto']       
+        os.environ["HTTPS_PROXY"] = protocol+"://"+ self.request.host
+        print(os.environ["HTTPS_PROXY"])
         if self.get_argument('code', False):
             redirect_uri=protocol+"://"+self.request.host+self.application.settings['login_url']
             access = await self.get_authenticated_user(
