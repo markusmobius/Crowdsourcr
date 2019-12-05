@@ -45,7 +45,6 @@ class MTurkConnection:
             },
         }
         self.mturk_environment = environments["production"] if environment == 'production' else environments["sandbox"]
-        os.environ["HTTPS_PROXY"] = "https://www.crowdsourcr.econlabs.org"
         self.client = boto3.client('mturk',
             endpoint_url = self.mturk_environment['endpoint'], 
             region_name = 'us-east-1', 
@@ -59,14 +58,14 @@ class MTurkConnection:
     
     async def get_balance_async(self):
         def get_balance_sync(self):
-            try:
-                balance = self.client.get_account_balance()['AvailableBalance']
-                print("Account balance: %s" % (balance))
-                #print("Account balance: %d" % (balance['AvailableBalance']))
-                return balance
-            except:
-                print("Problem getting account balance")
-                return None
+            #try:
+            balance = self.client.get_account_balance()['AvailableBalance']
+            print("Account balance: %s" % (balance))
+            #print("Account balance: %d" % (balance['AvailableBalance']))
+            #return balance
+            #except:
+            #    print("Problem getting account balance")
+            #    return None
         loop = asyncio.get_running_loop()
         balance = await loop.run_in_executor(None, get_balance_sync, self) 
         return balance
