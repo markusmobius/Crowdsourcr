@@ -36,7 +36,7 @@ class Application(tornado.web.Application):
     def __init__(self, environment, drop):
         self.db = pymongo.MongoClient()[app_config.db_name]
         if drop == "REALLYREALLY" :
-            clear_db(self.db)
+            pymongo.MongoClient().drop_database(app_config.db_name)        
             print("Cleared.")
             sys.exit(0)
 
@@ -172,20 +172,6 @@ def main():
         start_as_daemon()
     else :
         start()
-
-def clear_db(db):
-    db.ctasks.drop()
-    db.ctypes.drop()
-    db.cresponses.drop()
-    db.chits.drop()
-    db.cdocs.drop()
-    db.chitloads.drop()
-    db.workerpings.drop()
-    db.currentstatus.drop()
-    db.paid_bonus.drop()
-    db.bonus_info.drop()
-    db.events.drop()
-    db.sets.drop()
 
 if __name__ == "__main__":
     main()
