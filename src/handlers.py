@@ -129,15 +129,12 @@ class GoogleLoginHandler(BaseHandler, tornado.auth.GoogleOAuth2Mixin):
         protocol="http"
         if ('X-Forwarded-Proto' in self.request.headers):
             protocol=self.request.headers['X-Forwarded-Proto']       
-        os.environ["HTTPS_PROXY"] = protocol+"://"+ self.request.host
-        print(os.environ["HTTPS_PROXY"])
         if self.get_argument('code', False):
             redirect_uri=protocol+"://"+self.request.host+self.application.settings['login_url']
             access = await self.get_authenticated_user(
                 redirect_uri=redirect_uri,
                 code=self.get_argument('code'))
             user = await self.oauth2_request("https://www.googleapis.com/oauth2/v1/userinfo", access_token=access["access_token"])
-            print(json.dumps(user))
             self.set_secure_cookie('admin_email', user['email'])
             self.set_secure_cookie('admin_name', user['name'])
             self.redirect('/admin/')
@@ -306,7 +303,6 @@ class AdminInfoHandler(BaseHandler):
             turk_balance = False
             hit_info = self.chit_controller.get_agg_hit_info()
             hit_info = self.cresponse_controller.append_completed_task_info(**hit_info)   
-            print(turk_conn)
             if turk_conn:
                 balance = await turk_conn.get_balance_async()                
                 turk_balance = str(balance or '')
