@@ -306,9 +306,9 @@ class AdminInfoHandler(BaseHandler):
             turk_balance = False
             hit_info = self.chit_controller.get_agg_hit_info()
             hit_info = self.cresponse_controller.append_completed_task_info(**hit_info)   
-            print(hit_info)
+            print(turk_conn)
             if turk_conn:
-                balance = await turk_conn.get_balance_async()
+                balance = await turk_conn.get_balance_async()                
                 turk_balance = str(balance or '')
                 turk_info = turk_conn.serialize()
                 self._send_json(hit_info, turk_info, turk_balance)
