@@ -167,7 +167,7 @@ $('#addAdmin').click(function(evt) {
 	  function updateStatus(data,updateTurkInfo){
                   if (data.authed) {
                       $('#admin-login-info').text('Logged in as ' + data.full_name + ' (' + data.email + ').');
-                      $('#admin-server-info').text('Server is running in '+data.environment+' mode.');
+                      $('#admin-server-info').text('Server is running in '+ data.environment +' mode.');
                       $('#admin-superadmin').toggle(data.superadmin);
                       $('#admin-task-info').html(data.hitinfo.num_hits + ' HITs ('+ data.hitinfo.num_tasks +' tasks) loaded. ' + data.hitinfo.num_completed_hits + ' HITs ('+ data.hitinfo.num_completed_tasks +' tasks) complete. ');
                       if (!data.turkinfo || !data.turkbalance || data.hitinfo.num_hits==0) {
@@ -206,7 +206,7 @@ $('#addAdmin').click(function(evt) {
                               $('#upload-btn-title').attr("title", "An experiment is running.");
                               $('#download-bonusinfo-btn').attr("disabled", true);
                               $('#download-bonusinfo-btn-title').attr("title", "Stop the experiment to ensure MTurk workers are paid their bonuses.");
-  							  $('#openEditModalButton').attr("disabled", true);
+  							              $('#openEditModalButton').attr("disabled", true);
                           } else {
                               var amazonLink = data.turkinfo.admin_host + "/mturk/manageHITs";
                               $('#admin-turk-info').append('<p> Not currently running. <a href="' + amazonLink + '" target="_blank">Manage HITs</a></p>');
@@ -217,7 +217,8 @@ $('#addAdmin').click(function(evt) {
                               $('#upload-btn-title').attr("title", "");
                               $('#download-bonusinfo-btn').attr("disabled", false);
                               $('#download-bonusinfo-btn-title').attr("title", "");
-  							  $('#openEditModalButton').attr("disabled", false);
+  							              $('#openEditModalButton').attr("disabled", false);
+                              $('#submit-task-info').html("<strong>Projected Cost: $" + (1.2 * data.hitinfo.num_hits * (data.turkinfo.hitpayment + data.turkinfo.bonus)).toFixed(2) + "</strong> (incl. MTurk fees) <br>(" + data.hitinfo.num_hits + " HITs with potential " + data.turkinfo.hitpayment + " reward and " + data.turkinfo.bonus + " bonus per HIT) <br> <strong>Available funds in " + data.environment + " mode: $" +  data.turkbalance + "</strong>");
                           }
                           
                       }
