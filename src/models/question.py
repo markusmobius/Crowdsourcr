@@ -26,8 +26,8 @@ class Question(object) :
             except:
                 raise Exception('bonus points for question %s must be coercible to float' % self.varname)
 
-            if bonus is None and (bonuspoints is not None and bonuspoints != 0.0):
-                raise Exception("Bonus points specified without a bonus type for question %s" % self.varname)
+            if bonus is None:
+                return 0.0
 
             if not bonuspoints >= 0:
                 raise Exception('bonus points for question %s must be larger than 0' % self.varname)
