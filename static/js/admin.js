@@ -218,7 +218,7 @@ $('#addAdmin').click(function(evt) {
                               $('#download-bonusinfo-btn').attr("disabled", false);
                               $('#download-bonusinfo-btn-title').attr("title", "");
   							              $('#openEditModalButton').attr("disabled", false);
-                              $('#submit-task-info').html("<strong>Projected Cost: $" + (1.2 * data.hitinfo.num_hits * (data.turkinfo.hitpayment + data.turkinfo.bonus)).toFixed(2) + "</strong> (incl. MTurk fees) <br>(" + data.hitinfo.num_hits + " HITs with potential " + data.turkinfo.hitpayment + " reward and " + data.turkinfo.bonus + " bonus per HIT) <br> <strong>Available funds in " + data.environment + " mode: $" +  data.turkbalance + "</strong>");
+                              $('#submit-task-info').html("<strong>Projected Costs: $" + (1.2 * data.hitinfo.num_hits * (data.turkinfo.hitpayment + 0.01)).toFixed(2) + " - $" + (1.2 * data.hitinfo.num_hits * (data.turkinfo.hitpayment + data.turkinfo.bonus)).toFixed(2) + "</strong> (incl. MTurk fees) <br>(" + data.hitinfo.num_hits + " HITs with " + data.turkinfo.hitpayment + " reward and up to " + data.turkinfo.bonus + " bonus per HIT) <br> <strong>Available funds in " + data.environment + " mode: $" +  data.turkbalance + "</strong>");
                           }
                           
                       }
