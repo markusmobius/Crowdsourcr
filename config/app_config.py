@@ -24,7 +24,7 @@ def populate_config(filename):
         superadmins=data["superadmins"]
         google=data["google"]
         port=data["port"]
-        environment=data["environment"]
+        environment=data["environment"] if "environment" in data else environment
         db_name=data["db_name"]
         make_payments=data["make_payments"]
         aws=data["aws"]
