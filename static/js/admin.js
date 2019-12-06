@@ -12,7 +12,7 @@
           });
           
           
-          $('#admin-begin-run').click(function(evt) {
+          $('#admin-begin-run').click(function(evt) {			  
               evt.preventDefault();
               beginRun();
           });
@@ -170,10 +170,22 @@ $('#addAdmin').click(function(evt) {
                       $('#admin-server-info').text('Server is running in '+data.environment+' mode.');
                       $('#admin-superadmin').toggle(data.superadmin);
                       $('#admin-task-info').html(data.hitinfo.num_hits + ' HITs ('+ data.hitinfo.num_tasks +' tasks) loaded. ' + data.hitinfo.num_completed_hits + ' HITs ('+ data.hitinfo.num_completed_tasks +' tasks) complete. ');
-                      if (!data.turkinfo || !data.turkbalance) {
-                          $('#admin-turk-info').html('Could not authenticate with MTurk.');
-                          $('#upload-btn').attr("disabled", false);
-                          $('#upload-btn-title').attr("title", "");
+                      if (!data.turkinfo || !data.turkbalance || data.hitinfo.num_hits==0) {
+						  $('#openEditModalButton').attr("disabled", false);
+						  if (!data.turkinfo){
+							$('#admin-turk-info').html('MTurk HIT parameters need to be defined.');
+						  }
+						  else{
+							if (!data.turkbalance){
+								$('#admin-turk-info').html('Could not authenticate with MTurk.');
+							}
+							else{
+								$('#admin-turk-info').html('Survey needs to be uploaded.');
+							}
+						  }
+                          $('#admin-begin-run-original').hide();
+                          $('#upload-btn').attr("disabled", false);						  
+                          $('#upload-btn-title').attr("title", "");						  
                       } else {
                           $('#admin-turk-info').html('MTurk authenticated. Current balance: ' + data.turkbalance);
                           if (updateTurkInfo) {
@@ -194,6 +206,7 @@ $('#addAdmin').click(function(evt) {
                               $('#upload-btn-title').attr("title", "An experiment is running.");
                               $('#download-bonusinfo-btn').attr("disabled", true);
                               $('#download-bonusinfo-btn-title').attr("title", "Stop the experiment to ensure MTurk workers are paid their bonuses.");
+  							  $('#openEditModalButton').attr("disabled", true);
                           } else {
                               var amazonLink = data.turkinfo.admin_host + "/mturk/manageHITs";
                               $('#admin-turk-info').append('<p> Not currently running. <a href="' + amazonLink + '" target="_blank">Manage HITs</a></p>');
@@ -204,6 +217,7 @@ $('#addAdmin').click(function(evt) {
                               $('#upload-btn-title').attr("title", "");
                               $('#download-bonusinfo-btn').attr("disabled", false);
                               $('#download-bonusinfo-btn-title').attr("title", "");
+  							  $('#openEditModalButton').attr("disabled", false);
                           }
                           
                       }

@@ -143,8 +143,9 @@
 <p>Crowdsourcr is a <a class="reference external" href="https://www.python.org/">Python</a> program that uses <a class="reference external" href="http://www.mongodb.org/">MongoDB</a> and the <a class="reference external" href="https://www.tornadoweb.org/">Tornado</a>
 library.  Optionally, it may use <a class="reference external" href="http://nginx.org/">nginx</a> for load balancing across
 multiple processes and for serving static content.</p>
-<p>For both Linux and Windows you need Python 3 and <code class="docutils literal notranslate"><span class="pre">pip</span></code>. Make sure that Python 3 is the default Python installation (for example, by ensuring that your Python installation appears first in the PATH environment variable).</p>
-<p>Install the following Python libraries:</p>
+<p>For both Linux and Windows you need at least Python 3.7  and <code class="docutils literal notranslate"><span class="pre">pip</span></code>. If you have several Python versions installed you might have to select the correct one by using the command <code class="docutils literal notranslate"><span class="pre">python3</span></code> or <code class="docutils literal notranslate"><span class="pre">python3.8</span></code> instead of <code class="docutils literal notranslate"><span class="pre">python</span></code>.
+You can easily check your Python version by typing <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">--version</span></code>.</p>
+<p>Install the following Python libraries (assuming that your Python 3 installation is invoked with <code class="docutils literal notranslate"><span class="pre">python</span></code> command):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">tornado</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">pymongo</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">boto3</span>

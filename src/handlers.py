@@ -27,7 +27,6 @@ from helpers import CustomEncoder, Lexer, Status
 import jsonpickle
  
 class BaseHandler(tornado.web.RequestHandler):
-    __superusers__ = app_config.superadmins
     
     @property
     def logging(self) :
@@ -73,7 +72,7 @@ class BaseHandler(tornado.web.RequestHandler):
         return "http://" + self.request.host + "/HIT"
     def is_super_admin(self):
         admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
-        return admin_email in self.__superusers__
+        return admin_email in app_config.superadmins
     def get_current_admin(self):
         admin = self.admin_controller.get_by_email(tornado.escape.to_unicode(self.get_secure_cookie("admin_email")))
     def return_json(self, data):
@@ -135,19 +134,25 @@ class GoogleLoginHandler(BaseHandler, tornado.auth.GoogleOAuth2Mixin):
                 redirect_uri=redirect_uri,
                 code=self.get_argument('code'))
             user = await self.oauth2_request("https://www.googleapis.com/oauth2/v1/userinfo", access_token=access["access_token"])
-            self.set_secure_cookie('admin_email', user['email'])
-            self.set_secure_cookie('admin_name', user['name'])
+            if self.admin_controller.get_by_email(user['email']):            
+                self.set_secure_cookie('admin_email', user['email'])
+                self.set_secure_cookie('admin_name', user['name'])
             self.redirect('/admin/')
         else:
             redirect_uri=protocol+"://"+self.request.host+self.application.settings['login_url']
-            await self.authorize_redirect(
+            self.authorize_redirect(
                 redirect_uri=redirect_uri,
                 client_id=app_config.google['client_id'],
                 client_secret=app_config.google['client_secret'],
                 scope=['profile', 'email'],
                 response_type='code',
-                extra_params={'approval_prompt': 'auto'})
+                extra_params={'prompt': 'select_account'})
 
+class LogoutHandler(BaseHandler) :
+    def get(self):
+        self.clear_cookie('admin_email')
+        self.clear_cookie('admin_name')
+        self.redirect('/admin/')
 
 class XMLUploadHandler(BaseHandler):
     def post(self):

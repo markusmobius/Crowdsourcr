@@ -13,11 +13,9 @@ multiple processes and for serving static content.
 .. _nginx: http://nginx.org/
 
 For both Linux and Windows you need at least Python 3.7  and ``pip``. If you have several Python versions installed you might have to select the correct one by using the command ``python3`` or ``python3.8`` instead of ``python``. 
-You can easily check your Python version by typing ``python3.8 --version``.
+You can easily check your Python version by typing ``python --version``.
 
- Make sure that Python 3.7 is the default Python installation (for example, by ensuring that your Python installation appears first in the PATH environment variable).
-
-Install the following Python libraries:
+Install the following Python libraries (assuming that your Python 3 installation is invoked with ``python`` command):
 ::
 
  pip install tornado
