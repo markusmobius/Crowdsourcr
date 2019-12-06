@@ -147,12 +147,7 @@ described in the <a class="reference internal" href="installation.html#installat
 <p>This is a description of the options <code class="docutils literal notranslate"><span class="pre">app.py</span></code> accepts:</p>
 <dl class="option-list">
 <dt><kbd><span class="option">--config=<var>CONFIG_FILENAME</var></span></kbd></dt>
-<dd><p>Filename for JSON file that contains the basic configuration settings such as Google authentication, AWS key and secret, port and database. Default is <code class="docutils literal notranslate"><span class="pre">config.json</span></code>.</p>
-</dd>
-<dt><kbd><span class="option">--environment=<var>MODE</var></span></kbd></dt>
-<dd><p>Options are <code class="docutils literal notranslate"><span class="pre">development</span></code> and <code class="docutils literal notranslate"><span class="pre">production</span></code>.
-When in <code class="docutils literal notranslate"><span class="pre">development</span></code> (the default), HITs are
-posted to Amazon’s sandbox.</p>
+<dd><p>Filename for JSON file that contains the basic configuration settings such as Google authentication, AWS key and secret, port, environment (<code class="docutils literal notranslate"><span class="pre">development</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">production</span></code>), and database. Default is <code class="docutils literal notranslate"><span class="pre">config.json</span></code>.</p>
 </dd>
 <dt><kbd><span class="option">--drop=<var>REALLYREALLY</var></span></kbd></dt>
 <dd><p>This clears all of the data in the databases.
@@ -261,7 +256,7 @@ being responsible for payments.</p>
 </script>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, Microsoft Research.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.
     </div>
   </body>
 </html>

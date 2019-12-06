@@ -16,10 +16,7 @@ where ``python`` may be ``python3`` if Python 2 is also installed. Note, that Cr
 
 This is a description of the options ``app.py`` accepts:
 
---config=CONFIG_FILENAME  Filename for JSON file that contains the basic configuration settings such as Google authentication, AWS key and secret, port and database. Default is ``config.json``.
---environment=MODE  Options are ``development`` and ``production``.
-                    When in ``development`` (the default), HITs are
-                    posted to Amazon's sandbox.
+--config=CONFIG_FILENAME  Filename for JSON file that contains the basic configuration settings such as Google authentication, AWS key and secret, port, environment (``development`` (default) or ``production``), and database. Default is ``config.json``.
 --drop=REALLYREALLY  This clears all of the data in the databases.
                      Crowdsourcr will quit immediately after this
                      operation.  ``REALLYREALLY`` should be the

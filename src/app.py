@@ -17,7 +17,7 @@ import Settings
 
 from tornado.options import define, options
  
-define('config', default="config.json", help="JSON file with config parameters such as Google authentication, AWS mTurl parameters, port and database", type=str)
+define('config', default="config.json", help="JSON file with config parameters such as Google authentication, AWS mTurl parameters, port, environ., and database", type=str)
 define('environment', default="development", help="server environment", type=str)
 define('drop', default="", help="pass REALLYREALLY to drop the db", type=str)
 define('daemonize', default=False, help="set whether this process should run as a daemon (linux/unix-only)", type=bool)
@@ -33,7 +33,7 @@ def random256() :
     return base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
  
 class Application(tornado.web.Application):
-    def __init__(self, environment, drop):
+    def __init__(self, drop):
         self.db = pymongo.MongoClient()[app_config.db_name]
         if drop == "REALLYREALLY" :
             pymongo.MongoClient().drop_database(app_config.db_name)        
@@ -48,7 +48,7 @@ class Application(tornado.web.Application):
             "cookie_secret": Settings.COOKIE_SECRET,
             "root_path": Settings.ROOT_PATH,
             "login_url": "/admin/login/",
-            "environment" : environment,
+            "environment" : app_config.environment,
             "google_oauth" :{"key": app_config.google['client_id'], "secret": app_config.google['client_secret']}           
         }
 
@@ -128,15 +128,14 @@ class Application(tornado.web.Application):
         tornado.ioloop.IOLoop.instance().add_callback(_ensure)
 
 def start() :
-    application = Application(environment=options.environment,
-                              drop=options.drop)
+    application = Application(drop=options.drop)
     http_server = tornado.httpserver.HTTPServer(application)
     try :
         http_server.listen(app_config.port)
     except :
         traceback.print_exc()
         os._exit(1) # since it otherwise hangs
-    Settings.logging.info("Started news_crowdsourcer in %s mode." % options.environment)
+    Settings.logging.info("Started news_crowdsourcer in %s mode." % app_config.environment)
     ioloop = tornado.ioloop.IOLoop.instance()
     try :
         ioloop.start()
