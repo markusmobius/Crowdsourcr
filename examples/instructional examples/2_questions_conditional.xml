@@ -1,0 +1,97 @@
+<xml>
+  <modules>
+    <module>
+      <header>Numbers</header>
+      <name>numbers</name>
+      <questions>
+        <question>
+          <varname>number1</varname>
+          <questiontext>Which of the following is the number twenty-two?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>3</text>
+                <value>3</value>
+              </category>
+              <category>
+                <text>17</text>
+                <value>17</value>
+              </category>
+              <category>
+                <text>22</text>
+                <value>22</value>
+              </category>
+              <category>
+                <text>111</text>
+                <value>111</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>kidding</varname>
+          <condition>
+            <![CDATA[
+			  number1!=22
+			  ]]>
+          </condition>
+
+          <questiontext>You were kidding, right?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>No</text>
+                <value>0</value>
+              </category>
+              <category>
+                <text>Yes</text>
+                <value>1</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>number2</varname>
+          <questiontext>Please type the number 47 in words.</questiontext>
+          <valuetype>text</valuetype>
+        </question>
+      </questions>
+    </module>
+  </modules>
+
+  <tasks>
+    <task>
+      <content>numbers.html</content>
+      <taskid>1</taskid>
+      <modules>numbers</modules>
+    </task>
+  </tasks>
+  
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>1</tasks>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>1</tasks>
+    </hit>
+    <hit>
+      <hitid>3</hitid>
+      <tasks>1</tasks>
+    </hit>
+  </hits>
+  
+  <documents>
+    <document>
+      <name>numbers.html</name>
+      <content><![CDATA[
+      <p>This example is survey 1 with a conditional question add to the first question of the survey. The condition question
+      appears only if the first question is answered incorrectly. If the first question is answered correctly the conditional question will not be displayed 
+      and this survey will appear identical to survey 1.</p>
+      ]]></content>
+    </document>
+  </documents>
+</xml>

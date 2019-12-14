@@ -1,0 +1,128 @@
+<xml>
+  <modules>
+    <module>
+      <header>Numbers</header>
+      <name>numbers</name>
+      <questions>
+        <question>
+          <varname>number1</varname>
+          <bonus>threshold:50</bonus>
+          <bonuspoints>2</bonuspoints>
+          <questiontext>Which of the following is the number twenty-two?</questiontext>
+          <helptext>You will get a bonus based on how many other people choose the same thing.</helptext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>3</text>
+                <value>3</value>
+              </category>
+              <category>
+                <text>17</text>
+                <value>17</value>
+              </category>
+              <category>
+                <text>22</text>
+                <value>22</value>
+              </category>
+              <category>
+                <text>111</text>
+                <value>111</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>kidding</varname>
+          <condition>
+            <![CDATA[
+			  number1!=22
+			  ]]>
+          </condition>
+
+          <questiontext>You were kidding, right?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>No</text>
+                <value>0</value>
+              </category>
+              <category>
+                <text>Yes</text>
+                <value>1</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>number2</varname>
+          <questiontext>Please type the number 47 in words.</questiontext>
+          <valuetype>text</valuetype>
+        </question>
+      </questions>
+    </module>
+  </modules>
+
+  <tasks>
+    <task>
+      <content>numbers.html</content>
+      <taskid>1</taskid>
+      <modules>numbers</modules>
+    </task>
+    <task>
+      <content>conditional_task.html</content>
+      <taskid>2</taskid>
+      <modules>numbers</modules>
+    </task>
+  </tasks>
+  
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>1 2</tasks>
+      <taskconditions>
+        <taskcondition>
+          <taskid>2</taskid>
+          <condition>
+            <![CDATA[
+				1*numbers*number1==22
+				]]>
+          </condition>
+        </taskcondition>
+      </taskconditions>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>1</tasks>
+    </hit>
+    <hit>
+      <hitid>3</hitid>
+      <tasks>1</tasks>
+    </hit>
+  </hits>
+  
+  <documents>
+    <document>
+      <name>numbers.html</name>
+      <content>
+        <![CDATA[
+      <p>In this example a conditional task has been added to the first HIT. The conditional task is reached only if the first question in the first task is 
+        answered correctly.
+        Notice in the bottom right corner it says "You are on task 1 of 2". But if you answer the first task incorrectly
+        it will end the HIT.</p>
+        <p> The task added contains the same module as the first task (on the right), and a new document identifying the task as the 
+        conditional task (on the left). <\p>
+      ]]></content>
+    </document>
+    <document>
+      <name>conditional_task.html</name>
+      <content>
+        <![CDATA[
+      <p>The task you are on is a conditional task. You have reached this task because you answered the first question 
+      in the first task correctly. Congratulations!</p>
+      ]]>
+      </content>
+    </document>
+  </documents>
+</xml>

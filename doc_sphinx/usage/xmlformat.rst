@@ -7,6 +7,8 @@ This section describes the structure of the XML file used for
 describing an experiment (see :ref:`survey_tab` for how to upload the XML file
 to Crowdsourcr).
 
+For instructional examples, load and view (in labeled order) the files located in the examples folder. 
+
 The main structure of the XML file is as follows:
 ::
 

@@ -36,3 +36,7 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+|
+|
+**Crowdsourcr Contributers:** Sam Grondahl, Kyle Miller, Markus Mobius, Tobias Schmidt, Ling Dong, Anna Croley
