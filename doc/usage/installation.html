@@ -172,9 +172,9 @@ You can easily check your Python version by typing <code class="docutils literal
 <p>To set up Crowdsourcr itself, copy <code class="docutils literal notranslate"><span class="pre">config/config_example.json</span></code>
 to <code class="docutils literal notranslate"><span class="pre">config/MY_CONFIG_FILENAME.json</span></code> (choose <code class="docutils literal notranslate"><span class="pre">config.json</span></code> if you do not want to specify the config filename during startup) and modify the settings.  Crowdsourcr
 uses Google OAuth2 for authentication, so you need to get Google
-OAuth2 keys from their <a class="reference external" href="https://console.developers.google.com/">developer console</a>.  The configuration file
+OAuth2 keys from their <a class="reference external" href="https://console.developers.google.com/">developer console</a> using your Google account.  The configuration file
 (or <a class="reference internal" href="#google-configuration">Google configuration</a> below) has more details about this.  Put
-your Google account into the list of superadmins so that you can
+your Google account into the list of superadmins in your config file so that you can
 administrate the administrators for Crowdsourcr.</p>
 <p>You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in your config JSON.</p>
 <p>At this point, it should be possible to start Crowdsourcr by entering
@@ -349,8 +349,8 @@ be prompted to first set up your OAuth consent screen. Enter the minimal
 amount of information that will let you pass to the next screen. On
 the next screen select “Web application”, choose a name and click
 “Create”.  Enter information similar to that in the following image,
-replacing the domain appropriately. If you want to do local testing add <code class="docutils literal notranslate"><span class="pre">http://localhost:8080</span></code> as authorized domain (if you are running on port 8080) and <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/admin/loing</span></code>
-as authorized redirect URI.  Note carefully the trailing slash in the “Authorized Redirect URI” and the <code class="docutils literal notranslate"><span class="pre">http</span></code> rather than <code class="docutils literal notranslate"><span class="pre">https</span></code>. Authentication will not work if either of these
+replacing the domain appropriately. If you want to do local testing add <code class="docutils literal notranslate"><span class="pre">http://localhost:8080</span></code> as Authorized Domain (if you are running on port 8080) and <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/admin/login/</span></code>
+as Authorized Redirect URI.  Note carefully the trailing slash in the “Authorized Redirect URI” and the <code class="docutils literal notranslate"><span class="pre">http</span></code> rather than <code class="docutils literal notranslate"><span class="pre">https</span></code>. Authentication will not work if either of these
 are missing.</p>
 <div class="figure align-center">
 <img alt="Example configuration for an OAuth client id for Crowdsourcr." src="../_images/crowdsourcer_google_oauth.png" />
