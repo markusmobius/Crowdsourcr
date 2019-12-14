@@ -1,0 +1,75 @@
+<xml>
+  <modules>
+    <module>
+      <header>Numbers</header>
+      <name>numbers</name>
+      <questions>
+        <question>
+          <varname>number1</varname>
+          <questiontext>Which of the following is the number twenty-two?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>3</text>
+                <value>3</value>
+              </category>
+              <category>
+                <text>17</text>
+                <value>17</value>
+              </category>
+              <category>
+                <text>22</text>
+                <value>22</value>
+              </category>
+              <category>
+                <text>111</text>
+                <value>111</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>number2</varname>
+          <questiontext>Please type the number 47 in words.</questiontext>
+          <valuetype>text</valuetype>
+        </question>
+      </questions>
+    </module>
+  </modules>
+
+  <tasks>
+    <task>
+      <content>numbers.html</content>
+      <taskid>1</taskid>
+      <modules>numbers</modules>
+    </task>
+  </tasks>
+  
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>1</tasks>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>1</tasks>
+    </hit>
+    <hit>
+      <hitid>3</hitid>
+      <tasks>1</tasks>
+    </hit>
+  </hits>
+  
+  <documents>
+    <document>
+      <name>numbers.html</name>
+      <content><![CDATA[
+      <p>Here is a single module with two questions. The first question is a categorical question and the second is a text question.
+        See the XML section in the Crowdsourcr Documentation for a description of question types. These two questions are contained in a module.
+        </p> <p> This example consists of 1 task. The task contains the single module (displayed on the right) and a single document, which is the text you are 
+        reading now. There are 3 cHITs in this survey, each contain this task. </p>
+      ]]></content>
+    </document>
+  </documents>
+</xml>
