@@ -52,9 +52,9 @@ To set up Crowdsourcr itself, copy ``config/config_example.json``
 to ``config/MY_CONFIG_FILENAME.json`` (choose ``config.json`` if you do not want to specify the config filename during startup) and modify the settings.  Crowdsourcr
 uses Google OAuth2 for authentication, so you need to get Google
 OAuth2 keys from their `developer console
-<https://console.developers.google.com/>`_.  The configuration file
+<https://console.developers.google.com/>`_ using your Google account.  The configuration file
 (or `Google configuration`_ below) has more details about this.  Put
-your Google account into the list of superadmins so that you can
+your Google account into the list of superadmins in your config file so that you can
 administrate the administrators for Crowdsourcr.
 
 You also need to obtain an access key and secret from the AWS console in order to use the Amazon Turk integration. Modify the appropriate settings in your config JSON.
@@ -257,8 +257,8 @@ be prompted to first set up your OAuth consent screen. Enter the minimal
 amount of information that will let you pass to the next screen. On
 the next screen select "Web application", choose a name and click
 "Create".  Enter information similar to that in the following image,
-replacing the domain appropriately. If you want to do local testing add ``http://localhost:8080`` as authorized domain (if you are running on port 8080) and ``http://localhost:8080/admin/loing``
-as authorized redirect URI.  Note carefully the trailing slash in the "Authorized Redirect URI" and the ``http`` rather than ``https``. Authentication will not work if either of these
+replacing the domain appropriately. If you want to do local testing add ``http://localhost:8080`` as Authorized Domain (if you are running on port 8080) and ``http://localhost:8080/admin/login/``
+as Authorized Redirect URI.  Note carefully the trailing slash in the "Authorized Redirect URI" and the ``http`` rather than ``https``. Authentication will not work if either of these
 are missing.
 
 .. figure:: ../doc_img/crowdsourcer_google_oauth.png
