@@ -50,18 +50,17 @@ var currentTypeGroup = null;
 function showWithData(task, modules) {
     $('.content-main').show();
     $('#login-panel').hide();
-    var iframe = $('<iframe src="about:blank" frameborder="0" border="0" cellspacing="0"/>');
-    $('#hit-content').empty().append(iframe);
-    _.defer(function () {
-		iframe.contents()[0].write('<head><link rel="stylesheet" href="/static/css/bootstrap3.min.css"/><script src="/static/js/jquery-3.4.1.min.js"></script><script src="/static/js/bootstrap3.min.js"></script></head>');
-        iframe.contents()[0].write(task.content);
+    $("#hit-content-iframe").ready(function(){
+        var iframe=document.getElementById('hit-content-iframe').contentWindow.$("#content");
+        iframe.empty();
+        iframe.append(task.content);
+        currentTypeGroup = new CTypeGroup();
+        $('#hit-modules').empty();
+        for (var i = 0; i < task.modules.length; i++){
+            var dest = $('<div/>').appendTo($('#hit-modules'));
+            registerModule(i, modules[task.modules[i]], dest);
+        }    
     });
-    currentTypeGroup = new CTypeGroup();
-    $('#hit-modules').empty();
-    for (var i = 0; i < task.modules.length; i++){
-        var dest = $('<div/>').appendTo($('#hit-modules'));
-        registerModule(i, modules[task.modules[i]], dest);
-    }
 }
 
 var hitLoadingTime = undefined;
