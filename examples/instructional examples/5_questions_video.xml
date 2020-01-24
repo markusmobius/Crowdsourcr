@@ -109,9 +109,9 @@
         <![CDATA[
       <p>This survey contains an embedded youTube link, displayed below.</p>
       <iframe width="420" height="315" 
-        src="https://www.youtube.com/watch?v=JZqvuBxEDnw" 
+        src="https://www.youtube.com/embed/JZqvuBxEDnw" 
         frameborder="0" allowfullscreen></iframe>        
-        <p> To view more complex survey examples, click through the final example survey (6_complex_modules.xml). <\p>
+        <p> To view more complex survey examples, click through the final example survey (6_complex_modules.xml).
       ]]></content>
     </document>
     <document>
