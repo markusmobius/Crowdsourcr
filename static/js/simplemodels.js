@@ -14,6 +14,11 @@ var CTypeGroup = Model.extend({
 	      this.types.push(ctype);
     },
     showType : function (ctype) {
+          if (ctype.contentUpdate){
+            var iframe=document.getElementById('hit-content-iframe').contentWindow;
+            var update=ctype.contentUpdate.split(';');
+            iframe[update[0]](update[1]);
+          }
 	      ctype = ctype || this.types[0];
 	      _.each(this.types, function (t) {
 	          if (t === ctype) {
@@ -48,7 +53,8 @@ var CType = Model.extend({
 	      typeGroup.addType(this);
 	      this.display_template = $('#ctype-display-template').html();
 	      this.name = params.name || '';
-	      this.header = params.header || '';
+          this.header = params.header || '';
+          this.contentUpdate=params.contentUpdate;
 	      this.questionlist = new QuestionList(params.questions || []);
 	      this.el.empty();
     },

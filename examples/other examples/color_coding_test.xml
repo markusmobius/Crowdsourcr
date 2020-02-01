@@ -1,0 +1,116 @@
+<xml>
+  <modules>
+    <module>
+      <header>Questions on Joe Biden</header>
+	  <contentUpdate>highlight;joebiden</contentUpdate>
+      <name>joebiden</name>
+      <questions>
+        <question>
+          <varname>joebiden</varname>
+          <questiontext>How many instances of Joe Biden do you see on the left?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>One</text>
+                <value>1</value>
+              </category>
+              <category>
+                <text>Two</text>
+                <value>2</value>
+              </category>
+              <category>
+                <text>More than 2</text>
+                <value>2+</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+      </questions>
+    </module>
+    <module>
+      <header>Questions on Elizabeth Warren</header>
+	  <contentUpdate>highlight;elizabethwarren</contentUpdate>
+      <name>elizabethwarren</name>
+      <questions>
+        <question>
+          <varname>elizabethwarren</varname>
+          <questiontext>How many instances of Elizabeth Warren do you see on the left?</questiontext>
+          <valuetype>categorical</valuetype>
+		  <contextualUpdate>highlight;elizabethwarren</contextualUpdate>
+          <content>
+            <categories>
+              <category>
+                <text>One</text>
+                <value>1</value>
+              </category>
+              <category>
+                <text>Two</text>
+                <value>2</value>
+              </category>
+              <category>
+                <text>More than 2</text>
+                <value>2+</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+      </questions>
+    </module>
+  </modules>
+
+  <tasks>
+    <task>
+      <content>names.html</content>
+      <taskid>names</taskid>
+      <modules>joebiden elizabethwarren</modules>
+    </task>
+  </tasks>
+
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>names</tasks>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>names</tasks>
+    </hit>
+  </hits>
+
+  <documents>
+    <document>
+      <name>names.html</name>
+      <content><![CDATA[
+	  <style>
+		.yellow {
+			background-color: yellow
+			}
+		.green {
+			background-color: #8FBC8F
+			}			
+	  </style>
+	  <script>
+	  var highlight=function(name){
+		var tags=document.getElementsByTagName("SPAN");
+		for (let tag of tags) {
+			if (tag.getAttribute("nameMarker")==name){
+				if (name=="joebiden"){
+					tag.className="yellow";
+				}
+				if (name=="elizabethwarren"){
+					tag.className="green";
+				}
+			}
+			else{
+				tag.className="";
+			}
+		}
+	  }
+	  </script>
+	  <p><span nameMarker="joebiden">Joe Biden</span> and <span nameMarker="elizabethwarren">Elizabeth Warren</span> are often mentioned. If I had to guess 
+	  then <span nameMarker="elizabethwarren">Elizabeth Warren</span> is mentioned more often than <span nameMarker="joebiden">Joe Biden</span> but I am not sure.	  
+      ]]></content>
+    </document>
+  </documents>
+</xml>

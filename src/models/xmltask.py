@@ -25,6 +25,7 @@ class XMLTask(object) :
         for module in self.modules.iter('module'):
             module_out = {'header' : module.find('header').text,
                           'name' : module.find('name').text,
+                          'contentUpdate' : module.find('contentUpdate').text if module.find('contentUpdate') != None else None,
                           'questions' : []}
             for question in module.find('questions').iter('question'):
                 lexedCondition=None
