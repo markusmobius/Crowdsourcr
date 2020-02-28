@@ -274,12 +274,26 @@ class BonusInfoHandler(BaseHandler) :
                      'paid on mturk' : False,
                      'payment info' : {}}
                     for d in bi}
+            total_workers = 0
+            total_bonuses = 0 
+            connection_info = self.db.mturkconnections.find()[0]
             for d in pb :
+                total_workers += 1
+                total_bonuses += d['amount']
                 wrk_info = resp.setdefault(d['workerid'], {})
                 wrk_info['paid on mturk'] = True
                 wrk_info['payment info'] = {'percent' : d['percent'],
                                             'amount' : d['amount'],
                                             'assignmentid' : d['assignmentid']}
+
+            resp['Payment summary'] = {'Title': connection_info['title'],
+                                        'HITID': connection_info['hitid'], 
+                                        'HIT Payment': connection_info['hitpayment'],
+                                        'Bonus Payment': connection_info['bonus'],
+                                        'Workers paid': total_workers, 
+                                        'Total task payments:': total_workers * connection_info['hitpayment'], 
+                                        'Total bonus payments:': total_bonuses, 
+                                        'Total overall payments:': total_bonuses + total_workers * connection_info['hitpayment']}
             self.return_json(resp)
         else :
             self.return_json([])

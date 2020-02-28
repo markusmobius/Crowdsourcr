@@ -51,8 +51,10 @@ class MTurkConnection:
             aws_access_key_id = app_config.aws['access_key'], 
             aws_secret_access_key = app_config.aws['access_secret'])
         self.hit_id = hitid
+        self.try_auth()
 
     async def try_auth(self):
+        print("Testing mturk connection...")
         return True if await self.get_balance_async() else False
 
     
@@ -187,15 +189,20 @@ class MTurkConnection:
                     if workerid not in bonus :
                         print("Error in end_run: worker_id %s present on mturk but not in bonus dict." % workerid)
                     else :
-                        bonus_amt = min(10, max(0.01, round(bonus[workerid] * self.bonus, 2)))
-                        self.client.send_bonus(WorkerId=workerid,
-                                           BonusAmount=str(bonus_amt),
-                                           AssignmentId=assignmentid,
-                                           Reason='Bonus for completion of task.')
-                        paid_bonus.append({'workerid' : workerid,
-                                       'percent' : bonus[workerid],
-                                       'amount' : bonus_amt,
-                                       'assignmentid' : assignmentid})
+                        try:
+                            bonus_amt = min(10, max(0.01, round(bonus[workerid] * self.bonus, 2)))
+                            self.client.send_bonus(WorkerId=workerid,
+                                               BonusAmount=str(bonus_amt),
+                                               AssignmentId=assignmentid,
+                                               Reason='Bonus for completion of task.', 
+                                               UniqueRequestToken="%s:%s" % (self.hit_id, assignmentid))
+                            paid_bonus.append({'workerid' : workerid,
+                                           'percent' : bonus[workerid],
+                                           'amount' : bonus_amt,
+                                           'assignmentid' : assignmentid})
+                        except:
+                            print("Could not send bonus of %s to worker %s (assignment id = %s)" % (str(bonus_amt), workerid, assignmentid))
+                            continue
                 self.client.update_expiration_for_hit(HITId = self.hit_id, ExpireAt = datetime.datetime(2019, 1, 1))
                 print("Expired hit: ", self.hit_id)
             except:
@@ -237,9 +244,11 @@ class MTurkConnection:
                 self.client.approve_assignment(AssignmentId=assignmentid)
                 npayments += 1
             except:
+                print("Could not make payments for assignment %s" % assignmentid)
                 continue
         if len(assignment_ids) > 0:
             print("Successfully made %d of %d payments" % (npayments, len(assignment_ids)))
+            print("New account balance: %s" % str(self.client.get_account_balance()['AvailableBalance']))
 
     def delete_hit(self):
         try:
