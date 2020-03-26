@@ -13,7 +13,7 @@
         </question>
         <question>
           <varname>number1</varname>
-          <bonus>threshold:50</bonus>
+          <bonus>threshold:51</bonus>
           <bonuspoints>2</bonuspoints>
           <questiontext>Which of the following is the number twenty-two?</questiontext>
           <helptext>You will get a bonus based on how many other people choose the same thing.</helptext>
