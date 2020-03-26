@@ -245,7 +245,23 @@ example:
    </content>
  </question>
 
+Image upload questions
+++++++++++++++++++++++
 
+You can upload images (up to 16MB per question). 
+
+::
+
+  <question>
+    <varname>nyt_logo</varname>
+    <questiontext>Please upload a nytlogo</questiontext>
+    <valuetype>imageupload</valuetype>
+  </question>
+
+The variable will only store an image hash. The raw BASE64-encoded image will be stored under a second variable with suffix ``_raw``
+added. For example, ``nyt_logo`` will become ``ny_logo_raw`` while ``nyt_logo`` will hold the hash. The image hash allows you to
+compare the similarity through simple differences. A threshold difference of 20 is internally used for defining two images
+as identical for bonus calculations.
 
 Tasks
 -----
@@ -308,6 +324,95 @@ The ``content`` value refers to a document that is defined under ``documents``:
  
 Any HTML content can be provided under the content property (you can even use it to load external images through ``<img src="http://my_other_domain/my_image.png">``) but you need to encapsulate your HTML in a CDATA tag in order to produce valid XML.
 The ``complex_modules.xml`` survey provides an example of very rich content panels.
+
+Dynamic content
++++++++++++++++
+
+You can make the content change dynamically when switching between modules within a task.
+
+The sample XML file ``color_coding_test.xml`` shows an example where the names of different political candidates are highlighted depending
+on the module.
+
+.. figure:: ../doc_img/crowdsourcer_dynamic_content.png
+   :align: center
+
+Dynamic content can be included by adding the ``contentUpdate`` tag as shown below:
+
+::
+
+  <module>
+    <header>Questions on Joe Biden</header>
+	  <contentUpdate>highlight;joebiden</contentUpdate>
+    <name>joebiden</name>
+    <questions>
+      <question>
+        <varname>joebiden</varname>
+        <questiontext>How many instances of Joe Biden do you see on the left?</questiontext>
+        <valuetype>categorical</valuetype>
+        <content>
+          <categories>
+            <category>
+              <text>One</text>
+              <value>1</value>
+            </category>
+            <category>
+              <text>Two</text>
+              <value>2</value>
+            </category>
+            <category>
+              <text>More than 2</text>
+              <value>2+</value>
+            </category>
+          </categories>
+        </content>
+      </question>
+    </questions>
+  </module>
+
+The tag consists of two strings separated by semi-colon. ``highlight`` indicates that the corresponding Javascript function should
+be called when the user switches to this module with value ``joebiden``. 
+
+The content HTML code looks as follows:
+
+::
+
+  <documents>
+    <document>
+      <name>names.html</name>
+      <content><![CDATA[
+	  <style>
+		.yellow {
+			background-color: yellow
+			}
+		.green {
+			background-color: #8FBC8F
+			}			
+	  </style>
+	  <script>
+	  var highlight=function(name){
+		var tags=document.getElementsByTagName("SPAN");
+		for (let tag of tags) {
+			if (tag.getAttribute("nameMarker")==name){
+				if (name=="joebiden"){
+					tag.className="yellow";
+				}
+				if (name=="elizabethwarren"){
+					tag.className="green";
+				}
+			}
+			else{
+				tag.className="";
+			}
+		}
+	  }
+	  </script>
+	  <p><span nameMarker="joebiden">Joe Biden</span> and <span nameMarker="elizabethwarren">Elizabeth Warren</span> are often mentioned. If I had to guess 
+	  then <span nameMarker="elizabethwarren">Elizabeth Warren</span> is mentioned more often than <span nameMarker="joebiden">Joe Biden</span> but I am not sure.	  
+      ]]></content>
+    </document>
+  </documents>
+
+
 
 cHits
 -----
@@ -571,9 +676,11 @@ Two kinds of bonus schemes are available:
   of other Turkers who gave the same answer to the task. To use this scheme
   add ``<bonus>linear</bonus>`` to the XML specification
 - threshold: an all-or-nothing scheme where the bonus is awarded only if
-  the share of Turkers who gave the same answer to the task (weakly 
+  the share of Turkers (*including* herself) who gave the same answer to the task weakly 
   exceeds a threshold. To use this scheme add 
-  ``<bonus>threshold:50</bonus>`` to the XML specification.
+  ``<bonus>threshold:50</bonus>`` to the XML specification. Note that with simple 
+  double data entry (two workers per task) you would want to set the threshold at 51 at least because otherwise
+  every worker receives the bonus (since the share of workers including herself that agrees with her answer is exactly 0.5.)
 
 
 Bonus calculation

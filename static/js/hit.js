@@ -218,3 +218,26 @@ function registerModule(i, data, dest) {
         currentTypeGroup.showType(module);
     }
 }
+
+function showMyImage(fileInput,element) {
+    var files = fileInput.files;
+    for (var i = 0; i < files.length; i++) {           
+        var file = files[i];
+        var imageType = /image.*/;     
+        if (!file.type.match(imageType)) {
+            continue;
+        }           
+        var img=element.parent().parent().find('img')[0]; 
+        img.style.display="";           
+        img.file = file;    
+        var reader = new FileReader();
+        var hiddenElement=element.parent().parent().children('input')[0];
+        reader.onload = (function(aImg,hiddenElement) { 
+            return function(e) { 
+                aImg.src = e.target.result;
+                hiddenElement.value=aImg.src;
+            }; 
+        })(img,hiddenElement);
+        reader.readAsDataURL(file);
+    }    
+}

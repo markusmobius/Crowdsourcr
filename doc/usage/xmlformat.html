@@ -144,11 +144,21 @@
             <a href="#scale-questions" class="nav-link">Scale questions</a>
         </li>
     
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#image-upload-questions" class="nav-link">Image upload questions</a>
+        </li>
+    
             </ul>
         </li>
     
         <li class="nav-item toc-entry toc-h2">
-            <a href="#tasks" class="nav-link">Tasks</a>
+            <a href="#tasks" class="nav-link">Tasks</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#dynamic-content" class="nav-link">Dynamic content</a>
+        </li>
+    
+            </ul>
         </li>
     
         <li class="nav-item toc-entry toc-h2">
@@ -418,6 +428,21 @@ example:</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="image-upload-questions">
+<h3>Image upload questions<a class="headerlink" href="#image-upload-questions" title="Permalink to this headline">¶</a></h3>
+<p>You can upload images (up to 16MB per question).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">question</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">varname</span><span class="o">&gt;</span><span class="n">nyt_logo</span><span class="o">&lt;/</span><span class="n">varname</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">questiontext</span><span class="o">&gt;</span><span class="n">Please</span> <span class="n">upload</span> <span class="n">a</span> <span class="n">nytlogo</span><span class="o">&lt;/</span><span class="n">questiontext</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">valuetype</span><span class="o">&gt;</span><span class="n">imageupload</span><span class="o">&lt;/</span><span class="n">valuetype</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">question</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The variable will only store an image hash. The raw BASE64-encoded image will be stored under a second variable with suffix <code class="docutils literal notranslate"><span class="pre">_raw</span></code>
+added. For example, <code class="docutils literal notranslate"><span class="pre">nyt_logo</span></code> will become <code class="docutils literal notranslate"><span class="pre">ny_logo_raw</span></code> while <code class="docutils literal notranslate"><span class="pre">nyt_logo</span></code> will hold the hash. The image hash allows you to
+compare the similarity through simple differences. A threshold difference of 20 is internally used for defining two images
+as identical for bonus calculations.</p>
+</div>
 </div>
 <div class="section" id="tasks">
 <h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
@@ -471,6 +496,86 @@ example:</p>
 </div>
 <p>Any HTML content can be provided under the content property (you can even use it to load external images through <code class="docutils literal notranslate"><span class="pre">&lt;img</span> <span class="pre">src=&quot;http://my_other_domain/my_image.png&quot;&gt;</span></code>) but you need to encapsulate your HTML in a CDATA tag in order to produce valid XML.
 The <code class="docutils literal notranslate"><span class="pre">complex_modules.xml</span></code> survey provides an example of very rich content panels.</p>
+<div class="section" id="dynamic-content">
+<h3>Dynamic content<a class="headerlink" href="#dynamic-content" title="Permalink to this headline">¶</a></h3>
+<p>You can make the content change dynamically when switching between modules within a task.</p>
+<p>The sample XML file <code class="docutils literal notranslate"><span class="pre">color_coding_test.xml</span></code> shows an example where the names of different political candidates are highlighted depending
+on the module.</p>
+<div class="figure align-center">
+<img alt="../_images/crowdsourcer_dynamic_content.png" src="../_images/crowdsourcer_dynamic_content.png" />
+</div>
+<p>Dynamic content can be included by adding the <code class="docutils literal notranslate"><span class="pre">contentUpdate</span></code> tag as shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;module&gt;
+  &lt;header&gt;Questions on Joe Biden&lt;/header&gt;
+        &lt;contentUpdate&gt;highlight;joebiden&lt;/contentUpdate&gt;
+  &lt;name&gt;joebiden&lt;/name&gt;
+  &lt;questions&gt;
+    &lt;question&gt;
+      &lt;varname&gt;joebiden&lt;/varname&gt;
+      &lt;questiontext&gt;How many instances of Joe Biden do you see on the left?&lt;/questiontext&gt;
+      &lt;valuetype&gt;categorical&lt;/valuetype&gt;
+      &lt;content&gt;
+        &lt;categories&gt;
+          &lt;category&gt;
+            &lt;text&gt;One&lt;/text&gt;
+            &lt;value&gt;1&lt;/value&gt;
+          &lt;/category&gt;
+          &lt;category&gt;
+            &lt;text&gt;Two&lt;/text&gt;
+            &lt;value&gt;2&lt;/value&gt;
+          &lt;/category&gt;
+          &lt;category&gt;
+            &lt;text&gt;More than 2&lt;/text&gt;
+            &lt;value&gt;2+&lt;/value&gt;
+          &lt;/category&gt;
+        &lt;/categories&gt;
+      &lt;/content&gt;
+    &lt;/question&gt;
+  &lt;/questions&gt;
+&lt;/module&gt;
+</pre></div>
+</div>
+<p>The tag consists of two strings separated by semi-colon. <code class="docutils literal notranslate"><span class="pre">highlight</span></code> indicates that the corresponding Javascript function should
+be called when the user switches to this module with value <code class="docutils literal notranslate"><span class="pre">joebiden</span></code>.</p>
+<p>The content HTML code looks as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;documents&gt;
+  &lt;document&gt;
+    &lt;name&gt;names.html&lt;/name&gt;
+    &lt;content&gt;&lt;![CDATA[
+        &lt;style&gt;
+              .yellow {
+                      background-color: yellow
+                      }
+              .green {
+                      background-color: #8FBC8F
+                      }
+        &lt;/style&gt;
+        &lt;script&gt;
+        var highlight=function(name){
+              var tags=document.getElementsByTagName(&quot;SPAN&quot;);
+              for (let tag of tags) {
+                      if (tag.getAttribute(&quot;nameMarker&quot;)==name){
+                              if (name==&quot;joebiden&quot;){
+                                      tag.className=&quot;yellow&quot;;
+                              }
+                              if (name==&quot;elizabethwarren&quot;){
+                                      tag.className=&quot;green&quot;;
+                              }
+                      }
+                      else{
+                              tag.className=&quot;&quot;;
+                      }
+              }
+        }
+        &lt;/script&gt;
+        &lt;p&gt;&lt;span nameMarker=&quot;joebiden&quot;&gt;Joe Biden&lt;/span&gt; and &lt;span nameMarker=&quot;elizabethwarren&quot;&gt;Elizabeth Warren&lt;/span&gt; are often mentioned. If I had to guess
+        then &lt;span nameMarker=&quot;elizabethwarren&quot;&gt;Elizabeth Warren&lt;/span&gt; is mentioned more often than &lt;span nameMarker=&quot;joebiden&quot;&gt;Joe Biden&lt;/span&gt; but I am not sure.
+    ]]&gt;&lt;/content&gt;
+  &lt;/document&gt;
+&lt;/documents&gt;
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="chits">
 <h2>cHits<a class="headerlink" href="#chits" title="Permalink to this headline">¶</a></h2>
@@ -717,9 +822,11 @@ one. This can be changed by adding a <code class="docutils literal notranslate">
 of other Turkers who gave the same answer to the task. To use this scheme
 add <code class="docutils literal notranslate"><span class="pre">&lt;bonus&gt;linear&lt;/bonus&gt;</span></code> to the XML specification</p></li>
 <li><p>threshold: an all-or-nothing scheme where the bonus is awarded only if
-the share of Turkers who gave the same answer to the task (weakly
+the share of Turkers (<em>including</em> herself) who gave the same answer to the task weakly
 exceeds a threshold. To use this scheme add
-<code class="docutils literal notranslate"><span class="pre">&lt;bonus&gt;threshold:50&lt;/bonus&gt;</span></code> to the XML specification.</p></li>
+<code class="docutils literal notranslate"><span class="pre">&lt;bonus&gt;threshold:50&lt;/bonus&gt;</span></code> to the XML specification. Note that with simple
+double data entry (two workers per task) you would want to set the threshold at 51 at least because otherwise
+every worker receives the bonus (since the share of workers including herself that agrees with her answer is exactly 0.5.)</p></li>
 </ul>
 </div>
 <div class="section" id="bonus-calculation">
@@ -795,7 +902,7 @@ potential bonus points.</p>
 </script>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, Microsoft Research.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
     </div>
   </body>
 </html>

@@ -57,6 +57,7 @@ class CResponseController(object):
                         continue
                     module_responses[mod_name].setdefault(response['varname'], {})
                     module_responses[mod_name][response['varname']].setdefault(response['response'], [])
+
                     module_responses[mod_name][response['varname']][response['response']].append(row['workerid'])
         return module_responses
     def worker_responses_by_task(self, taskid=None, workerids=[]):
@@ -72,7 +73,7 @@ class CResponseController(object):
             for resp in row['response']:
                 mod_name = resp['name']
                 module_responses.setdefault(mod_name, {})
-                for response in resp['responses']:
+                for response in resp['responses']:                    
                     module_responses[mod_name].setdefault(row['workerid'], [])
                     response_dict = {'varname': response['varname']}
                     response_dict['response'] = response.setdefault('response', None)

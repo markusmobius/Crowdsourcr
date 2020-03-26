@@ -294,6 +294,9 @@ var Question = Model.extend({
 	      case 'comment':
 	          new_question = new CommentQuestion(el, question);
 	          break;
+	      case 'imageupload':
+	          new_question = new UploadQuestion(el, question);
+	          break;
 	      }
 
 	      if (new_question === undefined)
@@ -379,6 +382,33 @@ var CommentQuestion = TextQuestion.extend({
     	return true;
     }
 });
+
+
+var UploadQuestion = Question.extend({
+    constructor : function(el, question) {
+        this.el = $(el);
+	      this.display_template = $('#imageuploadquestion-display-template').html();
+    },
+    renderDisplay : function() {
+        this.el.empty();
+        this.el.html(_.template(this.display_template, this.serializeForDisplay()));
+	      this.renderHelpText();
+    },
+    validate : function () {
+    	if(this.response() == "") {
+    		return false;
+    	} else{
+            if (this.response().length>16*1024*1024){
+                return false;
+            }
+            return true;
+    	}
+    },
+    response : function() {
+	      return this.el.find('input:eq(1)').val();
+    }
+});
+
 
 var NumericQuestion = Question.extend({
     constructor : function(el, question) {

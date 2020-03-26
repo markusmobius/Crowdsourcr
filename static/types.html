@@ -300,6 +300,12 @@
     <textarea></textarea>
     <% } %>
   </script>
-  
+
+  <script type="text/template" id="imageuploadquestion-display-template">
+      <input type="file" accept="image/*"  onchange="showMyImage(this)" />
+      <br/>
+      <img id="thumbnail" class="img-thumbnail" src="" alt="image"/> 
+  </script>
+
 </body>
 </html>

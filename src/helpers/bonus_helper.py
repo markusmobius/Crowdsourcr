@@ -1,4 +1,4 @@
-
+import imagehash
 
 class BonusType(object) :
     def __init__(self) :
@@ -48,18 +48,31 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
                 total_responses = 1.0 * sum([len(responses[c]) 
                                              for c in responses 
                                              if c != '__bonus__'])
+                #check if this is an imagehas
+                is_imagehash = True
                 for response, workerids in responses.items() :
                     if response == '__bonus__' : continue
-                    # total_responses measures the total number of workers
-                    # who answered this question, while agreed measures
-                    # the total number of workers who submit each partcular
-                    # answer
-                    agreed = 1.0 * len(workerids)
-                    bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
+                    if not response.startswith("imagehash:"):
+                        is_imagehash=False
+                if is_imagehash:
+                    #we use approximate image matching
+                    allworkerids=[]
+                    hashes={}
+                    for response, workerids in responses.items() :
+                        if response == '__bonus__' : continue
+                        for workerid in workerids:
+                            allworkerids.append(workerid)
+                            hashes[workerid]=imagehash.hex_to_hash(response[len("imagehash:"):])
+                    for workerid in allworkerids:
+                        agreed=0
+                        for otherworkerid in allworkerids:
+                            if hashes[workerid]-hashes[otherworkerid]<20:
+                                agreed=agreed+1
+                        agreed=1.0*agreed
+                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
                                                                         agreed=agreed, 
                                                                         total=total_responses)
-                    bonus_exp = 'On task %s, question %s_%s, for response %s: %s' % (task, module, varname, response, bonus_exp)
-                    for workerid in workerids :
+                        bonus_exp = 'On image task %s, question %s_%s, for response %s: %s' % (task, module, varname, hashes[workerid], bonus_exp)
                         worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
                                                                 'possible' : 0.0,
                                                                 'exp' : []})
@@ -70,6 +83,29 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
                         else:
                             bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
                             worker_bonus_info[workerid]['exp'].append(bonus_exp)
+                else:
+                    for response, workerids in responses.items() :
+                        if response == '__bonus__' : continue
+                        # total_responses measures the total number of workers
+                        # who answered this question, while agreed measures
+                        # the total number of workers who submit each partcular
+                        # answer
+                        agreed = 1.0 * len(workerids)
+                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
+                                                                        agreed=agreed, 
+                                                                        total=total_responses)
+                        bonus_exp = 'On task %s, question %s_%s, for response %s: %s' % (task, module, varname, response, bonus_exp)
+                        for workerid in workerids :
+                            worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
+                                                                'possible' : 0.0,
+                                                                'exp' : []})
+                            worker_bonus_info[workerid]['possible'] += bonus_info['bonuspoints']
+                            if(evaluated_conditions[task][module][workerid][varname]):
+                                worker_bonus_info[workerid]['earned'] += bonus_amount
+                                worker_bonus_info[workerid]['exp'].append(bonus_exp)
+                            else:
+                                bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
+                                worker_bonus_info[workerid]['exp'].append(bonus_exp)
     print(worker_bonus_info)
 
     return worker_bonus_info

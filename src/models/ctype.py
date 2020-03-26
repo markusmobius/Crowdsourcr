@@ -34,8 +34,13 @@ class CType(object) :
 
         sanitize_response = response
         module_responses = sanitize_response['responses']
+        extra_responses=[]
         for r in module_responses :
             r = questions[r['varname']].sanitize_response(r) 
+            if "response_raw" in r:
+                extra_responses.append({'varname':r['varname']+'_raw','response':r['response_raw']})
+        for extra in extra_responses:
+            sanitize_response['responses'].append(extra)         
         return sanitize_response
                 
     def validate(self, response) :

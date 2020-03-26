@@ -202,7 +202,7 @@ class RecruitingBeginHandler(BaseHandler):
 
 class RecruitingEndHandler(BaseHandler):
     async def post(self):
-        #TODO: validate expermenter
+        #TODO: validate experimenter
         admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
         if not admin_email :
             return

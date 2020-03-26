@@ -2,7 +2,10 @@ import re
 import validators
 from helpers import CustomEncoder, Lexer, Status
 import jsonpickle
-
+from PIL import Image
+import imagehash
+import base64
+import io
 
 class Question(object) :
     def __init__(self, varname=None, condition=None, questiontext=None, helptext=None, options=None, valuetype=None, bonus=None, bonuspoints=None):
@@ -54,6 +57,8 @@ class Question(object) :
            return URLQuestion.deserialize(d)
         if d['valuetype']=="comment":
            return CommentQuestion.deserialize(d)
+        if d['valuetype']=="imageupload":
+           return ImageUploadQuestion.deserialize(d)
     def serialize(self) :
         return {'valuetype' : self.valuetype,
                 'varname' : self.varname,
@@ -123,6 +128,8 @@ class Question(object) :
            return URLQuestion.parse_content_from_xml(question_content)
         if question_type=="comment":
            return CommentQuestion.parse_content_from_xml(question_content)
+        if question_type=="imageupload":
+           return ImageUploadQuestion.parse_content_from_xml(question_content)
 
 # Allows question-specific deserialization (not currently used).
 # Otherwise unnecessary.
@@ -190,6 +197,27 @@ class URLQuestion(TextQuestion) :
 class CommentQuestion(TextQuestion) :
     typeName = 'comment'
     def validate(self, response, module_responses):
+        return True
+
+class ImageUploadQuestion(TextQuestion) :
+    typeName = 'imageupload'
+    def sanitize_response(self, response):
+        resp=response['response']
+        try:
+            image=resp[resp.index('base64,')+7:]
+            decoded = io.BytesIO(base64.b64decode(image))
+            response['response']="imagehash:"+str(imagehash.average_hash(Image.open(decoded)))
+            response['response_raw']=resp
+        except:            
+            print('Could not decode image %s' % response['varname'])
+        return response
+    def validate(self, response, module_responses):
+        resp=response['response']
+        try:
+            image=resp[resp.index('base64,')+7:]
+            decoded = io.BytesIO(base64.b64decode(image))
+        except:            
+            return False
         return True
 
 """

@@ -1,0 +1,75 @@
+<xml>
+  <modules>
+    <module>
+      <header>Upload NYT logo</header>
+      <name>nyt</name>
+      <questions>
+        <question>
+          <varname>nyt_logo</varname>
+          <bonus>threshold:60</bonus>
+          <bonuspoints>2</bonuspoints>
+          <questiontext>Please upload a nytlogo</questiontext>
+          <valuetype>imageupload</valuetype>
+        </question>
+        <question>
+          <varname>number1</varname>
+          <bonus>threshold:50</bonus>
+          <bonuspoints>2</bonuspoints>
+          <questiontext>Which of the following is the number twenty-two?</questiontext>
+          <helptext>You will get a bonus based on how many other people choose the same thing.</helptext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>3</text>
+                <value>3</value>
+              </category>
+              <category>
+                <text>17</text>
+                <value>17</value>
+              </category>
+              <category>
+                <text>22</text>
+                <value>22</value>
+              </category>
+              <category>
+                <text>111</text>
+                <value>111</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+      </questions>
+    </module>
+  </modules>
+
+  <tasks>
+    <task>
+      <content>nyt.html</content>
+      <taskid>nyt</taskid>
+      <modules>nyt</modules>
+    </task>
+  </tasks>
+
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>nyt</tasks>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>nyt</tasks>
+    </hit>
+  </hits>
+
+  <documents>
+    <document>
+      <name>nyt.html</name>
+      <content><![CDATA[
+      <p>Please find a logo for <strong>nytimes.com</strong>.</p>
+      <p>You might try to visit the site directly: <a href="http://nytimes.com" target="_blank">http://nytimes.com</a></p>
+      <p>You might also try a google search: <a href="https://www.google.com/search?q=nytimes.com" target="_blank">https://www.google.com/search?q=nytimes.com</a></p>
+      ]]></content>
+    </document>
+  </documents>
+</xml>
