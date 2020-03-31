@@ -137,11 +137,19 @@ class MTurkConnection:
                 Keywords=self.keywords,
                 Reward=str(self.hitpayment),
                 QualificationRequirements=[{
-                        'QualificationTypeId': '00000000000000000071',
+                        'QualificationTypeId': '00000000000000000071', #Locale
                         'Comparator': 'EqualTo',
                         'LocaleValues': [{
                                 'Country': 'US',
                         }]
+                }, {
+                        'QualificationTypeId': '00000000000000000040', #nHITS approved
+                        'Comparator': 'GreaterThan',
+                        'IntegerValues': [100]
+                }, {
+                        'QualificationTypeId': '000000000000000000L0', #PercentAssignments approved
+                        'Comparator': 'GreaterThan',
+                        'IntegerValues': [95]
                 }],
                 Question = question_xml.replace("QUESTION_URL", url)
                 # Question='<p>'+self.description+' To begin, navigate to the following url: <a href="'+url+'">%('+url+')s</a>.</p>'
