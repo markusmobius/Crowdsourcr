@@ -2,15 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Crowdsourcr 2.0 administration</title>
+    <title>Crowdsourcr 2.1 administration</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" type="text/css" />	
 	<link rel="stylesheet" href="/static/css/custom.css">
     <script src="/static/js/jquery-3.4.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>	
     <script type="text/javascript" src="/static/js/autoexpand.js"></script>
-    <script type="text/javascript" src="/static/js/admin.js"></script>			
+    <script type="text/javascript" src="/static/js/admin.js?version=2020_04_01"></script>			
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="docsearch:language" content="en">
+	<meta name="docsearch:language" content="en">
+	<meta http-equiv="Cache-control" content="no-cache">	
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
@@ -20,7 +21,7 @@
 	<div id="navbar-menu" class="collapse navbar-collapse">
 		<ul id="navbar-main-elements" class="navbar-nav mr-auto">
 			<li class="nav-item">
-			<a class="nav-link" href="#">Crowdsourcr 2.0 Administration</a>
+			<a class="nav-link" href="#">Crowdsourcr 2.1 Administration</a>
 			</li>       
 			<li class="nav-item ">
 			<a class="nav-link" href="/doc">Documentation</a>
@@ -174,6 +175,28 @@
 		</div>
 </div>
 
+<div class="form-group row">
+	<div class="col-md-3"><label  for="staticHitLocales" class="col-form-label">Locales</label></div>
+	<div class="col-md-9">
+			<input type="text" id="staticHitLocales" readonly class="form-control-plaintext" aria-label="cHIT locales" placeholder="not yet set">
+			</div>
+</div>
+
+<div class="form-group row">
+	<div class="col-md-3"><label  for="staticHitPCapproved" class="col-form-label">Min. approval</label></div>
+	<div class="col-md-9">
+			<input type="text" id="staticHitPCapproved" readonly class="form-control-plaintext" aria-label="workers min. percent approved" placeholder="not yet set">
+			</div>
+</div>
+
+<div class="form-group row">
+	<div class="col-md-3"><label  for="staticHitMinCompleted" class="col-form-label">Min. completed</label></div>
+	<div class="col-md-9">
+			<input type="text" id="staticHitMinCompleted" readonly class="form-control-plaintext" aria-label="workers min. completed" placeholder="not yet set">
+			</div>
+</div>
+
+
 <button type="submit" class="btn btn-success" id="openEditModalButton">Edit cHIT parameters</button>
 
 </div>				
@@ -268,8 +291,8 @@
 </div>
 
 
-<div class="modal fade" id="beginEditHitModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
+<div class="modal fade bd-example-modal-lg" id="beginEditHitModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">	 	 
         <h5 class="modal-title">Edit cHIT Parameters</h5>
@@ -323,7 +346,31 @@
 		<input type="text" id="editHitKeywords" class="form-control-plaintext" aria-label="cHIT keywords" placeholder="not yet set">
 		</div>
 </div>
-</div>				
+
+<div class="form-group row">
+	<div class="col-md-3"><label  for="editHitLocales" class="col-form-label">Locales</label></div>
+	<div class="col-md-9">
+			<input type="text" id="editHitLocales" class="form-control-plaintext" aria-label="cHIT locales" value="US">
+			<small>Comma-delimited list of ISO 3166 countries and/or subdivisions (such as US or US-CA).</small>
+			</div>
+</div>	
+
+<div class="form-group row">
+	<div class="col-md-3"><label  for="editHitPCapproved" class="col-form-label">Min. approval</label></div>
+	<div class="col-md-9">
+			<input type="text" id="editHitPCapproved" class="form-control-plaintext" aria-label="workers min. percent approved" value="95">
+			<small>Only target workers with minimum percentage of approved hits.</small>
+			</div>
+</div>	
+
+<div class="form-group row">
+	<div class="col-md-3"><label  for="editHitMinCompleted" class="col-form-label">Min. completed</label></div>
+	<div class="col-md-9">
+			<input type="text" id="editHitMinCompleted" class="form-control-plaintext" aria-label="workers min. completed" value="100">
+			<small>Only target workers with minimum number of completed hits.</small>
+			</div>
+</div>	
+
 
 <div id="editHitWarning" class="alert alert-warning" role="alert" style="display:none">
   You must specify all fields.

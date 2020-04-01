@@ -60,6 +60,9 @@ $('#addAdmin').click(function(evt) {
 				$('#editHitTitle').val($('#staticHitTitle').val());
 				$('#editHitDescription').val($('#staticHitDescription').val());
 				$('#editHitKeywords').val($('#staticHitKeywords').val());
+				$('#editHitLocales').val($('#staticHitLocales').val());
+				$('#editHitPCapproved').val($('#staticHitPCapproved').val());
+				$('#editHitMinCompleted').val($('#staticHitMinCompleted').val());
 				$('#editHitWarning').hide();
 						$('#beginEditHitModal').modal('show');		
 		  });	
@@ -71,7 +74,11 @@ $('#addAdmin').click(function(evt) {
                             title : $('#editHitTitle').val(),
                             description : $('#editHitDescription').val(),
                             keywords : $('#editHitKeywords').val(),
-                            bonus : parseFloat($('#editBonusPayment').val())};	
+                            bonus : parseFloat($('#editBonusPayment').val()),
+                            locales : $('#editHitLocales').val(),	
+                            pcapproved : parseFloat($('#editHitPCapproved').val()),	
+                            mincompleted : parseFloat($('#editHitMinCompleted').val())	                        
+                        };	
 			console.log(mturk_info);
 			for (var key in mturk_info) {
               if (mturk_info.hasOwnProperty(key) && !mturk_info[key]) {
@@ -194,6 +201,9 @@ $('#addAdmin').click(function(evt) {
 								$('#staticHitTitle').val(data.turkinfo.title);
 								$('#staticHitDescription').val(data.turkinfo.description);
 								$('#staticHitKeywords').val(data.turkinfo.keywords);							  
+								$('#staticHitLocales').val(data.turkinfo.locales);							  
+								$('#staticHitPCapproved').val(data.turkinfo.pcapproved);							  
+                                $('#staticHitMinCompleted').val(data.turkinfo.mincompleted);	            
                           }
                           if (data.turkinfo.running) {
                               var amazonLink = data.turkinfo.admin_host + "/mturk/manageHIT?HITId=" + data.turkinfo.hitid;

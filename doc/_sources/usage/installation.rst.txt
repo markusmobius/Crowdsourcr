@@ -26,6 +26,7 @@ Install the following Python libraries (assuming that your Python 3 installation
  pip install jsonpickle
  pip install xmltodict
  pip install ImageHash
+ pip install pycountry
 
 On Linux you can also simply run the ``requirements.txt`` file:
 ::

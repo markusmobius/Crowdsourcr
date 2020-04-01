@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Crowdsourcr'
-copyright = '2019, Microsoft Research'
-author = 'Kyle Miller, Sam Grondahl, Tobias Schmidt, Ling Dong and Markus Mobius'
+copyright = '2020, Microsoft Research'
+author = 'Kyle Miller, Sam Grondahl, Tobias Schmidt, Ling Dong, Anna Croley and Markus Mobius'
 
 # The full version, including alpha/beta/rc tags
-release = '2.0'
+release = '2.1'
 
 
 # -- General configuration ---------------------------------------------------

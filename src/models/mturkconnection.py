@@ -6,6 +6,7 @@ import json
 import datetime
 import asyncio
 import app_config
+from helpers import CountryTools
 
 #QuestionContent,Question,QuestionForm,Overview,AnswerSpecification,SelectionAnswer,FormattedContent,FreeTextAnswer
 
@@ -19,6 +20,9 @@ class MTurkConnection:
                  title="News Classification Task", 
                  description="Classify a set of news articles as part of an academic research study.",
                  keywords="news, classification, research, academic",
+                 locales="US",
+                 pcapproved="95",
+                 mincompleted="100",
                  environment="development",
                  bonus=0.0,
                  **kwargs):
@@ -32,6 +36,9 @@ class MTurkConnection:
         self.preview=preview
         self.admin_host = 'https://requester.mturk.com' if environment == 'production' else 'https://requestersandbox.mturk.com'
         self.bonus = float(bonus)
+        self.locales=locales
+        self.pcapproved=pcapproved
+        self.mincompleted=mincompleted
         environments = {
             "production": {
                 "endpoint": "https://mturk-requester.us-east-1.amazonaws.com",
@@ -51,6 +58,7 @@ class MTurkConnection:
             aws_access_key_id = app_config.aws['access_key'], 
             aws_secret_access_key = app_config.aws['access_secret'])
         self.hit_id = hitid
+        self.ct=CountryTools()
         self.try_auth()
 
     async def try_auth(self):
@@ -85,7 +93,10 @@ class MTurkConnection:
                  'title' : self.title,
                  'description' : self.description,
                  'keywords' : self.keywords,
-                 'bonus' : self.bonus}
+                 'bonus' : self.bonus,
+                 'locales': self.locales,
+                 'pcapproved':self.pcapproved,
+                 'mincompleted':self.mincompleted}
     @classmethod
     def deserialize(cls, d):  
         return MTurkConnection(**d)
@@ -127,7 +138,6 @@ class MTurkConnection:
             </Question>
             </QuestionForm>
             """.format(title = self.title, description = self.description, url1 = url, url2 = url)
-            
             hitinfo = self.client.create_hit(
                 MaxAssignments=max_assignments,
                 Title=self.title,
@@ -136,16 +146,30 @@ class MTurkConnection:
                 AssignmentDurationInSeconds=60 * 60 * 2,
                 Keywords=self.keywords,
                 Reward=str(self.hitpayment),
-                QualificationRequirements=[{
-                        'QualificationTypeId': '00000000000000000071',
-                        'Comparator': 'EqualTo',
-                        'LocaleValues': [{
-                                'Country': 'US',
-                        }]
-                }],
+                QualificationRequirements=[
+                    # in the US
+                    {
+                        'QualificationTypeId': "00000000000000000071",
+                        'Comparator': "EqualTo",
+                        'LocaleValues': self.ct.createLocales(self.locales)
+                    },
+                    #  percent assignments approved above 95 percent
+                    {
+                        'QualificationTypeId': "000000000000000000L0",
+                        'Comparator': "GreaterThanOrEqualTo",
+                        'IntegerValues': [self.pcapproved]
+                    },
+                    # At least 100 assignments completed
+                    {
+                        'QualificationTypeId': "00000000000000000040",
+                        'Comparator': "GreaterThanOrEqualTo",
+                        'IntegerValues': [self.mincompleted]
+                    },
+                ],
                 Question = question_xml.replace("QUESTION_URL", url)
                 # Question='<p>'+self.description+' To begin, navigate to the following url: <a href="'+url+'">%('+url+')s</a>.</p>'
             )
+            print(hitinfo)
 
             self.hit_type_id = hitinfo['HIT']['HITTypeId']
             self.hit_id = hitinfo['HIT']['HITId']

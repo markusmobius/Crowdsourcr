@@ -305,6 +305,7 @@ class RecruitingInfoHandler(BaseHandler):
             recruiting_info = json.loads(self.get_argument('data', '{}'))
             recruiting_info['email'] = admin_email
             recruiting_info['environment'] = self.settings['environment']
+            print(recruiting_info)
             mtconn = self.mturkconnection_controller.create(recruiting_info)
         self.finish()
 
