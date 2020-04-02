@@ -138,10 +138,6 @@ class MTurkConnection:
             </Question>
             </QuestionForm>
             """.format(title = self.title, description = self.description, url1 = url, url2 = url)
-            localeSet=self.ct.createLocales(self.locales)
-            localeComparator="In"
-            if len(localeSet)==1:
-                localeComparator="EqualTo"
             hitinfo = self.client.create_hit(
                 MaxAssignments=max_assignments,
                 Title=self.title,
@@ -154,8 +150,8 @@ class MTurkConnection:
                     # in the US
                     {
                         'QualificationTypeId': "00000000000000000071",
-                        'Comparator': localeComparator,
-                        'LocaleValues': localeSet
+                        'Comparator': "In",
+                        'LocaleValues': self.ct.createLocales(self.locales)
                     },
                     #  percent assignments approved above 95 percent
                     {
