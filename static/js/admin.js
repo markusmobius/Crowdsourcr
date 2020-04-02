@@ -55,16 +55,26 @@ $('#addAdmin').click(function(evt) {
           $('#openEditModalButton').click(function(evt) {
 				$('#editHITparameters').show();
 				$('#editHITparameters-submitting').hide();
-				$('#editHitPayment').val($('#staticHitPayment').val());
-				$('#editBonusPayment').val($('#staticBonusPayment').val());
+                $('#editHitPayment').val($('#staticHitPayment').val());
+                $('#editBonusPayment').val($('#staticBonusPayment').val());
 				$('#editHitTitle').val($('#staticHitTitle').val());
 				$('#editHitDescription').val($('#staticHitDescription').val());
 				$('#editHitKeywords').val($('#staticHitKeywords').val());
-				$('#editHitLocales').val($('#staticHitLocales').val());
+                $('#editHitLocales').val($('#staticHitLocales').val());                
+                if ($('#editHitLocales').val()==""){
+                    $('#editHitLocales').val("US");
+                }                
 				$('#editHitPCapproved').val($('#staticHitPCapproved').val());
-				$('#editHitMinCompleted').val($('#staticHitMinCompleted').val());
+                if ($('#editHitPCapproved').val()==""){
+                    $('#editHitPCapproved').val(95);
+                }                
+                $('#editHitMinCompleted').val($('#staticHitMinCompleted').val());
+                if ($('#editHitMinCompleted').val()==""){
+                    $('#editHitMinCompleted').val(100);
+                }                
 				$('#editHitWarning').hide();
-						$('#beginEditHitModal').modal('show');		
+                $('#editHitServerWarning').hide();
+				$('#beginEditHitModal').modal('show');		
 		  });	
 				
 			
@@ -76,8 +86,8 @@ $('#addAdmin').click(function(evt) {
                             keywords : $('#editHitKeywords').val(),
                             bonus : parseFloat($('#editBonusPayment').val()),
                             locales : $('#editHitLocales').val(),	
-                            pcapproved : parseFloat($('#editHitPCapproved').val()),	
-                            mincompleted : parseFloat($('#editHitMinCompleted').val())	                        
+                            pcapproved : $('#editHitPCapproved').val(),	
+                            mincompleted : $('#editHitMinCompleted').val()	                        
                         };	
 			console.log(mturk_info);
 			for (var key in mturk_info) {
@@ -87,16 +97,28 @@ $('#addAdmin').click(function(evt) {
               }
             }
 			$('#editHitWarning').hide();
+			$('#editHitServerWarning').hide();
 			$('#editHITparameters').hide();
 			$('#editHITparameters-submitting').show();
 			$.post('/admin/recruit/',{data : JSON.stringify(mturk_info)}, function(data) {
-					$.get('/admin/info/' + nocache(), function(data) {
-					try {
-						updateStatus(data,true);
-						$('#editHITparameters').show();
-						$('#editHITparameters-submitting').hide();
-						$('#beginEditHitModal').modal('hide');		
-					}finally {}});				
+                    if (data["errors"]){
+                        $('#editHitServerWarning').empty();
+                        for(var i in data["errors"]){
+                            $('#editHitServerWarning').append("<p>"+data["errors"][i]+"</p>")
+                        }
+                        $('#editHITparameters-submitting').hide();
+                        $('#editHITparameters').show();
+                        $('#editHitServerWarning').show();
+                    }
+                    else{
+                        $.get('/admin/info/' + nocache(), function(data) {
+                        try {
+                            updateStatus(data,true);
+                            $('#editHITparameters').show();
+                            $('#editHITparameters-submitting').hide();
+                            $('#beginEditHitModal').modal('hide');		
+                        }finally {}});				    
+                    }                 
 			});
           });
 

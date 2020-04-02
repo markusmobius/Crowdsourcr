@@ -150,7 +150,7 @@ class MTurkConnection:
                     # in the US
                     {
                         'QualificationTypeId': "00000000000000000071",
-                        'Comparator': "EqualTo",
+                        'Comparator': "In",
                         'LocaleValues': self.ct.createLocales(self.locales)
                     },
                     #  percent assignments approved above 95 percent
@@ -169,7 +169,6 @@ class MTurkConnection:
                 Question = question_xml.replace("QUESTION_URL", url)
                 # Question='<p>'+self.description+' To begin, navigate to the following url: <a href="'+url+'">%('+url+')s</a>.</p>'
             )
-            print(hitinfo)
 
             self.hit_type_id = hitinfo['HIT']['HITTypeId']
             self.hit_id = hitinfo['HIT']['HITId']

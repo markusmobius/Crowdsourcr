@@ -21,6 +21,8 @@ import io
 import app_config
 from io import BytesIO
 from zipfile import ZipFile
+from helpers import CountryTools
+
  
 from tornado.options import define, options
 from helpers import CustomEncoder, Lexer, Status
@@ -301,13 +303,34 @@ class BonusInfoHandler(BaseHandler) :
 class RecruitingInfoHandler(BaseHandler):
     def post(self):
         admin_email = tornado.escape.to_unicode(self.get_secure_cookie('admin_email'))
+        errorList=[]
         if admin_email:
             recruiting_info = json.loads(self.get_argument('data', '{}'))
             recruiting_info['email'] = admin_email
             recruiting_info['environment'] = self.settings['environment']
-            print(recruiting_info)
-            mtconn = self.mturkconnection_controller.create(recruiting_info)
-        self.finish()
+            #check locales
+            ct=CountryTools()
+            locales_check=ct.checkList(recruiting_info['locales'])
+            if locales_check!=None:
+                errorList.append(locales_check)
+            try: 
+                pc=int(recruiting_info['pcapproved'])
+                if pc<0 or pc>100:
+                    errorList.append("Workers min. percent approved has to be an integer between 0 and 100.")
+            except ValueError:
+                errorList.append("Workers min. percent approved has to be an integer between 0 and 100.")
+            try: 
+                mincompleted=int(recruiting_info['mincompleted'])
+                if mincompleted<0:
+                    errorList.append("Workers min. completed HITs has to be a non-negative integer.")
+            except ValueError:
+                errorList.append("Workers min. completed HITs has to be a non-negative integer.")
+            if len(errorList)==0:
+                mtconn = self.mturkconnection_controller.create(recruiting_info)            
+        if len(errorList)==0:
+            self.finish()
+        else:
+            self.finish({"errors":errorList})
 
 class AdminInfoHandler(BaseHandler):
     async def get(self):
