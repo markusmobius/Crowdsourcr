@@ -157,13 +157,13 @@ class MTurkConnection:
                     {
                         'QualificationTypeId': "000000000000000000L0",
                         'Comparator': "GreaterThanOrEqualTo",
-                        'IntegerValues': [self.pcapproved]
+                        'IntegerValues': [int(self.pcapproved)]
                     },
                     # At least 100 assignments completed
                     {
                         'QualificationTypeId': "00000000000000000040",
                         'Comparator': "GreaterThanOrEqualTo",
-                        'IntegerValues': [self.mincompleted]
+                        'IntegerValues': [int(self.mincompleted)]
                     },
                 ],
                 Question = question_xml.replace("QUESTION_URL", url)
