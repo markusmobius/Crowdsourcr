@@ -60,6 +60,10 @@ $('#addAdmin').click(function(evt) {
 				$('#editHitTitle').val($('#staticHitTitle').val());
 				$('#editHitDescription').val($('#staticHitDescription').val());
 				$('#editHitKeywords').val($('#staticHitKeywords').val());
+				$('#editHitLifetime').val($('#staticHitLifetime').val());
+                if ($('#editHitLifetime').val()==""){
+                    $('#editHitLifetime').val(12*3600);
+                }                
                 $('#editHitLocales').val($('#staticHitLocales').val());                
                 if ($('#editHitLocales').val()==""){
                     $('#editHitLocales').val("US");
@@ -85,6 +89,7 @@ $('#addAdmin').click(function(evt) {
                             description : $('#editHitDescription').val(),
                             keywords : $('#editHitKeywords').val(),
                             bonus : parseFloat($('#editBonusPayment').val()),
+                            lifetime:  $('#editHitLifetime').val(),
                             locales : $('#editHitLocales').val(),	
                             pcapproved : $('#editHitPCapproved').val(),	
                             mincompleted : $('#editHitMinCompleted').val()	                        
@@ -223,6 +228,7 @@ $('#addAdmin').click(function(evt) {
 								$('#staticHitTitle').val(data.turkinfo.title);
 								$('#staticHitDescription').val(data.turkinfo.description);
 								$('#staticHitKeywords').val(data.turkinfo.keywords);							  
+								$('#staticHitLifetime').val(data.turkinfo.lifetime);							  
 								$('#staticHitLocales').val(data.turkinfo.locales);							  
 								$('#staticHitPCapproved').val(data.turkinfo.pcapproved);							  
                                 $('#staticHitMinCompleted').val(data.turkinfo.mincompleted);	            

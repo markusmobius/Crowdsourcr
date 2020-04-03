@@ -8,7 +8,7 @@
     <script src="/static/js/jquery-3.4.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>	
     <script type="text/javascript" src="/static/js/autoexpand.js"></script>
-    <script type="text/javascript" src="/static/js/admin.js?version=2020_04_01"></script>			
+    <script type="text/javascript" src="/static/js/admin.js?version=2020_04_02"></script>			
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="docsearch:language" content="en">
 	<meta http-equiv="Cache-control" content="no-cache">	
@@ -173,6 +173,13 @@
 <div class="col-md-9">
 		<input type="text" id="staticHitKeywords" readonly class="form-control-plaintext" aria-label="cHIT keywords" placeholder="not yet set">
 		</div>
+</div>
+
+<div class="form-group row">
+	<div class="col-md-3"><label  for="staticHitLifetime" class="col-form-label">Lifetime</label></div>
+	<div class="col-md-9">
+			<input type="text" id="staticHitLifetime" readonly class="form-control-plaintext" aria-label="cHIT lifetime (seconds)" placeholder="not yet set">
+			</div>
 </div>
 
 <div class="form-group row">
@@ -346,6 +353,13 @@
 		<input type="text" id="editHitKeywords" class="form-control-plaintext" aria-label="cHIT keywords" placeholder="not yet set">
 		</div>
 </div>
+
+<div class="form-group row">
+	<div class="col-md-3"><label  for="editHitLifetime" class="col-form-label">Lifetime</label></div>
+	<div class="col-md-9">
+			<input type="text" id="editHitLifetime" class="form-control-plaintext" aria-label="cHIT lifetime (seconds)" value="43200">
+			</div>
+</div>	
 
 <div class="form-group row">
 	<div class="col-md-3"><label  for="editHitLocales" class="col-form-label">Locales</label></div>

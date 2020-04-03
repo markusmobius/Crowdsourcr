@@ -314,6 +314,12 @@ class RecruitingInfoHandler(BaseHandler):
             if locales_check!=None:
                 errorList.append(locales_check)
             try: 
+                lt=int(recruiting_info['lifetime'])
+                if lt<2*3600:
+                    errorList.append("HIT lifetime has to be at least 2 hours.")
+            except ValueError:
+                errorList.append("Workers min. percent approved has to be an integer between 0 and 100.")
+            try: 
                 pc=int(recruiting_info['pcapproved'])
                 if pc<0 or pc>100:
                     errorList.append("Workers min. percent approved has to be an integer between 0 and 100.")
@@ -326,7 +332,7 @@ class RecruitingInfoHandler(BaseHandler):
             except ValueError:
                 errorList.append("Workers min. completed HITs has to be a non-negative integer.")
             if len(errorList)==0:
-                mtconn = self.mturkconnection_controller.create(recruiting_info)            
+                mtconn = self.mturkconnection_controller.create(recruiting_info)    
         if len(errorList)==0:
             self.finish()
         else:

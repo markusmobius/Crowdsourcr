@@ -21,6 +21,7 @@ class MTurkConnection:
                  description="Classify a set of news articles as part of an academic research study.",
                  keywords="news, classification, research, academic",
                  locales="US",
+                 lifetime="43200",
                  pcapproved="95",
                  mincompleted="100",
                  environment="development",
@@ -37,6 +38,7 @@ class MTurkConnection:
         self.admin_host = 'https://requester.mturk.com' if environment == 'production' else 'https://requestersandbox.mturk.com'
         self.bonus = float(bonus)
         self.locales=locales
+        self.lifetime=lifetime
         self.pcapproved=pcapproved
         self.mincompleted=mincompleted
         environments = {
@@ -94,6 +96,7 @@ class MTurkConnection:
                  'description' : self.description,
                  'keywords' : self.keywords,
                  'bonus' : self.bonus,
+                 'lifetime': self.lifetime,
                  'locales': self.locales,
                  'pcapproved':self.pcapproved,
                  'mincompleted':self.mincompleted}
@@ -142,7 +145,7 @@ class MTurkConnection:
                 MaxAssignments=max_assignments,
                 Title=self.title,
                 Description=self.description,
-                LifetimeInSeconds=14400,
+                LifetimeInSeconds=int(self.lifetime),
                 AssignmentDurationInSeconds=60 * 60 * 2,
                 Keywords=self.keywords,
                 Reward=str(self.hitpayment),
