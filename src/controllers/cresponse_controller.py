@@ -27,12 +27,14 @@ class CResponseController(object):
                                     tornado.escape.json_encode(d['response'])])
     def write_task_submission_times_to_csv(self, csvwriter, completed_workers=[]) :
         csvwriter.writerow(['hitid', 'taskid', 'workerid', 'submitted_at'])
-        for d in self.db.cresponses.find().sort("submitted",pymongo.ASCENDING) :
+        #for d in self.db.cresponses.find().sort("submitted",pymongo.ASCENDING) :
+        for d in self.db.cresponses.find() :
             if d['workerid'] in completed_workers :
                 csvwriter.writerow([d['hitid'], d['taskid'], d['workerid'], str(d['submitted'])])
     def write_question_responses_to_csv(self, csvwriter, completed_workers=[]) :
         csvwriter.writerow(['hitid', 'taskid', 'workerid', 'module', 'varname', 'response'])
-        for d in self.db.cresponses.find().sort("submitted",pymongo.ASCENDING) :
+        #for d in self.db.cresponses.find().sort("submitted",pymongo.ASCENDING) :
+        for d in self.db.cresponses.find() :
             if d['workerid'] in completed_workers :
                 for module in d['response']:
                     for question_response in module['responses']:
