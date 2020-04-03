@@ -152,6 +152,7 @@ You can specifically modify the following parameters:
 - HIT title 
 - HIT description
 - HIT keywords
+- Lifetime of HIT
 - worker locale (Comma-delimited list of ISO 3166 countries and/or subdivisions (such as US or US-CA).)
 - workers with minimum percent approved HITs (any integer between 0 and 100)
 - workers with minimum number of completed HITs (any non-negative integer)
