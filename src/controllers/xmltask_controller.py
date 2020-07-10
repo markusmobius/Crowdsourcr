@@ -3,7 +3,10 @@ import models
 class XMLTaskController(object):
     def __init__(self, db):
         self.db = db
-    def xml_upload(self, xml_path=None) :
+    def xml_process(self, xml_path=None) :
+        return models.XMLTask(xml_path)
+
+    def dropDB(self) :
         self.db.ctasks.drop()
         self.db.ctypes.drop()
         self.db.cresponses.drop()
@@ -15,7 +18,7 @@ class XMLTaskController(object):
         self.db.paid_bonus.drop()
         self.db.bonus_info.drop()
         self.db.sets.drop()
-        return models.XMLTask(xml_path)
+
 
 """
         for module in xmltask.get_modules():

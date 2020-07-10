@@ -166,8 +166,21 @@ class XMLUploadHandler(BaseHandler):
                 temp.write(self.request.files['file'][0]['body'])
                 temp.flush()
                 uploadedFilename = self.request.files['file'][0]['filename']
-                self.event_controller.add_event("Uploaded: " + uploadedFilename)
-                xmltask = self.xmltask_controller.xml_upload(temp.name)
+                xmltask = self.xmltask_controller.xml_process(temp.name)
+                if len(list(xmltask.get_modules()))==0:
+                    self.return_json({'error' : "Error: Survey has no modules."})
+                    return                    
+                if len(list(xmltask.get_tasks()))==0:
+                    self.return_json({'error' : "Error: Survey has no tasks."})
+                    return                    
+                if len(list(xmltask.get_hits()))==0:
+                    self.return_json({'error' : "Error: Survey has no cHits."})
+                    return             
+                if len(list(xmltask.docs.items()))==0:
+                    self.return_json({'error' : "Error: Survey has no docs."})
+                    return
+                self.xmltask_controller.dropDB()                         
+                self.event_controller.add_event("Uploaded: " + uploadedFilename)                                
                 for module in xmltask.get_modules():
                     self.ctype_controller.create(module)
                 for task in xmltask.get_tasks():
@@ -177,7 +190,7 @@ class XMLUploadHandler(BaseHandler):
                 for set in xmltask.get_sets():
                     self.set_controller.create(set)
                 for name, doc in xmltask.docs.items():
-                    self.cdocument_controller.create(name, doc)
+                    self.cdocument_controller.create(name, doc)                
             self.return_json({'success' : True})
         except Exception as x :
             self.return_json({'error' : type(x).__name__ + ": " + str(x)})
