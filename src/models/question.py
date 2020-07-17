@@ -53,6 +53,8 @@ class Question(object) :
            return NumericQuestion.deserialize(d)
         if d['valuetype']=="text":
            return TextQuestion.deserialize(d)
+        if d['valuetype']=="approximatetext":
+           return ApproximateTextQuestion.deserialize(d)
         if d['valuetype']=="url":
            return URLQuestion.deserialize(d)
         if d['valuetype']=="comment":
@@ -124,6 +126,8 @@ class Question(object) :
            return NumericQuestion.parse_content_from_xml(question_content)
         if question_type=="text":
            return TextQuestion.parse_content_from_xml(question_content)
+        if question_type=="approximatetext":
+           return ApproximateTextQuestion.parse_content_from_xml(question_content)
         if question_type=="url":
            return URLQuestion.parse_content_from_xml(question_content)
         if question_type=="comment":
@@ -165,6 +169,17 @@ class NumericQuestion(AbstractQuestion):
     
 class TextQuestion(AbstractQuestion) :
     typeName = 'text'
+    @staticmethod
+    def parse_content_from_xml(question_content=None):
+        return []
+    def sanitize_response(self, response):
+        response['response'] = response['response'].strip()
+        return response
+    def valid_response(self, response) :
+        return response.get('response', False)
+
+class ApproximateTextQuestion(AbstractQuestion) :
+    typeName = 'approximatetext'
     @staticmethod
     def parse_content_from_xml(question_content=None):
         return []
