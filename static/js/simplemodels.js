@@ -288,7 +288,10 @@ var Question = Model.extend({
 	      case 'text':
 	          new_question = new TextQuestion(el, question);
 	          break;
-	      case 'url':
+          case 'approximatetext':
+                new_question = new ApproximateTextQuestion(el, question);
+                break;
+          case 'url':
 	          new_question = new URLQuestion(el, question);
 	          break;
 	      case 'comment':
@@ -353,6 +356,24 @@ var TextQuestion = Question.extend({
     constructor : function(el, question) {
         this.el = $(el);
 	      this.display_template = $('#textquestion-display-template').html();
+    },
+    renderDisplay : function() {
+        this.el.empty();
+        var q = this.el.html(_.template(this.display_template, this.serializeForDisplay()));
+	      this.renderHelpText();
+    },
+    validate : function () {
+        return this.response() != "";
+    },
+    response : function() {
+	      return this.el.find('textarea:first').val();
+    }
+});
+
+var ApproximateTextQuestion = Question.extend({
+    constructor : function(el, question) {
+        this.el = $(el);
+	      this.display_template = $('#approximatetextquestion-display-template').html();
     },
     renderDisplay : function() {
         this.el.empty();

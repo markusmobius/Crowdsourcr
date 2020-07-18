@@ -1,4 +1,5 @@
 import imagehash
+from .jaccard_machine import Jaccard
 
 class BonusType(object) :
     def __init__(self) :
@@ -48,12 +49,18 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
                 total_responses = 1.0 * sum([len(responses[c]) 
                                              for c in responses 
                                              if c != '__bonus__'])
-                #check if this is an imagehas
+                #check if this is an imagehash
                 is_imagehash = True
                 for response, workerids in responses.items() :
                     if response == '__bonus__' : continue
                     if not response.startswith("imagehash:"):
                         is_imagehash=False
+                #check if approximatetext
+                is_approximate = True
+                for response, workerids in responses.items() :
+                    if response == '__bonus__' : continue
+                    if not response.startswith("approximatetext:"):
+                        is_approximate=False            
                 if is_imagehash:
                     #we use approximate image matching
                     allworkerids=[]
@@ -83,6 +90,35 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
                         else:
                             bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
                             worker_bonus_info[workerid]['exp'].append(bonus_exp)
+                elif is_approximate:
+                    #we use approximate text matching
+                    allworkerids=[]
+                    pureText={}
+                    for response, workerids in responses.items() :
+                        if response == '__bonus__' : continue
+                        for workerid in workerids:
+                            allworkerids.append(workerid)
+                            pureText[workerid]=response[len("approximatetext:"):]
+                    for workerid in allworkerids:
+                        agreed=0
+                        for otherworkerid in allworkerids:
+                            if jaccard_machine.Jaccard.compare(pureText[workerid],pureText[otherworkerid])>0.75:
+                                agreed=agreed+1
+                        agreed=1.0*agreed
+                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
+                                                                        agreed=agreed, 
+                                                                        total=total_responses)
+                        bonus_exp = 'On approximate text task %s, question %s_%s, for response %s: %s' % (task, module, varname, pureText[workerid], bonus_exp)
+                        worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
+                                                                'possible' : 0.0,
+                                                                'exp' : []})
+                        worker_bonus_info[workerid]['possible'] += bonus_info['bonuspoints']
+                        if(evaluated_conditions[task][module][workerid][varname]):
+                            worker_bonus_info[workerid]['earned'] += bonus_amount
+                            worker_bonus_info[workerid]['exp'].append(bonus_exp)
+                        else:
+                            bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
+                            worker_bonus_info[workerid]['exp'].append(bonus_exp)                    
                 else:
                     for response, workerids in responses.items() :
                         if response == '__bonus__' : continue

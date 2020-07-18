@@ -184,7 +184,7 @@ class ApproximateTextQuestion(AbstractQuestion) :
     def parse_content_from_xml(question_content=None):
         return []
     def sanitize_response(self, response):
-        response['response'] = response['response'].strip()
+        response['response'] = "approximatetext:"+response['response'].strip()
         return response
     def valid_response(self, response) :
         return response.get('response', False)
