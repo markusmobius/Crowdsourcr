@@ -373,7 +373,7 @@ var TextQuestion = Question.extend({
 var ApproximateTextQuestion = Question.extend({
     constructor : function(el, question) {
         this.el = $(el);
-	      this.display_template = $('#approximatetextquestion-display-template').html();
+	      this.display_template = $('#textquestion-display-template').html();
     },
     renderDisplay : function() {
         this.el.empty();
