@@ -95,14 +95,14 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
                     allworkerids=[]
                     pureText = {}
                     tokens={}
+                    pureText={}
                     jaccard = Jaccard()
                     for response, workerids in responses.items() :
                         if response == '__bonus__' : continue
                         for workerid in workerids:
                             allworkerids.append(workerid)
+                            pureText[workerid]=response[len("approximatetext:"):]
                             tokens[workerid]=jaccard.getTokens(response[len("approximatetext:"):])
-                            pureText[workerid] = response[len("approximatetext:"):]
-                            print(response[len("approximatetext:"):])
                     for workerid in allworkerids:
                         agreed=0
                         for otherworkerid in allworkerids:

@@ -27,6 +27,9 @@ Install the following Python libraries (assuming that your Python 3 installation
  pip install xmltodict
  pip install ImageHash
  pip install pycountry
+ pip install spacy
+ python -m spacy download en_core_web_sm
+
 
 On Linux you can also simply run the ``requirements.txt`` file:
 ::

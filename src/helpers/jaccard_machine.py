@@ -28,4 +28,4 @@ class Jaccard:
                     overlap += tokens2[key]
         tokens1_size = sum(tokens1.values())
         tokens2_size = sum(tokens2.values())
-        return 1.0*overlap / (tokens1_size + tokens2_size - overlap + 0.0001)
+        return 1.0*overlap / (tokens1_size + tokens2_size - overlap+0.000000001)
