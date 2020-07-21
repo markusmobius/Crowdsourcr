@@ -100,6 +100,7 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
                         for workerid in workerids:
                             allworkerids.append(workerid)
                             tokens[workerid]=jaccard.getTokens(response[len("approximatetext:"):])
+                            print(response[len("approximatetext:"):])
                     for workerid in allworkerids:
                         agreed=0
                         for otherworkerid in allworkerids:
