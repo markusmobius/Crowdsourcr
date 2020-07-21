@@ -7,7 +7,7 @@ class Jaccard:
     def getTokens(self,text):
         """ takes a string, removes periods and commas and return a dictionary that maps each token 
         in the string to its frequency in the text"""
-        doc = self.nlp(text.replace(".", "").replace(",", "").replace("?", "").replace("!", "").lower())
+        doc = self.nlp(text.replace(".", " ").replace(",", " ").replace("?", " ").replace("!", " ").lower())
         tokens = {}
         for token in doc:
             if token.text in tokens:
@@ -28,4 +28,4 @@ class Jaccard:
                     overlap += tokens2[key]
         tokens1_size = sum(tokens1.values())
         tokens2_size = sum(tokens2.values())
-        return 1.0*overlap / (tokens1_size + tokens2_size - overlap)
+        return 1.0*overlap / (tokens1_size + tokens2_size - overlap+0.000000001)
