@@ -1,18 +1,19 @@
 from spacy.lang.en import English
 
 class Jaccard:
-    nlp = English()
+    def __init__(self):
+        self.nlp = English()
 
     def getTokens(self,text):
         """ takes a string, removes periods and commas and return a dictionary that maps each token 
         in the string to its frequency in the text"""
-        doc = nlp(text.replace(".", "").replace(",", ""))
+        doc = self.nlp(text.replace(".", "").replace(",", "").replace("?", "").replace("!", "").lower())
         tokens = {}
         for token in doc:
-            if token in tokens:
-                tokens[token] +=1
+            if token.text in tokens:
+                tokens[token.text] +=1
             else:
-                tokens[token] =1
+                tokens[token.text] =1
         return tokens
 
     def compare(self, tokens1,tokens2):

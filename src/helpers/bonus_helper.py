@@ -94,15 +94,16 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions) :
                     #we use approximate text matching
                     allworkerids=[]
                     tokens={}
+                    jaccard = Jaccard()
                     for response, workerids in responses.items() :
                         if response == '__bonus__' : continue
                         for workerid in workerids:
                             allworkerids.append(workerid)
-                            tokens[workerid]=Jaccard.getTokens(response[len("approximatetext:"):])
+                            tokens[workerid]=jaccard.getTokens(response[len("approximatetext:"):])
                     for workerid in allworkerids:
                         agreed=0
                         for otherworkerid in allworkerids:
-                            if Jaccard.compare(tokens[workerid],tokens[otherworkerid])>0.75:
+                            if jaccard.compare(tokens[workerid],tokens[otherworkerid])>0.75:
                                 agreed=agreed+1
                         agreed=1.0*agreed
                         bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
