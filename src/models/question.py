@@ -193,6 +193,9 @@ class URLQuestion(TextQuestion) :
     typeName = 'url'
     @staticmethod
     def stem_url(url):
+        # if it's an academic link take the part before /publication
+        if "academic" in url:
+            url = url.split("/publication")[0]
         # strip protocols and 'www'
         url = re.sub(r"^https?:\/\/(www.)?", "", url)
         # strip trailing slashes
