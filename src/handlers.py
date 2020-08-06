@@ -23,13 +23,13 @@ from io import BytesIO
 from zipfile import ZipFile
 from helpers import CountryTools
 
- 
+
 from tornado.options import define, options
 from helpers import CustomEncoder, Lexer, Status
 import jsonpickle
- 
+
 class BaseHandler(tornado.web.RequestHandler):
-    
+
     @property
     def logging(self) :
         return self.application.logging
@@ -129,14 +129,14 @@ class GoogleLoginHandler(BaseHandler, tornado.auth.GoogleOAuth2Mixin):
     async def get(self):
         protocol="http"
         if ('X-Forwarded-Proto' in self.request.headers):
-            protocol=self.request.headers['X-Forwarded-Proto']       
+            protocol=self.request.headers['X-Forwarded-Proto']
         if self.get_argument('code', False):
             redirect_uri=protocol+"://"+self.request.host+self.application.settings['login_url']
             access = await self.get_authenticated_user(
                 redirect_uri=redirect_uri,
                 code=self.get_argument('code'))
             user = await self.oauth2_request("https://www.googleapis.com/oauth2/v1/userinfo", access_token=access["access_token"])
-            if self.admin_controller.get_by_email(user['email']):            
+            if self.admin_controller.get_by_email(user['email']):
                 self.set_secure_cookie('admin_email', user['email'])
                 self.set_secure_cookie('admin_name', user['name'])
             self.redirect('/admin/')
@@ -169,18 +169,18 @@ class XMLUploadHandler(BaseHandler):
                 xmltask = self.xmltask_controller.xml_process(temp.name)
                 if len(list(xmltask.get_modules()))==0:
                     self.return_json({'error' : "Error: Survey has no modules."})
-                    return                    
+                    return
                 if len(list(xmltask.get_tasks()))==0:
                     self.return_json({'error' : "Error: Survey has no tasks."})
-                    return                    
+                    return
                 if len(list(xmltask.get_hits()))==0:
                     self.return_json({'error' : "Error: Survey has no cHits."})
-                    return             
+                    return
                 if len(list(xmltask.docs.items()))==0:
                     self.return_json({'error' : "Error: Survey has no docs."})
                     return
-                self.xmltask_controller.dropDB()                         
-                self.event_controller.add_event("Uploaded: " + uploadedFilename)                                
+                self.xmltask_controller.dropDB()
+                self.event_controller.add_event("Uploaded: " + uploadedFilename)
                 for module in xmltask.get_modules():
                     self.ctype_controller.create(module)
                 for task in xmltask.get_tasks():
@@ -190,7 +190,7 @@ class XMLUploadHandler(BaseHandler):
                 for set in xmltask.get_sets():
                     self.set_controller.create(set)
                 for name, doc in xmltask.docs.items():
-                    self.cdocument_controller.create(name, doc)                
+                    self.cdocument_controller.create(name, doc)
             self.return_json({'success' : True})
         except Exception as x :
             self.return_json({'error' : type(x).__name__ + ": " + str(x)})
@@ -209,7 +209,7 @@ class RecruitingBeginHandler(BaseHandler):
         max_assignments = self.chit_controller.get_agg_hit_info()['num_hits']
         if admin_email:
             self.event_controller.add_event(admin_email + " began run")
-            await self.mturkconnection_controller.begin_run_async(email=admin_email, 
+            await self.mturkconnection_controller.begin_run_async(email=admin_email,
                                                       max_assignments=max_assignments,
                                                       url=self.main_hit_url,
                                                       environment=self.settings['environment'])
@@ -226,18 +226,18 @@ class RecruitingEndHandler(BaseHandler):
             if hasattr(tkconn,"hitid"):
                 self.event_controller.add_event(admin_email + " ending run " + tkconn.hitid)
             else:
-                self.event_controller.add_event(admin_email + " ending run")            
+                self.event_controller.add_event(admin_email + " ending run")
             completed_workers = self.chit_controller.get_workers_with_completed_hits()
             #create crosswalk from task IDs to possible hit IDs
-            taskIDs2HitIDs=self.cresponse_controller.gettaskIDs2HitIDs(completed_workers)     
+            taskIDs2HitIDs=self.cresponse_controller.gettaskIDs2HitIDs(completed_workers)
             #create crosswalk from module->varname->valuetype
-            moduleVarnameValuetype=self.ctype_controller.getModuleVarnameValuetype()  
+            moduleVarnameValuetype=self.ctype_controller.getModuleVarnameValuetype()
             worker_bonus_info = {}
-            # all_responses_by_task returns 
+            # all_responses_by_task returns
             # module -> varname -> response_value -> [workerid]
             # then filter_bonus_responses limits to applicable responses
             # and adds __bonus__ key
-            task_response_info = {task : 
+            task_response_info = {task :
                                   self.ctype_controller.filter_bonus_responses(
                                       self.cresponse_controller.all_responses_by_task(taskid=task,
                                                                                       workerids=completed_workers))
@@ -247,7 +247,6 @@ class RecruitingEndHandler(BaseHandler):
                                     self.cresponse_controller.worker_responses_by_task(taskid=task,
                                                                                        workerids=completed_workers))
                                     for task in self.ctask_controller.get_task_ids()}
-
             worker_bonus_info =  helpers.calculate_worker_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs, moduleVarnameValuetype)
             self.db.bonus_info.drop()
             for wid, info in worker_bonus_info.items() :
@@ -294,7 +293,7 @@ class BonusInfoHandler(BaseHandler) :
                      'payment info' : {}}
                     for d in bi}
             total_workers = 0
-            total_bonuses = 0 
+            total_bonuses = 0
             connection_info = self.db.mturkconnections.find()[0]
             for d in pb :
                 total_workers += 1
@@ -306,12 +305,12 @@ class BonusInfoHandler(BaseHandler) :
                                             'assignmentid' : d['assignmentid']}
 
             resp['Payment summary'] = {'Title': connection_info['title'],
-                                        'HITID': connection_info['hitid'], 
+                                        'HITID': connection_info['hitid'],
                                         'HIT Payment': connection_info['hitpayment'],
                                         'Bonus Payment': connection_info['bonus'],
-                                        'Workers paid': total_workers, 
-                                        'Total task payments:': total_workers * connection_info['hitpayment'], 
-                                        'Total bonus payments:': total_bonuses, 
+                                        'Workers paid': total_workers,
+                                        'Total task payments:': total_workers * connection_info['hitpayment'],
+                                        'Total bonus payments:': total_bonuses,
                                         'Total overall payments:': total_bonuses + total_workers * connection_info['hitpayment']}
             self.return_json(resp)
         else :
@@ -330,26 +329,26 @@ class RecruitingInfoHandler(BaseHandler):
             locales_check=ct.checkList(recruiting_info['locales'])
             if locales_check!=None:
                 errorList.append(locales_check)
-            try: 
+            try:
                 lt=int(recruiting_info['lifetime'])
                 if lt<2*3600:
                     errorList.append("HIT lifetime has to be at least 2 hours.")
             except ValueError:
                 errorList.append("Workers min. percent approved has to be an integer between 0 and 100.")
-            try: 
+            try:
                 pc=int(recruiting_info['pcapproved'])
                 if pc<0 or pc>100:
                     errorList.append("Workers min. percent approved has to be an integer between 0 and 100.")
             except ValueError:
                 errorList.append("Workers min. percent approved has to be an integer between 0 and 100.")
-            try: 
+            try:
                 mincompleted=int(recruiting_info['mincompleted'])
                 if mincompleted<0:
                     errorList.append("Workers min. completed HITs has to be a non-negative integer.")
             except ValueError:
                 errorList.append("Workers min. completed HITs has to be a non-negative integer.")
             if len(errorList)==0:
-                mtconn = self.mturkconnection_controller.create(recruiting_info)    
+                mtconn = self.mturkconnection_controller.create(recruiting_info)
         if len(errorList)==0:
             self.finish()
         else:
@@ -365,12 +364,12 @@ class AdminInfoHandler(BaseHandler):
         else :
             turk_conn = self.mturkconnection_controller.get_by_email(email=admin_email,
                                                                      environment=self.settings['environment'])
-            turk_info = False 
+            turk_info = False
             turk_balance = False
             hit_info = self.chit_controller.get_agg_hit_info()
-            hit_info = self.cresponse_controller.append_completed_task_info(**hit_info)   
+            hit_info = self.cresponse_controller.append_completed_task_info(**hit_info)
             if turk_conn:
-                balance = await turk_conn.get_balance_async()                
+                balance = await turk_conn.get_balance_async()
                 turk_balance = str(balance or '')
                 turk_info = turk_conn.serialize()
                 self._send_json(hit_info, turk_info, turk_balance)
@@ -476,7 +475,7 @@ class CHITViewHandler(BaseHandler):
                     self.logging.info('no next hit')
                     #self.clear_cookie('workerid')
                     self.return_json({'no_hits' : True,
-                                      'unfinished_hits' : self.chit_controller.has_available_hits()}) 
+                                      'unfinished_hits' : self.chit_controller.has_available_hits()})
                 else :
                     self.currentstatus_controller.create_or_update(workerid=workerid,
                                                                    hitid=nexthit,
@@ -589,8 +588,8 @@ class CResponseHandler(BaseHandler):
                                             for q in module["responses"]:
                                                 if q["varname"]==frags[2] and ("response" in q):
                                                     allVariables[v]=q["response"]
-                    
-                    allSets=dict() 
+
+                    allSets=dict()
                     for s in condition.setlist:
                         allSets[s]=Set(self.db,s)
                     if has_error:

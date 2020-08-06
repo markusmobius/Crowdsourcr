@@ -23,10 +23,12 @@ class CTypeController(object) :
         # module -> workerid -> {varname: response_value}
         return {module : self.get_by_name(module).evaluate_conditions(module_responses[module]) for module in module_responses}
     def getModuleVarnameValuetype(self):
+        #create crosswalk from module->varname->valuetype
         crosswalk={}
         d=self.db.ctypes.find({},{'name':1,'questions':1})
         for row in d:
+            print(row)
             crosswalk[row['name']]={}
             for question in row['questions']:
-                crosswalk[row['name']][row['varname']]=row['valuetype']
+                crosswalk[row['name']][question['varname']]=question['valuetype']
         return crosswalk

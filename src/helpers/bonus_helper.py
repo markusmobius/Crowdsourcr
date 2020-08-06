@@ -11,7 +11,7 @@ class BonusType(object) :
         if bonus_info['type']=="threshold":
             return ThresholdBonusType.calculate_bonus(bonus_info=bonus_info,agreed=agreed,total=total)
         raise Exception('Error: unsupported bonus type %s' % (bonus_info['type']))
-              
+
 class LinearBonusType(BonusType) :
     bonusType = 'linear'
     @staticmethod
@@ -29,9 +29,9 @@ class ThresholdBonusType(BonusType) :
         exp = '%s bonus points for agreeing with %d of %d workers on a question with threshold payment set at %d and maximal bonus points of %s' % (amt, agreed, total, bonus_info['threshold'], bonus_info['bonuspoints'])
         return (amt, exp)
 
-        
+
 def calculate_worker_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs, moduleVarnameValuetype) :
-    raw_bonus = calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs)
+    raw_bonus = calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs, moduleVarnameValuetype)
     return normalize_bonus_info(raw_bonus)
 
 def calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs, moduleVarnameValuetype) :
@@ -44,10 +44,10 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2H
             for varname, responses in varnames.items() :
                 bonus_info = responses['__bonus__']
                 # responses is a dictionary mapping the response
-                # for 'varname' to a list of worker ids who 
+                # for 'varname' to a list of worker ids who
                 # submitted that response
-                #total_responses = 1.0 * sum([len(responses[c]) 
-                #                             for c in responses 
+                #total_responses = 1.0 * sum([len(responses[c])
+                #                             for c in responses
                 #                             if c != '__bonus__'])
                 # total_responses measures the total number of workers
                 # who could have answered this question
@@ -68,8 +68,8 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2H
                             if hashes[workerid]-hashes[otherworkerid]<20:
                                 agreed=agreed+1
                         agreed=1.0*agreed
-                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
-                                                                        agreed=agreed, 
+                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info,
+                                                                        agreed=agreed,
                                                                         total=total_responses)
                         bonus_exp = 'On image task %s, question %s_%s, for response %s: %s' % (task, module, varname, hashes[workerid], bonus_exp)
                         worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
@@ -99,13 +99,13 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2H
                         agreed=0
                         for otherworkerid in allworkerids:
                             if jaccard.compare(tokens[workerid],tokens[otherworkerid])>0.75:
-                                agreed=agreed+1    
-                            print(jaccard.compare(tokens[workerid],tokens[otherworkerid])) 
+                                agreed=agreed+1
+                            print(jaccard.compare(tokens[workerid],tokens[otherworkerid]))
                             print(len(tokens[workerid]))
                             print(len(tokens[otherworkerid]))
                         agreed=1.0*agreed
-                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
-                                                                        agreed=agreed, 
+                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info,
+                                                                        agreed=agreed,
                                                                         total=total_responses)
                         bonus_exp = 'On approximate text task %s, question %s_%s, for response %s: %s' % (task, module, varname, pureText[workerid], bonus_exp)
                         worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
@@ -117,34 +117,34 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2H
                             worker_bonus_info[workerid]['exp'].append(bonus_exp)
                         else:
                             bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
-                            worker_bonus_info[workerid]['exp'].append(bonus_exp)                    
+                            worker_bonus_info[workerid]['exp'].append(bonus_exp)
                 else:
                     for response, workerids in responses.items() :
                         if response == '__bonus__' : continue
-                    # agreed measures the total number of workers who 
-                    # submit each partcular answer
-                    agreed = 1.0 * len(workerids)
-                    bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info, 
-                                                                        agreed=agreed, 
-                                                                        total=total_responses)
-                    bonus_exp = 'On task %s, question %s_%s, for response %s: %s' % (task, module, varname, response, bonus_exp)
-                    for workerid in workerids :
-                        worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
-                                                                'possible' : 0.0,
-                                                                'exp' : []})
-                        worker_bonus_info[workerid]['possible'] += bonus_info['bonuspoints']
-                        if(evaluated_conditions[task][module][workerid][varname]):
-                            worker_bonus_info[workerid]['earned'] += bonus_amount
-                            worker_bonus_info[workerid]['exp'].append(bonus_exp)
-                        else:
-                            bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
-                            worker_bonus_info[workerid]['exp'].append(bonus_exp)
+                        # agreed measures the total number of workers who
+                        # submit each partcular answer
+                        agreed = 1.0 * len(workerids)
+                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info,
+                                                                            agreed=agreed,
+                                                                            total=total_responses)
+                        bonus_exp = 'On task %s, question %s_%s, for response %s: %s' % (task, module, varname, response, bonus_exp)
+                        for workerid in workerids :
+                            worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
+                                                                    'possible' : 0.0,
+                                                                    'exp' : []})
+                            worker_bonus_info[workerid]['possible'] += bonus_info['bonuspoints']
+                            if(evaluated_conditions[task][module][workerid][varname]):
+                                worker_bonus_info[workerid]['earned'] += bonus_amount
+                                worker_bonus_info[workerid]['exp'].append(bonus_exp)
+                            else:
+                                bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
+                                worker_bonus_info[workerid]['exp'].append(bonus_exp)
 
     print(worker_bonus_info)
     return worker_bonus_info
 
 def normalize_bonus_info(worker_bonus_info) :
-    worker_bonus_percent = { a : 
+    worker_bonus_percent = { a :
                             {'pct' : 0 if worker_bonus_info[a]['possible'] == 0 else (worker_bonus_info[a]['earned'] / worker_bonus_info[a]['possible']),
                              'earn' : worker_bonus_info[a]['earned'],
                              'poss' : worker_bonus_info[a]['possible'],
@@ -153,15 +153,15 @@ def normalize_bonus_info(worker_bonus_info) :
     min_bonus_percent = 0.0
     max_bonus_percent = 1.0
     if len(worker_bonus_percent) > 0 :
-        worst_worker = min(worker_bonus_percent.keys(), 
+        worst_worker = min(worker_bonus_percent.keys(),
                           key=(lambda key: worker_bonus_percent[key]['pct']))
-        best_worker = max(worker_bonus_percent.keys(), 
+        best_worker = max(worker_bonus_percent.keys(),
                           key=(lambda key: worker_bonus_percent[key]['pct']))
         if (worker_bonus_percent[worst_worker]['pct'] != worker_bonus_percent[best_worker]['pct']) and worker_bonus_percent[best_worker]['pct'] > 0.0:
             min_bonus_percent = worker_bonus_percent[worst_worker]['pct']
             max_bonus_percent = worker_bonus_percent[best_worker]['pct']
     # scale by maximum -- minimum
-    worker_bonus_percent = {a.upper().strip() : 
+    worker_bonus_percent = {a.upper().strip() :
                             { 'pct' : (worker_bonus_percent[a]['pct'] - min_bonus_percent) / (max_bonus_percent - min_bonus_percent),
                               'earn' : worker_bonus_percent[a]['earn'],
                               'poss' : worker_bonus_percent[a]['poss'],
@@ -174,4 +174,3 @@ def normalize_bonus_info(worker_bonus_info) :
     print(worker_bonus_percent)
 
     return worker_bonus_percent
-
