@@ -44,6 +44,24 @@ class CResponseController(object):
                         csvwriter.writerow([d['hitid'], d['taskid'], d['workerid'], module['name'],
                                             question_response['varname'],
                                             response_string])
+    def gettaskIDs2HitIDs(self,workerids=[]):
+        #find all hits completed by workers
+        completedHits=set()
+        d = self.db.cresponses.find({'workerid' : {'$in' : workerids}}, 
+                                    {'hitid' : 1})
+        for row in d:
+            completedHits.add(row['hitid'])
+        crosswalk={}
+        d=self.db.chits.find({},{'hitid':1,'tasks':1})
+        for row in d:
+            if row['hitid'] not in completedHits:
+                continue
+            for task in row['tasks']:
+                if task not in crosswalk:
+                    crosswalk[task]=set()
+                crosswalk[task].add(row['hitid'])
+        return crosswalk
+
     def all_responses_by_task(self, taskid=None, workerids=[]):
         d = self.db.cresponses.find({'taskid' : taskid,
                                      'workerid' : {'$in' : workerids}}, 
@@ -61,7 +79,7 @@ class CResponseController(object):
                     module_responses[mod_name][response['varname']].setdefault(response['response'], [])
 
                     module_responses[mod_name][response['varname']][response['response']].append(row['workerid'])
-        return module_responses
+        return module_responses 
     def worker_responses_by_task(self, taskid=None, workerids=[]):
         """
         # task -> module -> workerid -> {varname: response_value}
