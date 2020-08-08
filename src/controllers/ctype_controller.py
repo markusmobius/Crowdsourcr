@@ -32,6 +32,7 @@ class CTypeController(object) :
                 crosswalk[row['name']][question['varname']]={"valuetype":question['valuetype'],"aprioripermissable":[]}
                 if question['valuetype']=="categorical":
                     for c in question['content']:
-                        if c['aprioripermissable']==True:
-                            crosswalk[row['name']][question['varname']]["aprioripermissable"].append(c['value'])
+                        if 'aprioripermissable' in c:
+                            if c['aprioripermissable']==True:
+                                crosswalk[row['name']][question['varname']]["aprioripermissable"].append(c['value'])
         return crosswalk
