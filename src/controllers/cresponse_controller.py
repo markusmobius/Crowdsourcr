@@ -48,7 +48,7 @@ class CResponseController(object):
                                             response_string])
     def gettaskIDs2WorkerIds(self,moduleVarnameValuetype={}):
         #cycle through hits
-        crosswalk={}
+        crosswalk={} # format taskid -> module -> varname -> [workerid]
         d=self.db.chits.find({},{'tasks':1,'taskconditions':1,'completed_hits':1,'hitid':1})
         for row in d:
             hitid=row['hitid']
@@ -115,7 +115,7 @@ class CResponseController(object):
                                 includedQuestionOrReachable=False
                                 if q.varname not in crosswalk[task][module]:
                                     crosswalk[task][module][q.varname]=[]
-                                if r['response']!=None:
+                                if r!=None and ('response' in r):
                                     #find the correct module
                                     for qr in r['response']:
                                         if qr['name']==module:
@@ -128,8 +128,8 @@ class CResponseController(object):
 
     def all_responses_by_task(self, taskid=None, workerids=[]):
         d = self.db.cresponses.find({'taskid' : taskid,
-                                     'workerid' : {'$in' : workerids}}, 
-                                    {'workerid' : 1, 
+                                     'workerid' : {'$in' : workerids}},
+                                    {'workerid' : 1,
                                      'response' : 1})
         module_responses = {} # module -> varname -> response -> [workerid]
         for row in d:
@@ -143,21 +143,21 @@ class CResponseController(object):
                     module_responses[mod_name][response['varname']].setdefault(response['response'], [])
 
                     module_responses[mod_name][response['varname']][response['response']].append(row['workerid'])
-        return module_responses 
+        return module_responses
     def worker_responses_by_task(self, taskid=None, workerids=[]):
         """
         # task -> module -> workerid -> {varname: response_value}
         """
         d = self.db.cresponses.find({'taskid' : taskid,
-                                     'workerid' : {'$in' : workerids}}, 
-                                    {'workerid' : 1, 
+                                     'workerid' : {'$in' : workerids}},
+                                    {'workerid' : 1,
                                      'response' : 1})
         module_responses = {} # module -> workerid -> [{'varname': varname, 'response': response}]
         for row in d:
             for resp in row['response']:
                 mod_name = resp['name']
                 module_responses.setdefault(mod_name, {})
-                for response in resp['responses']:                    
+                for response in resp['responses']:
                     module_responses[mod_name].setdefault(row['workerid'], [])
                     response_dict = {'varname': response['varname']}
                     response_dict['response'] = response.setdefault('response', None)
