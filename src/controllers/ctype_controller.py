@@ -27,8 +27,11 @@ class CTypeController(object) :
         crosswalk={}
         d=self.db.ctypes.find({},{'name':1,'questions':1})
         for row in d:
-            print(row)
             crosswalk[row['name']]={}
             for question in row['questions']:
-                crosswalk[row['name']][question['varname']]=question['valuetype']
+                crosswalk[row['name']][question['varname']]={"valuetype":question['valuetype'],"aprioripermissable":[]}
+                if question['valuetype']=="categorical":
+                    for c in question['content']:
+                        if c.aprioripermissable==True:
+                            crosswalk[row['name']][question['varname']]["aprioripermissable"].append(c['value'])
         return crosswalk

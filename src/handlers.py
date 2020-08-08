@@ -228,10 +228,10 @@ class RecruitingEndHandler(BaseHandler):
             else:
                 self.event_controller.add_event(admin_email + " ending run")
             completed_workers = self.chit_controller.get_workers_with_completed_hits()
-            #create crosswalk from task IDs to possible hit IDs
-            taskIDs2HitIDs=self.cresponse_controller.gettaskIDs2HitIDs(completed_workers)
             #create crosswalk from module->varname->valuetype
             moduleVarnameValuetype=self.ctype_controller.getModuleVarnameValuetype()
+            #create crosswalk from task IDs to possible hit IDs
+            taskIDs2HitIDs=self.cresponse_controller.gettaskIDs2HitIDs(moduleVarnameValuetype)
             worker_bonus_info = {}
             # all_responses_by_task returns
             # module -> varname -> response_value -> [workerid]
@@ -247,7 +247,7 @@ class RecruitingEndHandler(BaseHandler):
                                     self.cresponse_controller.worker_responses_by_task(taskid=task,
                                                                                        workerids=completed_workers))
                                     for task in self.ctask_controller.get_task_ids()}
-            worker_bonus_info =  helpers.calculate_worker_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs, moduleVarnameValuetype)
+            worker_bonus_info =  helpers.calculate_worker_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs,moduleVarnameValuetype)
             self.db.bonus_info.drop()
             for wid, info in worker_bonus_info.items() :
                 self.db.bonus_info.insert({'workerid' : wid,

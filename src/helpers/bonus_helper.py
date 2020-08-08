@@ -51,9 +51,9 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2H
                 #                             if c != '__bonus__'])
                 # total_responses measures the total number of workers
                 # who could have answered this question
-                total_responses=1.0 * len(taskIDs2HitIDs[task])
-
-                if moduleVarnameValuetype[module][varname]=="imageupload":
+                total_responses=1.0 * len(taskIDs2HitIDs[task][module][varname])
+                
+                if moduleVarnameValuetype[module][varname]["valuetype"]=="imageupload":
                     #we use approximate image matching
                     allworkerids=[]
                     hashes={}
@@ -82,7 +82,7 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2H
                         else:
                             bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
                             worker_bonus_info[workerid]['exp'].append(bonus_exp)
-                elif moduleVarnameValuetype[module][varname]=="approximatetext":
+                elif moduleVarnameValuetype[module][varname]["valuetype"]=="approximatetext":
                     #we use approximate text matching
                     allworkerids=[]
                     pureText = {}
@@ -100,9 +100,9 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2H
                         for otherworkerid in allworkerids:
                             if jaccard.compare(tokens[workerid],tokens[otherworkerid])>0.75:
                                 agreed=agreed+1
-                            print(jaccard.compare(tokens[workerid],tokens[otherworkerid]))
-                            print(len(tokens[workerid]))
-                            print(len(tokens[otherworkerid]))
+                            #print(jaccard.compare(tokens[workerid],tokens[otherworkerid]))
+                            #print(len(tokens[workerid]))
+                            #print(len(tokens[otherworkerid]))
                         agreed=1.0*agreed
                         bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info,
                                                                         agreed=agreed,

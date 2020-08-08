@@ -84,17 +84,24 @@ class Question(object) :
         bonus_dict['bonuspoints'] = self.bonuspoints
         return bonus_dict
 
-    def satisfies_condition(self, module_responses):
+    def satisfies_condition(self, module_responses,varnameValuetype=None):
         if (self.condition==None):
             return True
         lex=jsonpickle.decode(self.condition)
+        if varnameValuetype!=None:
+            #check whether this variable was reachable
+            for v in lex.varlist:
+                for r in module_responses:
+                    if v==r['varname']:
+                        if q["response"] not in varnameValuetype[r["varname"]]["aprioripermissable"]:
+                            return True
         allVariables=dict()
         has_error=False
         for r in module_responses:
             if "response" in r:
                 allVariables[r["varname"]]=r["response"]
         status=Status()
-        evaluatedLexer=lex.check_conditions(allVariables, dict(), status)
+        evaluatedLexer=lex.check_conditions(allVariables, dict(), status,varnameValuetype)
         if status.error!=None:
             return False
         return evaluatedLexer
@@ -150,7 +157,8 @@ class CategoricalQuestion(AbstractQuestion):
     @staticmethod
     def parse_content_from_xml(question_content):
         return [{'text' : category.find('text').text,
-                 'value' : category.find('value').text}
+                 'value' : category.find('value').text,
+                 'aprioripermissable': category.find('aprioripermissable').text=="true" if category.find('aprioripermissable') != None else False}
                 for category in question_content.find('categories').iter('category')]
     def valid_response(self, response) :
         return response.get('response', False)

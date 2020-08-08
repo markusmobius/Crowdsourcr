@@ -1,6 +1,8 @@
 import tornado.escape
 import pymongo
-from models import CResponse
+from models import CResponse, CType, SET
+from helpers import CustomEncoder, Lexer, Status
+import jsonpickle
 
 class CResponseController(object):
     def __init__(self, db):
@@ -44,22 +46,84 @@ class CResponseController(object):
                         csvwriter.writerow([d['hitid'], d['taskid'], d['workerid'], module['name'],
                                             question_response['varname'],
                                             response_string])
-    def gettaskIDs2HitIDs(self,workerids=[]):
-        #find all hits completed by workers
-        completedHits=set()
-        d = self.db.cresponses.find({'workerid' : {'$in' : workerids}}, 
-                                    {'hitid' : 1})
-        for row in d:
-            completedHits.add(row['hitid'])
+    def gettaskIDs2WorkerIds(self,moduleVarnameValuetype={}):
+        #cycle through hits
         crosswalk={}
-        d=self.db.chits.find({},{'hitid':1,'tasks':1})
+        d=self.db.chits.find({},{'tasks':1,'taskconditions':1,'completed_hits':1})
         for row in d:
-            if row['hitid'] not in completedHits:
-                continue
-            for task in row['tasks']:
-                if task not in crosswalk:
-                    crosswalk[task]=set()
-                crosswalk[task].add(row['hitid'])
+            hitid=row['hitid']
+            tasks=row['tasks']
+            taskconditions=row['taskconditions']
+            for completed_hit in row['completed_hits']:
+                workerid=completed_hit["worker_id"]
+                #now we cycle through tasks
+                for i,task in enumerate(tasks):
+                    includeTask=False
+                    couldBeReached=False
+                    if taskconditions[i]==None:
+                        includeTask=True
+                    else:
+                        #check the task condition
+                        condition=jsonpickle.decode(taskconditions[i])
+                        allVariables=dict()
+                        has_error=False
+                        for v in condition.varlist:
+                            if v=="$workerid":
+                                allVariables["$workerid"]=workerid
+                            else:
+                                frags=v.split('*')
+                                if len(frags)!=3:
+                                    has_error=True
+                                else:
+                                    docs = self.db.cresponses.find({"$and":[{'workerid' : workerid},{'hitid' : hitid},{'taskid':frags[0]}]}).sort('submitted')
+                                    lastDoc=None
+                                    for d in docs:
+                                        lastDoc=d
+                                    if lastDoc!=None:
+                                        response=lastDoc["response"]
+                                        for module in response:
+                                            if module["name"]==frags[1]:
+                                                for q in module["responses"]:
+                                                    if q["varname"]==frags[2] and ("response" in q):
+                                                        allVariables[v]=q["response"]
+                                                        if q["response"] not in moduleVarnameValuetype[module["name"]][q["varname"]]["aprioripermissable"]:
+                                                            couldBeReached=True
+                        allSets=dict()
+                        for s in condition.setlist:
+                            allSets[s]=SET(self.db,s)
+                        if has_error:
+                            continue
+                        else:
+                            status=Status()
+                            if condition.check_conditions(allVariables, allSets, status):
+                                #this task was shown to the worker
+                                includeTask=True
+                    #check if task was reached or could have been reached
+                    if includeTask or couldBeReached:
+                        if task not in crosswalk:
+                            crosswalk[task]={}
+                        #now cycle through the modules and variables
+                        m=self.db.ctasks.find_one({'taskid':task},{'modules':1})
+                        r=self.db.cresponses.find_one({'taskid':task,'hitid':hitid,'workerid':workerid},{'response':1})
+                        for module in m["modules"]:
+                            if module not in crosswalk[task]:
+                                crosswalk[task][module]={}
+                            #now find questions for this module
+                            d = self.db.ctypes.find_one({'name' : module})
+                            mod=CType.from_dict(d)
+                            for q in mod.questions:
+                                includedQuestionOrReachable=False
+                                if q.varname not in crosswalk[task][module]:
+                                    crosswalk[task][module][q.varname]=[]
+                                if r['response']!=None:
+                                    #find the correct module
+                                    for qr in r['response']:
+                                        if qr['name']==module:
+                                            includedQuestionOrReachable=q.satisfies_condition(qr['responses'],moduleVarnameValuetype[module])
+                                else:
+                                    includedQuestionOrReachable=True
+                                if includedQuestionOrReachable:
+                                    crosswalk[task][module][q.varname].append(workerid)
         return crosswalk
 
     def all_responses_by_task(self, taskid=None, workerids=[]):
