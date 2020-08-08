@@ -49,7 +49,7 @@ class CResponseController(object):
     def gettaskIDs2WorkerIds(self,moduleVarnameValuetype={}):
         #cycle through hits
         crosswalk={}
-        d=self.db.chits.find({},{'tasks':1,'taskconditions':1,'completed_hits':1})
+        d=self.db.chits.find({},{'tasks':1,'taskconditions':1,'completed_hits':1,'hitid':1})
         for row in d:
             hitid=row['hitid']
             tasks=row['tasks']

@@ -93,7 +93,7 @@ class Question(object) :
             for v in lex.varlist:
                 for r in module_responses:
                     if v==r['varname']:
-                        if q["response"] not in varnameValuetype[r["varname"]]["aprioripermissable"]:
+                        if r["response"] not in varnameValuetype[r["varname"]]["aprioripermissable"]:
                             return True
         allVariables=dict()
         has_error=False
@@ -101,7 +101,7 @@ class Question(object) :
             if "response" in r:
                 allVariables[r["varname"]]=r["response"]
         status=Status()
-        evaluatedLexer=lex.check_conditions(allVariables, dict(), status,varnameValuetype)
+        evaluatedLexer=lex.check_conditions(allVariables, dict(), status)
         if status.error!=None:
             return False
         return evaluatedLexer

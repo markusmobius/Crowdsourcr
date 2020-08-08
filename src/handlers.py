@@ -231,7 +231,7 @@ class RecruitingEndHandler(BaseHandler):
             #create crosswalk from module->varname->valuetype
             moduleVarnameValuetype=self.ctype_controller.getModuleVarnameValuetype()
             #create crosswalk from task IDs to possible hit IDs
-            taskIDs2HitIDs=self.cresponse_controller.gettaskIDs2HitIDs(moduleVarnameValuetype)
+            taskIDs2HitIDs=self.cresponse_controller.gettaskIDs2WorkerIds(moduleVarnameValuetype)
             worker_bonus_info = {}
             # all_responses_by_task returns
             # module -> varname -> response_value -> [workerid]
