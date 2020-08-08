@@ -1,0 +1,234 @@
+<xml>
+  <modules>
+    <module>
+      <header>Favorite Color</header>
+      <name>favoritecolor</name>
+      <questions>
+        <question>
+          <varname>favoritecolor</varname>
+          <questiontext>Which color do you like better?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>Red</text>
+                <value>red</value>
+                <aprioripermissable>true</aprioripermissable>
+              </category>
+              <category>
+                <text>Blue</text>
+                <value>blue</value>
+                <aprioripermissable>true</aprioripermissable>
+              </category>
+            </categories>
+          </content>
+        </question>
+      </questions>
+    </module>
+    <module>
+      <header>Blue Frequency</header>
+      <name>bluefrequency</name>
+      <questions>
+        <question>
+          <varname>bluefrequency</varname>
+          <bonus>threshold:50</bonus>
+          <bonuspoints>2</bonuspoints>		  
+          <questiontext>Is blue a low or high frequency type of light?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>Low frequency</text>
+                <value>low</value>
+              </category>
+              <category>
+                <text>High frequency</text>
+                <value>high</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>bluefrequency_sure</varname>
+          <questiontext>Are you sure?</questiontext>
+          <valuetype>categorical</valuetype>
+          <condition>
+            <![CDATA[
+			  bluefrequency=="low"
+			  ]]>
+          </condition>
+          <content>
+            <categories>
+              <category>
+                <text>Yes</text>
+                <value>yes</value>
+              </category>
+              <category>
+                <text>No</text>
+                <value>no</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+      </questions>
+    </module>
+    <module>
+      <header>Red Frequency</header>
+      <name>redfrequency</name>
+      <questions>
+        <question>
+          <varname>redfrequency</varname>
+          <bonus>threshold:51</bonus>
+          <bonuspoints>2</bonuspoints>		  
+          <questiontext>Is red a low or high frequency type of light?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>Low frequency</text>
+                <value>low</value>
+              </category>
+              <category>
+                <text>High frequency</text>
+                <value>high</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+        <question>
+          <varname>bluefrequency_sure</varname>
+          <questiontext>Are you sure?</questiontext>
+          <valuetype>categorical</valuetype>
+          <condition>
+            <![CDATA[
+			  redfrequency=="high"
+			  ]]>
+          </condition>
+          <content>
+            <categories>
+              <category>
+                <text>Yes</text>
+                <value>yes</value>
+              </category>
+              <category>
+                <text>No</text>
+                <value>no</value>
+              </category>
+            </categories>
+          </content>
+        </question>
+      </questions>
+    </module>
+  </modules>
+
+  <tasks>
+    <task>
+      <content>favoritecolor.html</content>
+      <taskid>1</taskid>
+      <modules>favoritecolor</modules>
+    </task>
+    <task>
+      <content>bluefrequency.html</content>
+      <taskid>2</taskid>
+      <modules>bluefrequency</modules>
+    </task>
+    <task>
+      <content>redfrequency.html</content>
+      <taskid>3</taskid>
+      <modules>redfrequency</modules>
+    </task>
+  </tasks>
+  
+  <hits>
+    <hit>
+      <hitid>1</hitid>
+      <tasks>1 2 3</tasks>
+      <taskconditions>
+        <taskcondition>
+          <taskid>2</taskid>
+          <condition>
+            <![CDATA[
+				1*favoritecolor*favoritecolor=="blue"
+				]]>
+          </condition>
+        </taskcondition>
+        <taskcondition>
+          <taskid>3</taskid>
+          <condition>
+            <![CDATA[
+				1*favoritecolor*favoritecolor=="red"
+				]]>
+          </condition>
+        </taskcondition>
+      </taskconditions>
+    </hit>
+    <hit>
+      <hitid>2</hitid>
+      <tasks>1 2 3</tasks>
+      <taskconditions>
+        <taskcondition>
+          <taskid>2</taskid>
+          <condition>
+            <![CDATA[
+				1*favoritecolor*favoritecolor=="blue"
+				]]>
+          </condition>
+        </taskcondition>
+        <taskcondition>
+          <taskid>3</taskid>
+          <condition>
+            <![CDATA[
+				1*favoritecolor*favoritecolor=="red"
+				]]>
+          </condition>
+        </taskcondition>
+      </taskconditions>
+    </hit>
+    <hit>
+      <hitid>3</hitid>
+      <tasks>1 2 3</tasks>
+      <taskconditions>
+        <taskcondition>
+          <taskid>2</taskid>
+          <condition>
+            <![CDATA[
+				1*favoritecolor*favoritecolor=="blue"
+				]]>
+          </condition>
+        </taskcondition>
+        <taskcondition>
+          <taskid>3</taskid>
+          <condition>
+            <![CDATA[
+				1*favoritecolor*favoritecolor=="red"
+				]]>
+          </condition>
+        </taskcondition>
+      </taskconditions>
+    </hit>
+  </hits>
+  
+  <documents>
+    <document>
+      <name>favoritecolor.html</name>
+      <content>
+        <![CDATA[
+      <p>Please tell us something about your favortite colors.</p>
+      ]]></content>
+    </document>
+    <document>
+      <name>bluefrequency.html</name>
+      <content>
+        <![CDATA[
+      <p>Please tell us something about color blue.</p>
+      ]]></content>
+    </document>
+    <document>
+      <name>redfrequency.html</name>
+      <content>
+        <![CDATA[
+      <p>Please tell us something about color red.</p>
+      ]]></content>
+    </document>	
+  </documents>
+</xml>

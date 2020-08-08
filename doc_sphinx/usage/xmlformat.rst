@@ -108,6 +108,10 @@ accepts any non-empty textual content.  An example:
      payment.</helptext>
   </question>
 
+There is also an approximate text question (value type ``approximatetext``). This displays the same way as a normal text question.
+However, for bonus calculations, two submissions are considered to match if their Jaccard similarity exceeds 75 percent.
+
+
 Categorical questions
 +++++++++++++++++++++
 
@@ -141,6 +145,45 @@ of radio buttons that accepts exactly one response.  An example:
 The ``text`` element holds what is shown to the worker, and the
 ``value`` element holds what is recorded to the database for that
 categorical response.
+
+Each category also has an optional parameter ``aprioripermissable`` which can be set to ``true`` or ``false`` (if missing it is set to ``false``).
+
+::
+
+        <question>
+          <varname>favoritecolor</varname>
+          <questiontext>Which color do you like better?</questiontext>
+          <valuetype>categorical</valuetype>
+          <content>
+            <categories>
+              <category>
+                <text>Red</text>
+                <value>red</value>
+                <aprioripermissable>true</aprioripermissable>
+              </category>
+              <category>
+                <text>Blue</text>
+                <value>blue</value>
+                <aprioripermissable>true</aprioripermissable>
+              </category>
+            </categories>
+          </content>
+        </question>
+
+This parameter matters for bonus calculations: if there is any conditional branching that omits certain tasks or questions 
+that involves any condition with ``aprioripermissable`` variables then the share of agreement for bonus purposes is biased
+only on the number of workers who ended up in this branch and not on the number of workers who could have seen this question.
+
+This is used, for example, in the ``elaborate_conditional_tasks.xml`` survey. In that survey, workers are first asked
+for their favorite color (red or blue) and both colors are apriori permissable (meaning there is no right or wrong answer).
+Depending on the color choice, the survey then asks if this light is in the low or high-frequency part of the spectrum (which involves two conditional tasks).
+The frequency questions are incentivized with bonus points.
+Since the color choices are marked as apriori permissable the bonus points for the red frequency question are only calculated
+relative to the majority answer among people who chose ``red''. For example, if 4 people complete the survey correctly and
+two of them have favorite color ``red'' and two have ``blue'' then the agreement level will be 100 percent. Otherwise, the agreement 
+level would be only 50 percent since only 2 people answered the frequency question identically (out of a possible 4 who
+could have answered this question).
+
 
 Nested categorical questions
 ++++++++++++++++++++++++++++
@@ -613,6 +656,9 @@ The parser for conditions is the same as for :ref:`task-condition`. However, var
 
 Bonus
 ---------
+
+Crowdsourcr has an extensive bonus point framework. 
+
 
 Crowdsourcr can automatically award bonuses conditional on agreement 
 between Turkers on each question. This allows one to reward Turkers for good

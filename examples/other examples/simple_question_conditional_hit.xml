@@ -103,7 +103,7 @@
       <questions>
         <question>
           <varname>spelling</varname>		 
-          <bonus>threshold:50</bonus>
+          <bonus>threshold:51</bonus>
           <questiontext>Please indicate which spelling is correct:</questiontext>
           <valuetype>categorical</valuetype>
           <content>
@@ -130,7 +130,7 @@
 			  spelling==other
 			  ]]>
 			  </condition>
-          <bonus>threshold:50</bonus>
+          <bonus>threshold:51</bonus>
 		      <bonuspoints>2</bonuspoints>
           <questiontext>Please specify the spelling.</questiontext>
           <valuetype>text</valuetype>

@@ -122,7 +122,7 @@ def calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2H
                     for response, workerids in responses.items() :
                         if response == '__bonus__' : continue
                         # agreed measures the total number of workers who
-                        # submit each partcular answer
+                        # submit each particular answer
                         agreed = 1.0 * len(workerids)
                         bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info,
                                                                             agreed=agreed,
