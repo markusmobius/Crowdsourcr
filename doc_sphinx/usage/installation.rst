@@ -40,7 +40,7 @@ If you want to modify the documentation you also need to install the boostrap th
 
 ::
 
-pip install pydata-sphinx-theme
+  pip install pydata-sphinx-theme
 
 Modify the rst files under ``doc_sphinx/usage`` and then compile the new documentation by running the ``create_documentation`` file in root directory.
 
