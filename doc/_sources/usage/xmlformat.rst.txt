@@ -498,7 +498,7 @@ A cHIT is a collection of tasks. This is what the Turk worker will see when clic
     </hit>
   </hits>
 
-In this example, the three tasks 1 to 3 are assigned to three cHITs. This implies triple data entry which makes workers potentially eligilble for a bonus payment (see :ref:`bonus` ).
+In this example, the three tasks 1 to 3 are assigned to three cHITs. This implies triple data entry which makes workers potentially eligible for a bonus payment (see :ref:`bonus` ).
 
 
 Data Download
@@ -734,7 +734,7 @@ specified in the admin panel (although if a worker completes two cHITs then she 
 Crowdsourcr calculates the sum of bonus points on any cHIT regardless of whether this sum is actually attainable. For
 example, the ``elaborate_conditional_tasks.xml`` asks you to pick between color ``red`` and ``blue`` and then asks
 a conditional followup question on each response (which is incentivized with two bonus points). The sum of bonus
-points on any cHIT is 4 but a worker can only achieve 2 bonus points. Hence, as they survey designer, you need to be aware of the attainable 
+points on any cHIT is 4 but a worker can only achieve 2 bonus points. Hence, as the survey designer, you need to be aware of the attainable 
 bonus points in order to scale the bonus amount appropriately.
 
 Rewarding Agreement
@@ -770,5 +770,5 @@ There are a few rules on how Crowdsourcr determines the level of agreement:
   is the set of all workers who satisfied the same conditions (and hence saw the question).
 
 For example, in the ``elaborate_conditional_tasks.xml`` survey the worker answers questions on either red light or blue
-light after choosing one of them. Both color choices are ``aprioripermissable`` which implies that agreeement on the red (blue)
+light after choosing one of them. Both color choices are ``aprioripermissable`` which implies that agreement on the red (blue)
 light tasks is only determined among the users who picked red (blue).
