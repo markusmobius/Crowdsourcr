@@ -39,6 +39,7 @@ On Linux you can also simply run the ``requirements.txt`` file:
 If you want to modify the documentation you also need to install the boostrap theme for sphinx:
 
 ::
+
 pip install pydata-sphinx-theme
 
 Modify the rst files under ``doc_sphinx/usage`` and then compile the new documentation by running the ``create_documentation`` file in root directory.
