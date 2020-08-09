@@ -80,6 +80,23 @@ class CHITController(object):
             for hit in r['completed_hits']:
                 worker_ids.add(hit['worker_id'])
         return list(worker_ids)
+    #max points
+    def getMaxBonusPoints(self):
+        maxBonusPoints=0
+        d = self.db.chits.find({}, {'tasks' : 1})
+        for row in d:
+            sum=0
+            for task in row['tasks']:
+                modules = self.db.ctasks.find({'taskid':task}, {'modules' : 1})
+                for row in modules:
+                    for m in row['modules']:
+                        questions = self.db.ctypes.find_one({'name':m}, {'questions' : 1})
+                        for q in questions['questions']:
+                            sum=sum+q['bonuspoints']
+            if sum>maxBonusPoints:
+                maxBonusPoints=sum
+        return maxBonusPoints
+
     # static wasn't working ... ?
     # utility method called by MTurkConnecitonController.make_payments
     @classmethod

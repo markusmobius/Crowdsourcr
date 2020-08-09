@@ -29,3 +29,12 @@ class Jaccard:
         tokens1_size = sum(tokens1.values())
         tokens2_size = sum(tokens2.values())
         return 1.0*overlap / (tokens1_size + tokens2_size - overlap+0.000000001)
+
+__jaccard = None
+
+
+def getJaccard():
+    global __jaccard
+    if __jaccard is None:
+        __jaccard = Jaccard()
+    return __jaccard

@@ -22,7 +22,7 @@ copyright = '2020, Microsoft Research'
 author = 'Kyle Miller, Sam Grondahl, Tobias Schmidt, Ling Dong, Anna Croley and Markus Mobius'
 
 # The full version, including alpha/beta/rc tags
-release = '2.1'
+release = '2.2'
 
 
 # -- General configuration ---------------------------------------------------
@@ -54,7 +54,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #import sphinx_bootstrap_theme
 #html_theme = 'bootstrap'
 #html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-html_theme = "pandas_sphinx_theme"
+html_theme = "pydata_sphinx_theme"
 html_sidebars = {'**': ['localtoc.html', 'searchbox.html']}
 
 # Add any paths that contain custom static files (such as style sheets) here,

@@ -227,27 +227,14 @@ class RecruitingEndHandler(BaseHandler):
                 self.event_controller.add_event(admin_email + " ending run " + tkconn.hitid)
             else:
                 self.event_controller.add_event(admin_email + " ending run")
-            completed_workers = self.chit_controller.get_workers_with_completed_hits()
-            #create crosswalk from module->varname->valuetype
+            #create crosswalk: module/varname/valuetype
             moduleVarnameValuetype=self.ctype_controller.getModuleVarnameValuetype()
-            #create crosswalk from task IDs to possible hit IDs
-            taskIDs2HitIDs=self.cresponse_controller.gettaskIDs2WorkerIds(moduleVarnameValuetype)
-            worker_bonus_info = {}
-            # all_responses_by_task returns
-            # module -> varname -> response_value -> [workerid]
-            # then filter_bonus_responses limits to applicable responses
-            # and adds __bonus__ key
-            task_response_info = {task :
-                                  self.ctype_controller.filter_bonus_responses(
-                                      self.cresponse_controller.all_responses_by_task(taskid=task,
-                                                                                      workerids=completed_workers))
-                                  for task in self.ctask_controller.get_task_ids()}
-
-            evaluated_conditions = {task : self.ctype_controller.evaluate_module_conditions(
-                                    self.cresponse_controller.worker_responses_by_task(taskid=task,
-                                                                                       workerids=completed_workers))
-                                    for task in self.ctask_controller.get_task_ids()}
-            worker_bonus_info =  helpers.calculate_worker_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs,moduleVarnameValuetype)
+            #create crosswalk: task/module/variable/workers
+            bonusDetails=self.cresponse_controller.getBonusDetails(moduleVarnameValuetype)
+            #worker/possible bonus points
+            possible_bonus_points = self.chit_controller.getMaxBonusPoints()
+            #now calculate raw bonus points
+            worker_bonus_info =  helpers.calculate_worker_bonus_info(possible_bonus_points, bonusDetails, moduleVarnameValuetype)
             self.db.bonus_info.drop()
             for wid, info in worker_bonus_info.items() :
                 self.db.bonus_info.insert({'workerid' : wid,

@@ -178,9 +178,10 @@ This is used, for example, in the ``elaborate_conditional_tasks.xml`` survey. In
 for their favorite color (red or blue) and both colors are apriori permissable (meaning there is no right or wrong answer).
 Depending on the color choice, the survey then asks if this light is in the low or high-frequency part of the spectrum (which involves two conditional tasks).
 The frequency questions are incentivized with bonus points.
+
 Since the color choices are marked as apriori permissable the bonus points for the red frequency question are only calculated
-relative to the majority answer among people who chose ``red''. For example, if 4 people complete the survey correctly and
-two of them have favorite color ``red'' and two have ``blue'' then the agreement level will be 100 percent. Otherwise, the agreement 
+relative to the majority answer among people who chose ``red``. For example, if 4 people complete the survey correctly and
+two of them have favorite color ``red'' and two have ``blue`` then the agreement level will be 100 percent. Otherwise, the agreement 
 level would be only 50 percent since only 2 people answered the frequency question identically (out of a possible 4 who
 could have answered this question).
 
@@ -657,35 +658,53 @@ The parser for conditions is the same as for :ref:`task-condition`. However, var
 Bonus
 ---------
 
-Crowdsourcr has an extensive bonus point framework. 
+Crowdsourcr has an extensive bonus point framework. Bonus points serve two functions:
 
-
-Crowdsourcr can automatically award bonuses conditional on agreement 
-between Turkers on each question. This allows one to reward Turkers for good
-performance in multiple entry tasks.
-
-Internally Crowdsourcr uses ``bonus points`` as a currency, which are 
-translated into a dollar amount after the conclusion of a run. The maximal
-dollar bonus payment can be specified in the admin interface. After a run
-is finished Crowdsourcr will tally up the number of bonus points awarded
-for each question and the number of bonus points that could have been 
-awarded, divide the two and pay out a bonus that's proportional to the
-share of bonus points actually awarded.
-
+First of all, they provide a currency to reward extra questions. This is useful when you have a lot of conditional branching
+and some hits might take longer than others. Second, you can reward accuracy by awarding bonus points for a task depending on the 
+level of agreement of the worker with other workers who completed the same task.
 
 Specifying a bonus
 ++++++++++++++++++
 
 Bonuses can be specified on a per-question basis by adding a ``<bonus>``
-element to the XML file. By default the maximal number of bonus
-points awarded per question which has an associated ``<bonus>`` will be
-one. This can be changed by adding a ``<bonuspoints>`` element.
+element to the XML file. If a question has no ``<bonus>`` element 
+then there are 0 bonus points assigned. Each question with the  ``<bonus>`` element has one bonus point assigned.
+This can be changed by adding a ``<bonuspoints>`` element. To always assign bonus points regardless of the answers
+of other players use ``<bonus>threshold:0</bonus>``.
+
+In the example below, the worker has the option of answering an extra question for which she receives 
+2 bonus points.
 
 ::
 
  <question>
-   <varname>article_type_categorial</varname>
+   <varname>article_extra</varname>
+   <questiontext>Do you want to answer an optional question? You will receive a bonus payment for answering optional questions.</questiontext>
+   <valuetype>categorical</valuetype>
+   <content>
+     <categories>
+       <category>
+         <text>Yes</text>
+         <value>yes</value>
+       </category>
+       <category>
+         <text>No</text>
+         <value>no</value>
+       </category>
+     </categories>
+   </content>
+ </question>
+ <question>
+   <varname>article_type</varname>
    <questiontext>What kind of article is this?</questiontext>
+	 <condition>
+			  <![CDATA[
+			  article_extra==yes
+			  ]]>
+	 </condition>
+   <bonus>threshold:0</bonus>
+   <bonuspoints>2</bonuspoints>
    <valuetype>categorical</valuetype>
    <content>
      <categories>
@@ -704,17 +723,24 @@ one. This can be changed by adding a ``<bonuspoints>`` element.
      </categories>
    </content>
  </question>
- <question>
-   <varname>article_type_other</varname>
-   <questiontext>What other kind is it?</questiontext>
-   <valuetype>text</valuetype>
-   <bonus>threshold:50</bonus>
-   <bonuspoints>2</bonuspoints>
- </question>
 
+The actual dollar bonus per worker is calculated as follows: the sum of bonus points on any cHIT is calculated. The maximum
+across all these individuals sum is taken. One bonus point is then valued as the bonus amount specified in the 
+admin panel divided by this maximum number of possible points. For example, in the ``elaborate_conditional_tasks.xml`` survey
+the sum of all bonus points for any cHIT equals 4. Note, that a worker will therefore never earn more than the bonus amount on any single cHIT
+specified in the admin panel (although if a worker completes two cHITs then she can earn this amount twice).
 
-Bonus schemes
-+++++++++++++++
+Crowdsourcr calculates the sum of bonus points on any cHIT regardless of whether this sum is actually attainable. For
+example, the ``elaborate_conditional_tasks.xml`` asks you to pick between color ``red`` and ``blue`` and then asks
+a conditional followup question on each response (which is incentivized with two bonus points). The sum of bonus
+points on any cHIT is 4 but a worker can only achieve 2 bonus points. Hence, as they survey designer, you need to be aware of the attainable 
+bonus points in order to scale the bonus amount appropriately.
+
+Rewarding Agreement
++++++++++++++++++++
+
+Crowdsourcr can automatically award bonuses conditional on agreement between Turkers on each question. This allows one 
+to reward Turkers for good performance in multiple entry tasks.
 
 Two kinds of bonus schemes are available:
 
@@ -724,20 +750,24 @@ Two kinds of bonus schemes are available:
 - threshold: an all-or-nothing scheme where the bonus is awarded only if
   the share of Turkers (*including* herself) who gave the same answer to the task weakly 
   exceeds a threshold. To use this scheme add 
-  ``<bonus>threshold:50</bonus>`` to the XML specification. Note that with simple 
+  ``<bonus>threshold:51</bonus>`` to the XML specification. Note that with simple 
   double data entry (two workers per task) you would want to set the threshold at 51 at least because otherwise
   every worker receives the bonus (since the share of workers including herself that agrees with her answer is exactly 0.5.)
 
+There are a few rules on how Crowdsourcr determines the level of agreement:
 
-Bonus calculation
-+++++++++++++++++
+* Crowdsourcr assumes that incentivized bonus questions on the same task have the same answer: it will therefore determine agreement
+  among all workers who answered questions on the same task. If you design a survey in a way that on two cHITs you reuse the
+  same task but expect different answers you should either not incentivize them with bonus points, or consider creating
+  two separate tasks.
 
-As described above, Crowdsourcr will tally up the number of bonus
-points awarded for each question according to the specified scheme,
-tally up the number of bonus points that could have been awarded, 
-divide the two and pay out a bonus that's proportional to the
-share of bonus points actually awarded.
 
-Bonuses will never be awarded for conditional questions whose condition
-is not satisfied. However, these questions will enter the calculation of
-potential bonus points.
+* Crowdsourcr calculates the number of workers who agreed with a specific worker on a question and divides this by the number of workers
+  who could have answered the same question. This makes the implicit assumption that if the worker's answer is correct
+  then other workers' answers have to be wrong. An exception is the case where the conditions for reaching a question only involve 
+  ``aprioripermissable`` responses (either on task conditions or question conditions or both): in this case the denominator
+  is the set of all workers who satisfied the same conditions (and hence saw the question).
+
+For example, in the ``elaborate_conditional_tasks.xml`` survey the worker answers questions on either red light or blue
+light after choosing one of them. Both color choices are ``aprioripermissable`` which implies that agreeement on the red (blue)
+light tasks is only determined among the users who picked red (blue).

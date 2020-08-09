@@ -46,9 +46,10 @@ class CResponseController(object):
                         csvwriter.writerow([d['hitid'], d['taskid'], d['workerid'], module['name'],
                                             question_response['varname'],
                                             response_string])
-    def gettaskIDs2WorkerIds(self,moduleVarnameValuetype={}):
+
+    def getBonusDetails(self,moduleVarnameValuetype={}):
         #cycle through hits
-        crosswalk={} # format taskid -> module -> varname -> [workerid]
+        crosswalk={} # format taskid -> module -> varname -> {"possibleWorkers":set(),"actualWorkers":dict(),"bonus":{}}
         d=self.db.chits.find({},{'tasks':1,'taskconditions':1,'completed_hits':1,'hitid':1})
         for row in d:
             hitid=row['hitid']
@@ -112,57 +113,25 @@ class CResponseController(object):
                             d = self.db.ctypes.find_one({'name' : module})
                             mod=CType.from_dict(d)
                             for q in mod.questions:
+                                if q.bonuspoints==0:
+                                    continue
                                 includedQuestionOrReachable=False
                                 if q.varname not in crosswalk[task][module]:
-                                    crosswalk[task][module][q.varname]=[]
+                                    crosswalk[task][module][q.varname]={'possibleWorkers':set(),'actualWorkers':{},'bonus':q.get_bonus()}
                                 if r!=None and ('response' in r):
                                     #find the correct module
                                     for qr in r['response']:
                                         if qr['name']==module:
+                                            if q.satisfies_condition(qr['responses']):
+                                                for vr in qr['responses']:
+                                                    if vr['varname']==q.varname:
+                                                        crosswalk[task][module][q.varname]['actualWorkers'][workerid]=q.getBonusValue(vr['response'])
                                             includedQuestionOrReachable=q.satisfies_condition(qr['responses'],moduleVarnameValuetype[module])
                                 else:
                                     includedQuestionOrReachable=True
                                 if includedQuestionOrReachable:
-                                    crosswalk[task][module][q.varname].append(workerid)
+                                    crosswalk[task][module][q.varname]['possibleWorkers'].add(workerid)
         return crosswalk
-
-    def all_responses_by_task(self, taskid=None, workerids=[]):
-        d = self.db.cresponses.find({'taskid' : taskid,
-                                     'workerid' : {'$in' : workerids}},
-                                    {'workerid' : 1,
-                                     'response' : 1})
-        module_responses = {} # module -> varname -> response -> [workerid]
-        for row in d:
-            for resp in row['response']:
-                mod_name = resp['name']
-                module_responses.setdefault(mod_name, {})
-                for response in resp['responses']:
-                    if 'response' not in response:
-                        continue
-                    module_responses[mod_name].setdefault(response['varname'], {})
-                    module_responses[mod_name][response['varname']].setdefault(response['response'], [])
-
-                    module_responses[mod_name][response['varname']][response['response']].append(row['workerid'])
-        return module_responses
-    def worker_responses_by_task(self, taskid=None, workerids=[]):
-        """
-        # task -> module -> workerid -> {varname: response_value}
-        """
-        d = self.db.cresponses.find({'taskid' : taskid,
-                                     'workerid' : {'$in' : workerids}},
-                                    {'workerid' : 1,
-                                     'response' : 1})
-        module_responses = {} # module -> workerid -> [{'varname': varname, 'response': response}]
-        for row in d:
-            for resp in row['response']:
-                mod_name = resp['name']
-                module_responses.setdefault(mod_name, {})
-                for response in resp['responses']:
-                    module_responses[mod_name].setdefault(row['workerid'], [])
-                    response_dict = {'varname': response['varname']}
-                    response_dict['response'] = response.setdefault('response', None)
-                    module_responses[mod_name][row['workerid']].append(response_dict)
-        return module_responses
 
     def sanitize_response(self, taskid, response, task_controller, module_controller):
         task = task_controller.get_task_by_id(taskid)

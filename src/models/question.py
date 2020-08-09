@@ -6,6 +6,7 @@ from PIL import Image
 import imagehash
 import base64
 import io
+from helpers import jaccard_machine
 
 class Question(object) :
     def __init__(self, varname=None, condition=None, questiontext=None, helptext=None, options=None, valuetype=None, bonus=None, bonuspoints=None):
@@ -122,6 +123,9 @@ class Question(object) :
             return True
         else:
             return self.valid_response(response)
+    def getBonusValue(self,response):
+        #transforms the text into something that can be used for bonus calculations        
+        return response
 
     # Parses XML to get question 'content' (returns list).
     # Currently only used for categorical questions.
@@ -196,6 +200,10 @@ class ApproximateTextQuestion(AbstractQuestion) :
         return response
     def valid_response(self, response) :
         return response.get('response', False)
+    def getBonusValue(self,response):
+        #get tokens
+        jaccard=jaccard_machine.getJaccard()
+        return  jaccard.getTokens(response[len("approximatetext:"):])
 
 class URLQuestion(TextQuestion) :
     typeName = 'url'
@@ -245,6 +253,10 @@ class ImageUploadQuestion(TextQuestion) :
         except:            
             return False
         return True
+    def getBonusValue(self,response):
+        #get image hash       
+        return imagehash.hex_to_hash(response[len("imagehash:"):])
+
 
 """
 class AbstractMultiQType(Question) :

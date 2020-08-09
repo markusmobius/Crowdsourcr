@@ -1,5 +1,4 @@
-import imagehash
-from .jaccard_machine import Jaccard
+from helpers import jaccard_machine
 
 class BonusType(object) :
     def __init__(self) :
@@ -30,116 +29,54 @@ class ThresholdBonusType(BonusType) :
         return (amt, exp)
 
 
-def calculate_worker_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs, moduleVarnameValuetype) :
-    raw_bonus = calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs, moduleVarnameValuetype)
+def calculate_worker_bonus_info(possible_bonus_points, bonusDetails, moduleVarnameValuetype) :
+    raw_bonus = calculate_raw_bonus_info(possible_bonus_points, bonusDetails, moduleVarnameValuetype)
     return normalize_bonus_info(raw_bonus)
 
-def calculate_raw_bonus_info(task_response_info, evaluated_conditions, taskIDs2HitIDs, moduleVarnameValuetype) :
-    '''Gets responses in structure task -> module -> varname ->
-    response_value -> [workerids] from RecruitingEndHandler and in
-    turn CResponseController.all_responses_by_task(task).  '''
+def calculate_raw_bonus_info(possible_bonus_points, bonusDetails, moduleVarnameValuetype) :
+    #calculate unnormalized bonus
     worker_bonus_info = {}
-    for task, filtered_responses in task_response_info.items() :
-        for module, varnames in filtered_responses.items() :
-            for varname, responses in varnames.items() :
-                bonus_info = responses['__bonus__']
-                # responses is a dictionary mapping the response
-                # for 'varname' to a list of worker ids who
-                # submitted that response
-                #total_responses = 1.0 * sum([len(responses[c])
-                #                             for c in responses
-                #                             if c != '__bonus__'])
-                # total_responses measures the total number of workers
-                # who could have answered this question
-                total_responses=1.0 * len(taskIDs2HitIDs[task][module][varname])
-                
-                if moduleVarnameValuetype[module][varname]["valuetype"]=="imageupload":
-                    #we use approximate image matching
-                    allworkerids=[]
-                    hashes={}
-                    for response, workerids in responses.items() :
-                        if response == '__bonus__' : continue
-                        for workerid in workerids:
-                            allworkerids.append(workerid)
-                            hashes[workerid]=imagehash.hex_to_hash(response[len("imagehash:"):])
-                    for workerid in allworkerids:
-                        agreed=0
-                        for otherworkerid in allworkerids:
-                            if hashes[workerid]-hashes[otherworkerid]<20:
+    for task,taskDetails in bonusDetails.items():
+        for module,moduleDetails in taskDetails.items():
+            for varname,questionDetails in moduleDetails.items():
+                total_responses=1.0 * len(questionDetails["possibleWorkers"])
+                #cycle over the workers
+                for workerid,response in questionDetails["actualWorkers"].items():
+                    if workerid not in worker_bonus_info:
+                        worker_bonus_info.setdefault(workerid, {'earned' : 0.0, 'possible' : 1.0*possible_bonus_points,'exp' : []})
+                    #now compare with all the other workers
+                    agreed=1
+                    for otherworkerid,otherresponse in questionDetails["actualWorkers"].items():
+                        if workerid==otherworkerid:
+                            continue
+                        if moduleVarnameValuetype[module][varname]["valuetype"]=="imageupload":
+                            if response-otherresponse<20:
                                 agreed=agreed+1
-                        agreed=1.0*agreed
-                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info,
+                        elif moduleVarnameValuetype[module][varname]["valuetype"]=="approximatetext":
+                            jaccard=jaccard_machine.getJaccard()
+                            if jaccard.compare(response,otherresponse)>0.75:
+                                agreed=agreed+1
+                        else:
+                            if response==otherresponse:
+                                agreed=agreed+1
+                    agreed=1.0*agreed
+                    bonus_info=questionDetails['bonus']
+                    bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info,
                                                                         agreed=agreed,
                                                                         total=total_responses)
-                        bonus_exp = 'On image task %s, question %s_%s, for response %s: %s' % (task, module, varname, hashes[workerid], bonus_exp)
-                        worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
-                                                                'possible' : 0.0,
-                                                                'exp' : []})
-                        worker_bonus_info[workerid]['possible'] += bonus_info['bonuspoints']
-                        if(evaluated_conditions[task][module][workerid][varname]):
-                            worker_bonus_info[workerid]['earned'] += bonus_amount
-                            worker_bonus_info[workerid]['exp'].append(bonus_exp)
-                        else:
-                            bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
-                            worker_bonus_info[workerid]['exp'].append(bonus_exp)
-                elif moduleVarnameValuetype[module][varname]["valuetype"]=="approximatetext":
-                    #we use approximate text matching
-                    allworkerids=[]
-                    pureText = {}
-                    tokens={}
-                    pureText={}
-                    jaccard = Jaccard()
-                    for response, workerids in responses.items() :
-                        if response == '__bonus__' : continue
-                        for workerid in workerids:
-                            allworkerids.append(workerid)
-                            pureText[workerid]=response[len("approximatetext:"):]
-                            tokens[workerid]=jaccard.getTokens(response[len("approximatetext:"):])
-                    for workerid in allworkerids:
-                        agreed=0
-                        for otherworkerid in allworkerids:
-                            if jaccard.compare(tokens[workerid],tokens[otherworkerid])>0.75:
-                                agreed=agreed+1
-                            #print(jaccard.compare(tokens[workerid],tokens[otherworkerid]))
-                            #print(len(tokens[workerid]))
-                            #print(len(tokens[otherworkerid]))
-                        agreed=1.0*agreed
-                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info,
-                                                                        agreed=agreed,
-                                                                        total=total_responses)
-                        bonus_exp = 'On approximate text task %s, question %s_%s, for response %s: %s' % (task, module, varname, pureText[workerid], bonus_exp)
-                        worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
-                                                                'possible' : 0.0,
-                                                                'exp' : []})
-                        worker_bonus_info[workerid]['possible'] += bonus_info['bonuspoints']
-                        if(evaluated_conditions[task][module][workerid][varname]):
-                            worker_bonus_info[workerid]['earned'] += bonus_amount
-                            worker_bonus_info[workerid]['exp'].append(bonus_exp)
-                        else:
-                            bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
-                            worker_bonus_info[workerid]['exp'].append(bonus_exp)
-                else:
-                    for response, workerids in responses.items() :
-                        if response == '__bonus__' : continue
-                        # agreed measures the total number of workers who
-                        # submit each particular answer
-                        agreed = 1.0 * len(workerids)
-                        bonus_amount, bonus_exp = BonusType.calculate_bonus(bonus_info=bonus_info,
-                                                                            agreed=agreed,
-                                                                            total=total_responses)
+                    if moduleVarnameValuetype[module][varname]["valuetype"]=="imageupload":
+                        bonus_exp = 'On image task %s, question %s_%s, for response %s: %s' % (task, module, varname, response, bonus_exp)
+                    elif moduleVarnameValuetype[module][varname]["valuetype"]=="approximatetext":
+                        bonus_exp = 'On approximate text task %s, question %s_%s, for response %s: %s' % (task, module, varname, response, bonus_exp)
+                    else:
                         bonus_exp = 'On task %s, question %s_%s, for response %s: %s' % (task, module, varname, response, bonus_exp)
-                        for workerid in workerids :
-                            worker_bonus_info.setdefault(workerid, {'earned' : 0.0,
-                                                                    'possible' : 0.0,
-                                                                    'exp' : []})
-                            worker_bonus_info[workerid]['possible'] += bonus_info['bonuspoints']
-                            if(evaluated_conditions[task][module][workerid][varname]):
-                                worker_bonus_info[workerid]['earned'] += bonus_amount
-                                worker_bonus_info[workerid]['exp'].append(bonus_exp)
-                            else:
-                                bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
-                                worker_bonus_info[workerid]['exp'].append(bonus_exp)
-
+                    worker_bonus_info[workerid]['earned'] += bonus_amount
+                    worker_bonus_info[workerid]['exp'].append(bonus_exp)
+                #add explainer for workers who did not answer this question
+                for workerid in questionDetails["possibleWorkers"]:
+                    if workerid not in questionDetails["actualWorkers"]:
+                        bonus_exp = 'On task %s, question %s_%s was not shown.' % (task, module, varname)
+                        worker_bonus_info[workerid]['exp'].append(bonus_exp)
     print(worker_bonus_info)
     return worker_bonus_info
 
