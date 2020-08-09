@@ -727,7 +727,8 @@ In the example below, the worker has the option of answering an extra question f
 The actual dollar bonus per worker is calculated as follows: the sum of bonus points on any cHIT is calculated. The maximum
 across all these individuals sum is taken. One bonus point is then valued as the bonus amount specified in the 
 admin panel divided by this maximum number of possible points. For example, in the ``elaborate_conditional_tasks.xml`` survey
-the sum of all bonus points for any cHIT equals 4. Note, that a worker will therefore never earn more than the bonus amount on any single cHIT
+the sum of all bonus points for any cHIT equals 4. If the bonus amount is set at 1 Dollar then a bonus point is worth 25 cents. 
+Note, that a worker will therefore never earn more than the bonus amount on any single cHIT
 specified in the admin panel (although if a worker completes two cHITs then she can earn this amount twice).
 
 Crowdsourcr calculates the sum of bonus points on any cHIT regardless of whether this sum is actually attainable. For
