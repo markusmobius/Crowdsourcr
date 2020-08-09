@@ -133,6 +133,8 @@ because it goes "stale").  The URL for these "Show HIT" links can be
 given to anyone if you want them to take a particular cHIT.
 
 
+.. _chitparams:
+
 cHIT Tab
 ++++++++
 
