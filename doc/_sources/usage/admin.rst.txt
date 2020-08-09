@@ -64,18 +64,6 @@ End Run
 
 In both cases, an event will be recorded and show up in the events area at the bottom of the status tab.
 
-Superadmin panel
-----------------
-
-.. figure:: ../doc_img/crowdsourcer_admin_manage_admins.png
-   :align: center
-
-If you are a superadmin, a link with the text "Administer admins" will
-appear in the status area of the admin panel.  This modal popup lets you add
-Google accounts which should be able to access the admin panel.
-Whenever a superadmins visits the admin panel, they are automatically
-added to the list of admins.
-
 .. _survey_tab:
 
 Survey Tab
@@ -133,7 +121,7 @@ because it goes "stale").  The URL for these "Show HIT" links can be
 given to anyone if you want them to take a particular cHIT.
 
 
-.. _chitparams:
+.. _chit_tab:
 
 cHIT Tab
 ++++++++
@@ -168,3 +156,15 @@ The bonus amount determines the maximum bonus a worker receives:
 - This shares is multiplied by the bonus amount in the cHIT Tab and determines the actual bonus paid to a worker.
 
 Note, that if questions are assigned to only one worker in the XML then the bonus will always be zero.
+
+Superadmin panel
+----------------
+
+.. figure:: ../doc_img/crowdsourcer_admin_manage_admins.png
+   :align: center
+
+If you are a superadmin, a link with the text "Administer admins" will
+appear in the status area of the admin panel.  This modal popup lets you add
+Google accounts which should be able to access the admin panel.
+Whenever a superadmins visits the admin panel, they are automatically
+added to the list of admins.
