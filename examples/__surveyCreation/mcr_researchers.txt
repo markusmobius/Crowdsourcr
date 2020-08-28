@@ -1,0 +1,409 @@
+displayname	researcharea	username
+Federica Bogo	Artificial intelligence, Computer vision	febogo
+Cedric Cagniart	Computer vision	cecagnia
+Jeff Delmerico	Hardware and devices, Artificial intelligence, Computer vision	jedelmer
+Joshua Elsdon	Human-computer interaction, Computer vision	joelsdon
+Silvano Galliani	Artificial intelligence, Computer vision	sigallia
+Lukas Gruber	Graphics and multimedia, Computer vision	lugruber
+Ondrej Miksik	Artificial intelligence, Computer vision	onmiksik
+Helen Oleynikova	Artificial intelligence, Computer vision	eloleyni
+Marc Pollefeys	Graphics and multimedia, Human-computer interaction, Artificial intelligence, Computer vision	mapoll
+Johannes Schönberger	Artificial intelligence, Computer vision	joschonb
+Pablo Speciale	Artificial intelligence, Computer vision	paspecia
+Bugra Tekin		butekin
+Christoph Vogel	Artificial intelligence, Computer vision	chvogel
+Alekh Agarwal	Artificial intelligence	alekha
+Zeyuan Allen-Zhu	Mathematics, Artificial intelligence, Algorithms	zeyuana
+Saleema Amershi	Human-computer interaction, Artificial intelligence, Data platforms and analytics	samershi
+Sean Andrist	Human language technologies, Human-computer interaction, Artificial intelligence	sandrist
+Paul Bennett	Systems and networking, Human-computer interaction, Artificial intelligence, Algorithms, Data platforms and analytics	pauben
+Dan Bohus	Human language technologies, Artificial intelligence, Algorithms	dbohus
+Chris Brockett	Human language technologies, Human-computer interaction, Artificial intelligence, Social sciences	chrisbkt
+Sébastien Bubeck	Artificial intelligence, Algorithms	sebubeck
+Rich Caruana	Medical, health and genomics, Artificial intelligence	rcaruana
+Asli Celikyilmaz	Human language technologies, Artificial intelligence, Algorithms	aslicel
+Nirupama Chandrasekaran	Artificial intelligence	niruc
+Byron Changuion	Hardware and devices, Artificial intelligence, Computer vision	byronc
+Ofer Dekel	Artificial intelligence, Algorithms	oferd
+Debadeepta Dey	Artificial intelligence, Algorithms, Computer vision	dedey
+Bill Dolan	Human language technologies, Human-computer interaction, Artificial intelligence	billdol
+Mark Encarnación	Human language technologies, Artificial intelligence	markenc
+Ashley Feniello	Systems and networking, Artificial intelligence, Programming languages and software engineering	ashleyf
+Roland Fernandez	Artificial intelligence, Algorithms, Data platforms and analytics	rfernand
+Adam Fourney	Human-computer interaction, Search and information retrieval, Artificial intelligence	adamfo
+Michel Galley	Human language technologies, Artificial intelligence	mgalley
+Michael Gamon	Human language technologies, Human-computer interaction, Artificial intelligence, Social sciences	mgamon
+Jianfeng Gao	Human language technologies, Artificial intelligence, Algorithms, Computer vision	jfgao
+Xiang Gao	Human language technologies, Artificial intelligence	xiag
+Kern Handa	Artificial intelligence, Programming languages and software engineering, Computer vision	kerha
+Ahmed Hassan Awadallah	Human language technologies, Search and information retrieval, Artificial intelligence	hassanam
+Matthew Hausknecht	Artificial intelligence	mahauskn
+Eric Horvitz	Human-computer interaction, Artificial intelligence, Algorithms	horvitz
+Saghar Hosseini	Human language technologies, Search and information retrieval, Artificial intelligence	sahoss
+Qiuyuan Huang	Human language technologies, Artificial intelligence, Algorithms	qihua
+Kori Inkpen	Hardware and devices, Human-computer interaction, Artificial intelligence	kori
+Shamsi Iqbal	Human-computer interaction, Artificial intelligence, Algorithms	shamsi
+Chuck Jacobs	Graphics and multimedia, Artificial intelligence	cjacobs
+Mihai Jalobeanu	Systems and networking, Human-computer interaction, Artificial intelligence, Programming languages and software engineering, Computer vision	mihaijal
+Sujay Kumar Jauhar	Human language technologies, Artificial intelligence	sjauhar
+Nebojsa Jojic	Human language technologies, Medical, health and genomics, Artificial intelligence, Computer vision, Ecology and environment	jojic
+Ece Kamar	Human-computer interaction, Artificial intelligence, Algorithms	eckamar
+Emre Kiciman	Systems and networking, Human-computer interaction, Search and information retrieval, Artificial intelligence, Social sciences	emrek
+Paul Koch	Algorithms	paulkoch
+Andrey Kolobov	Search and information retrieval, Artificial intelligence, Algorithms	akolobov
+John Krumm	Hardware and devices, Artificial intelligence, Algorithms	jckrumm
+Chunyuan Li	Artificial intelligence, Algorithms	chunyl
+Jerry Li	Artificial intelligence, Algorithms	jerrl
+Lars Liden	Human language technologies, Human-computer interaction, Artificial intelligence, Algorithms	laliden
+Xiaodong Liu	Human language technologies, Artificial intelligence, Algorithms	xiaodl
+Ricky Loynd	Artificial intelligence, Algorithms	riloynd
+Patrick MacAlpine	Artificial intelligence	patmac
+Riham Mansour	Human language technologies, Human-computer interaction, Artificial intelligence	rihamma
+Matt Mazzola	Artificial intelligence, Algorithms	mattm
+James McCaffrey	Artificial intelligence, Programming languages and software engineering, Algorithms	jammc
+Chris Meek	Human-computer interaction, Artificial intelligence, Algorithms, Data platforms and analytics	meek
+Subhabrata (Subho) Mukherjee	Human language technologies, Search and information retrieval, Artificial intelligence, Social sciences	submukhe
+Besmira Nushi	Human-computer interaction, Artificial intelligence	benushi
+Hamid Palangi	Human language technologies, Human-computer interaction, Artificial intelligence, Algorithms	hpalangi
+Xiulian Peng	Artificial intelligence, Computer vision	xipe
+Alex Polozov	Artificial intelligence, Programming languages and software engineering, Data platforms and analytics	polozov
+Gonzalo Ramos	Human-computer interaction, Artificial intelligence	goramos
+Sudha Rao	Human language technologies, Artificial intelligence	sudhra
+Ilya Razenshteyn	Artificial intelligence	ilyaraz
+Mason Remy	Hardware and devices, Artificial intelligence, Computer vision	masonr
+Matthew Richardson	Human language technologies, Search and information retrieval, Artificial intelligence	mattri
+Nick Saw	Artificial intelligence	chitsaw
+Tobias Schnabel	Human-computer interaction, Artificial intelligence, Data platforms and analytics	toschnab
+Shital Shah	Artificial intelligence, Computer vision	shitals
+Shahin Shayandeh	Human language technologies, Artificial intelligence, Algorithms	shahins
+Robert Sim	Artificial intelligence, Security, privacy, and cryptography, Computer vision	rsim
+Nalin Singal	Human language technologies, Artificial intelligence	nasingal
+Paul Smolensky	Artificial intelligence, Algorithms	psmo
+Denny Sun	Artificial intelligence, Programming languages and software engineering, Algorithms	dennys
+Siddharth Suri	Economics, Social sciences	suri
+Adith Swaminathan	Search and information retrieval, Artificial intelligence	adswamin
+Pat Sweeney	Artificial intelligence, Programming languages and software engineering	patricsw
+Deepthi Uppala	Artificial intelligence	deepthi
+Wei Wang	Human language technologies, Artificial intelligence	wawe
+Ryen W. White	Medical, health and genomics, Human-computer interaction, Search and information retrieval, Artificial intelligence	ryenw
+Shane Williams	Hardware and devices, Human-computer interaction, Artificial intelligence	shanewil
+Andy Wilson	Graphics and multimedia, Hardware and devices, Human-computer interaction, Artificial intelligence, Computer vision	awilson
+Lin Xiao	Mathematics, Artificial intelligence, Algorithms	lixiao
+Chenyan Xiong	Search and information retrieval, Artificial intelligence	cxiong
+Greg Yang	Human language technologies, Mathematics, Artificial intelligence	gregyang
+Pengchuan Zhang	Mathematics, Artificial intelligence, Algorithms	penzhan
+Yizhe Zhang	Human language technologies, Artificial intelligence	yizzhang
+Guoqing Zheng	Human language technologies, Artificial intelligence	zheng
+Mahmoud Adada	Artificial intelligence, Programming languages and software engineering, Algorithms, Data platforms and analytics	maadada
+Adam Atkinson	Mathematics, Search and information retrieval, Artificial intelligence, Programming languages and software engineering, Algorithms, Computer vision, Data platforms and analytics	adatkins
+Philip Bachman	Artificial intelligence	phbachma
+Luiz Belussi	Artificial intelligence	lubeluss
+William Buchwalter	Systems and networking, Artificial intelligence, Programming languages and software engineering	wibuch
+Marc-Alexandre Côté	Human language technologies, Artificial intelligence	macote
+Shehzaad Dhuliawala	Artificial intelligence	shdhulia
+Fernando Diaz	Search and information retrieval, Artificial intelligence	fdiaz
+Matthew Dixon	Systems and networking, Artificial intelligence, Programming languages and software engineering, Algorithms, Data platforms and analytics	madixon
+Susan Dumais	Human-computer interaction, Search and information retrieval, Artificial intelligence, Algorithms	sdumais
+Mehdi Fatemi	Artificial intelligence	mefatemi
+Emery Fine	Artificial intelligence	emfine
+Geoff Gordon	Artificial intelligence	ggordon
+Justin D. Harris	Economics, Artificial intelligence, Data platforms and analytics	juharri
+T. J. Hazen	Human language technologies, Human-computer interaction, Artificial intelligence	tihazen
+Devon Hjelm	Artificial intelligence	devonh
+Romain Laroche	Artificial intelligence	rolaroch
+Xihui (Eric) Lin	Human language technologies, Artificial intelligence	xihlin
+Zhi Liu	Human language technologies, Human-computer interaction, Artificial intelligence, Programming languages and software engineering, Data platforms and analytics	liuzhi
+Andrew McNamara	Artificial intelligence	anmcnama
+Soroush Mehri	Artificial intelligence	somehri
+Rahul Mehrotra	Human language technologies, Human-computer interaction, Artificial intelligence	ramehrot
+James Moore	Human language technologies, Artificial intelligence, Programming languages and software engineering	jamoo
+Tsendsuren Munkhdalai	Human language technologies, Artificial intelligence	tsmunkhd
+Mohamed Musbah	Artificial intelligence	momusbah
+Tatsuro Oya	Artificial intelligence	taoy
+Peter Potash	Human language technologies, Artificial intelligence	pepotash
+Marc-Antoine Rondeau	Human language technologies, Artificial intelligence	marondea
+Hannes Schulz	Human language technologies, Artificial intelligence	haschulz
+Samira Shabanian	Artificial intelligence	sashaban
+Shikhar Sharma	Human language technologies, Artificial intelligence, Computer vision	shsh
+Alessandro Sordoni	Artificial intelligence	alsordon
+Kaheer Suleman	Human language technologies, Artificial intelligence	kasulema
+Remi Tachet des Combes	Mathematics, Artificial intelligence, Algorithms	retachet
+Adam Trischler	Human language technologies, Artificial intelligence	adtrisch
+Tong Wang	Human language technologies, Artificial intelligence	tonwang
+Yadollah Yaghoobzadeh	Human language technologies, Artificial intelligence	yayaghoo
+Xingdi (Eric) Yuan	Human language technologies, Artificial intelligence	eryua
+Marion Zepf	Programming languages and software engineering	mazepf
+Dennis Zhuang	Artificial intelligence	enzhuang
+Harm van Seijen	Artificial intelligence	havansei
+Luke Stark	Human-computer interaction, Artificial intelligence, Security, privacy, and cryptography, Social sciences, Algorithms	chstark
+Bhaskar Mitra	Search and information retrieval, Artificial intelligence	bmitra
+Andrey Antipov	Hardware and devices, Quantum computing	anantipo
+Bela Bauer	Hardware and devices, Quantum computing	belabaue
+Michael Beverland	Hardware and devices, Algorithms, Quantum computing	mibeverl
+Alex Bocharov	Mathematics, Hardware and devices, Programming languages and software engineering, Algorithms, Quantum computing	alexeib
+Parsa Bonderson	Hardware and devices, Quantum computing	parsab
+Arnaud Bousquet	Hardware and devices, Quantum computing	arbousqu
+Gary Campbell	Hardware and devices, Quantum computing	gacampbe
+Doug Carmean	Hardware and devices, Algorithms, Quantum computing	dcarmean
+Lucas Casparis	Hardware and devices, Quantum computing	lucaspar
+Nicolas Delfosse	Hardware and devices, Algorithms, Quantum computing	nidelfos
+Michael Freedman	Hardware and devices, Quantum computing	michaelf
+Alexandra Fursina	Hardware and devices, Quantum computing	alfursin
+Geoff Gardner	Hardware and devices, Quantum computing	gegardne
+Alan Geller	Algorithms, Quantum computing	ageller
+Chris Granade	Hardware and devices, Algorithms, Quantum computing	chgranad
+Ruben Grigoryan	Hardware and devices, Quantum computing	rugrigor
+Sergei Gronin	Hardware and devices, Quantum computing	segronin
+Jan Gukelberger	Hardware and devices, Quantum computing	jagukelb
+Jeongwan Haah	Hardware and devices, Algorithms, Quantum computing	jwhaah
+Matthew Hastings	Hardware and devices, Algorithms, Quantum computing	mahastin
+Bettina Heim	Hardware and devices, Programming languages and software engineering, Quantum computing	beheim
+John Hornibrook	Hardware and devices, Quantum computing	johornib
+Karthik Jambunathan	Quantum computing	kajambun
+Stephen Jordan	Algorithms, Quantum computing	stjorda
+Ray Kallaher	Hardware and devices, Quantum computing	rakallah
+Torsten Karzig	Hardware and devices, Quantum computing	tokarzig
+Helmut Katzgraber	Algorithms, Quantum computing	hekatzgr
+Vadym Kliuchnikov	Hardware and devices, Algorithms, Quantum computing	vadym
+Robin Kothari	Algorithms, Quantum computing	rokothar
+Leo Kouwenhoven	Hardware and devices, Quantum computing	lekouwen
+Peter Krogstrup	Hardware and devices, Quantum computing	pekrogst
+Guang Hao Low	Hardware and devices, Algorithms, Quantum computing	gulow
+Roman Lutchyn	Hardware and devices, Quantum computing	rolutchy
+Charles Marcus	Hardware and devices, Quantum computing	chmarcus
+Andrew Mullally	Hardware and devices, Quantum computing	anmullal
+Mariia Mykhailova	Hardware and devices, Programming languages and software engineering, Algorithms, Quantum computing	mamykhai
+Chetan Nayak	Hardware and devices, Quantum computing	cnayak
+William HP Nielsen	Hardware and devices, Quantum computing	wihpniel
+Keita Ohtani	Quantum computing	keohtani
+Karl Petersson	Hardware and devices, Quantum computing	kapeter
+Wolfgang Pfaff	Hardware and devices, Quantum computing	wopfa
+Dmitry Pikulin	Hardware and devices, Quantum computing	dmpikuli
+Frank Preiss	Hardware and devices, Quantum computing	fpreiss
+David Reilly	Hardware and devices, Quantum computing	dareill
+Martin Roetteler	Hardware and devices, Algorithms, Quantum computing	martinro
+Burton Smith	Hardware and devices, Algorithms, Quantum computing	burtons
+Krysta M. Svore	Hardware and devices, Artificial intelligence, Algorithms, Quantum computing	ksvore
+Mason Thomas	Hardware and devices, Quantum computing	mathomas
+Matthias Troyer	Hardware and devices, Algorithms, Quantum computing	mtroyer
+Kevin Van Hoogdalem	Hardware and devices, Quantum computing	kevanhoo
+Alexander Vaschillo	Hardware and devices, Programming languages and software engineering, Algorithms, Quantum computing	alexva
+Jukka Vayrynen	Hardware and devices, Quantum computing	juvayry
+Thorvald Wadum Larsen	Quantum computing	thlarse
+Kevin Walker	Hardware and devices, Quantum computing	kevwalk
+Zhenghan Wang	Mathematics, Hardware and devices, Quantum computing	zhenghwa
+John Watson	Hardware and devices, Quantum computing	jowat
+Dave Wecker	Hardware and devices, Algorithms, Quantum computing	wecker
+Gijs de Lange	Hardware and devices, Quantum computing	gidelang
+Bernard van Heck	Hardware and devices, Quantum computing	bevanhec
+Jacob Alber	Artificial intelligence	jaalber
+Solon Barocas	Artificial intelligence	solon
+Peter Chang	Artificial intelligence	petchang
+Rajan Chari	Systems and networking, Artificial intelligence, Programming languages and software engineering	ranaras
+Kate Crawford	Human-computer interaction, Artificial intelligence, Social sciences, Algorithms	kate
+Hal Daumé III	Human language technologies, Artificial intelligence	hal3
+Miro Dudík	Medical, health and genomics, Artificial intelligence, Algorithms	mdudik
+Susan Dumais	Human-computer interaction, Search and information retrieval, Artificial intelligence, Algorithms	sdumais
+Kevin Gao	Artificial intelligence, Social sciences, Programming languages and software engineering	kevingao@microsoft.com
+Jack Gerrits	Artificial intelligence, Programming languages and software engineering	jagerrit
+Dan Goldstein	Economics, Human-computer interaction, Artificial intelligence, Social sciences, Data platforms and analytics	dgg
+Shawndra Hill	Economics, Social sciences	shawndra
+Jake Hofman	Economics, Artificial intelligence, Social sciences	jmh
+Rafah Hosn	Artificial intelligence	raaboulh
+Nicole Immorlica	Economics, Artificial intelligence, Social sciences, Algorithms	nicimm
+Akshay Krishnamurthy	Artificial intelligence, Algorithms	akshaykr
+John Langford	Artificial intelligence	jcl
+Paul Mineiro	Artificial intelligence	pmineiro
+Dipendra Misra	Artificial intelligence	dimisra
+Sangeeta Mudnal	Artificial intelligence	smudnal
+Marco Rossi	Artificial intelligence, Data platforms and analytics	marossi
+David Rothschild	Economics, Social sciences	davidmr
+Robert Schapire	Artificial intelligence	schapire
+Siddhartha Sen	Systems and networking, Artificial intelligence, Algorithms	sidsen
+Chinmay Singh	Economics, Artificial intelligence, Social sciences	chsingh
+Alex Slivkins	Economics, Artificial intelligence, Algorithms	slivkins
+Pavithra Srinath	Artificial intelligence	pasrinat
+Yann Stadnicki	Artificial intelligence, Programming languages and software engineering	yastadni
+Cheng Tan	Artificial intelligence	chetan
+Alexey Taymanov	Artificial intelligence, Programming languages and software engineering	ataymano
+Hanna Wallach	Human-computer interaction, Artificial intelligence, Social sciences	wallach
+E. Glen Weyl	Economics, Algorithms	glenweyl
+Jennifer Wortman Vaughan	Economics, Human-computer interaction, Artificial intelligence, Algorithms	jenn
+danah boyd	Human-computer interaction, Social sciences	dmb
+Rupert Freeman	Economics, Artificial intelligence, Algorithms	rufreema
+Mikael Henaff	Artificial intelligence	mihenaff
+Mathias Lecuyer	Systems and networking, Artificial intelligence, Security, privacy, and cryptography	malecuye
+Mihir Nanavati	Systems and networking, Algorithms	minanav
+Alexandra Olteanu	Human-computer interaction, Search and information retrieval, Artificial intelligence, Social sciences	aloltea
+Forough Poursabzi-Sangdeh	Human-computer interaction, Artificial intelligence, Social sciences	fopoursa
+Hunt Allcott	Economics	hallcott
+Nancy Baym	Social sciences	baym
+Henry Cohn	Mathematics	cohn
+Eleanor Dillon	Economics, Artificial intelligence, Social sciences	eldillon
+Susan Dumais	Human-computer interaction, Search and information retrieval, Artificial intelligence, Algorithms	sdumais
+Michael Freedman	Hardware and devices, Quantum computing	michaelf
+Nicolo Fusi	Medical, health and genomics, Artificial intelligence, Algorithms	fusi
+Tarleton Gillespie	Human-computer interaction, Social sciences	tarleton
+Sharon Gillett	Human language technologies, Economics, Medical, health and genomics, Artificial intelligence, Social sciences, Ecology and environment	sharong
+Mary L. Gray	Human-computer interaction, Social sciences, Technology for emerging markets	mlg
+Evan Green	Artificial intelligence, Data platforms and analytics	evgreen
+Jimmy Hall	Artificial intelligence	jamhall
+Maggie Hei	Economics, Artificial intelligence, Data platforms and analytics	mehei
+Yael Tauman Kalai	Mathematics, Security, privacy, and cryptography	yael
+Adam Tauman Kalai	Artificial intelligence, Algorithms	adum
+Butler Lampson	Systems and networking, Security, privacy, and cryptography, Programming languages and software engineering	blampson
+Greg Lewis	Economics, Artificial intelligence, Algorithms	glewis
+Brendan Lucier	Economics, Artificial intelligence, Algorithms	brlucier
+Lester Mackey	Medical, health and genomics, Artificial intelligence, Algorithms	lmackey
+Markus Mobius	Economics, Artificial intelligence, Social sciences, Algorithms	mobius
+Paul Oka	Economics, Artificial intelligence, Algorithms	pauloka
+Miruna Oprescu	Economics, Medical, health and genomics, Artificial intelligence, Data platforms and analytics	moprescu
+Philip Rosenfield	Medical, health and genomics, Artificial intelligence, Algorithms	phrosenf
+Vasilis Syrgkanis	Medical, health and genomics, Artificial intelligence, Algorithms	vasy
+Neil Tenenholtz	Medical, health and genomics, Artificial intelligence	netenenh
+Bill Thies	Economics, Human-computer interaction, Artificial intelligence, Technology for emerging markets	thies
+David Alvarez-Melis	Human language technologies, Artificial intelligence, Algorithms	daalvare
+Morgane Austern	Mathematics, Artificial intelligence, Algorithms	moauster
+Danielle Bragg	Human language technologies, Graphics and multimedia, Human-computer interaction, Artificial intelligence	dabragg
+Sydnee Caldwell	Economics	sycaldwe
+Yannai A. Gonczarowski	Economics, Artificial intelligence, Algorithms	yannai
+Elena Maris		elmaris
+Rishit Sheth	Artificial intelligence	rishet
+Ashia Wilson	Artificial intelligence, Algorithms	aswilson
+Lincoln Ghioni	Hardware and devices	lighio
+Woosuk Lee	Systems and networking, Hardware and devices, Human-computer interaction, Algorithms	Woosuk.Lee
+Vivek Pradeep		vpradeep
+Uros Batricevic		Urosb
+Tim Large	Systems and networking, Hardware and devices	tlarge
+Steven Bathiche	Hardware and devices, Artificial intelligence	stevieb
+Siyuan Ma	Hardware and devices, Technology for emerging markets	siyma
+Rishi Sathe	Hardware and devices	rhsathe
+Pablo Sala	Human-computer interaction, Artificial intelligence, Computer vision	Pablosa
+Neil Emerton	Hardware and devices, Computer vision	neilem
+Moshe Lutz		moshelu
+Kazuhito Koishida	Human language technologies, Human-computer interaction, Artificial intelligence, Computer vision, Audio and Acoustics	Kazukoi
+Karlton Powell		kapowell
+Jonathan Westhues		jowesthu
+John Weiss		joweis
+Flavio Protasio Ribeiro	Hardware and devices, Algorithms	flaviopr
+Doug Patterson	Systems and networking	Dougpatt
+David Rappaport	Hardware and devices	darapp
+Carl Ringler	Hardware and devices	carlr
+Christopher Bishop	Artificial intelligence	cmbishop
+Abigail Sellen	Human-computer interaction, Artificial intelligence	asellen
+Aditya Nori	Medical, health and genomics, Artificial intelligence, Programming languages and software engineering	adityan
+Andrew Fitzgibbon	Artificial intelligence, Algorithms, Computer vision	awf
+Haiyan Zhang	Graphics and multimedia, Hardware and devices, Medical, health and genomics, Human-computer interaction, Artificial intelligence	hazhang
+Andrew Phillips	Medical, health and genomics, Artificial intelligence, Programming languages and software engineering	aphillip
+Andy Gordon	Human-computer interaction, Artificial intelligence, Security, privacy, and cryptography, Programming languages and software engineering	adg
+Brendan Murphy	Systems and networking, Human-computer interaction, Artificial intelligence, Programming languages and software engineering	bmurphy
+Cecily Morrison	Medical, health and genomics, Human-computer interaction, Artificial intelligence	cecilym
+Richard Banks	Graphics and multimedia, Hardware and devices, Human-computer interaction, Artificial intelligence, Social sciences, Computer vision	rbanks
+Sean Rintel	Human-computer interaction, Artificial intelligence, Social sciences	serintel
+Sian Lindley	Human-computer interaction, Artificial intelligence	sianl
+Anja Thieme	Human-computer interaction, Artificial intelligence	anthie
+Danielle Belgrave	Medical, health and genomics, Artificial intelligence, Data platforms and analytics	dabelgra
+Javier Alvarez-Valle	Medical, health and genomics, Artificial intelligence, Computer vision, Data platforms and analytics	jaalvare
+Kenton O&#039;Hara	Medical, health and genomics, Human-computer interaction, Artificial intelligence	keohar
+Konstantina Palla	Medical, health and genomics, Artificial intelligence	kopalla
+Pratik Ghosh	Medical, health and genomics, Human-computer interaction, Artificial intelligence	prghos
+Ted Meeds	Medical, health and genomics, Artificial intelligence	edmeeds
+John Winn	Medical, health and genomics, Search and information retrieval, Artificial intelligence, Algorithms, Computer vision	jwinn
+Marc Brockschmidt	Artificial intelligence, Programming languages and software engineering, Algorithms	mabrocks
+Nate Kushman	Artificial intelligence, Algorithms	nkushman
+Nuno Lopes	Systems and networking, Programming languages and software engineering	nlopes
+Pashmina Cameron	Systems and networking, Artificial intelligence, Algorithms, Computer vision	pacamero
+Ryota Tomioka	Artificial intelligence, Programming languages and software engineering, Algorithms	ryoto
+Simon Peyton Jones	Human-computer interaction, Artificial intelligence, Programming languages and software engineering, Algorithms, Audio and Acoustics	simonpj
+Tom Minka	Artificial intelligence, Algorithms	minka
+Yordan Zaykov	Artificial intelligence	yordanz
+Ant Rowstron	Systems and networking	antr
+Benn Thomsen	Systems and networking	bethomse
+Hitesh Ballani	Systems and networking	hiballan
+Miguel Castro	Systems and networking, Security, privacy, and cryptography	mcastro
+Richard Black	Systems and networking, Programming languages and software engineering	rjblack
+Katja Hofmann	Artificial intelligence	kahofman
+Manuel Costa	Systems and networking, Artificial intelligence, Security, privacy, and cryptography, Programming languages and software engineering	manuelc
+Boris Köpf	Artificial intelligence, Security, privacy, and cryptography, Programming languages and software engineering	bokoepf
+Cédric Fournet	Artificial intelligence, Security, privacy, and cryptography, Programming languages and software engineering	fournet
+David Chisnall	Systems and networking, Hardware and devices, Artificial intelligence, Security, privacy, and cryptography, Programming languages and software engineering	dachisna
+Kapil Vaswani	Systems and networking, Artificial intelligence, Programming languages and software engineering	kapilv
+Matthew Parkinson	Artificial intelligence, Programming languages and software engineering	mattpark
+Shruti Tople	Artificial intelligence	t-shtopl
+Stavros Volos	Systems and networking, Hardware and devices	svolos
+Sylvan Clebsch	Artificial intelligence, Security, privacy, and cryptography, Programming languages and software engineering	syclebsc
+Tony Wieser	Human-computer interaction, Artificial intelligence	anwieser
+Vassily Lyutsarev	Artificial intelligence, Ecology and environment	vassilyl
+Boyan Yordanov	Medical, health and genomics, Programming languages and software engineering	yordanov
+Carlo Spaccasassi	Medical, health and genomics, Programming languages and software engineering, Algorithms	t-caspac
+Colin Gravill	Medical, health and genomics, Human-computer interaction, Programming languages and software engineering	cogravil
+Jacob Halatek	Mathematics, Medical, health and genomics	t-jacobh
+Neil Dalchau	Mathematics, Medical, health and genomics, Artificial intelligence	ndalchau
+Paul Grant	Medical, health and genomics, Artificial intelligence, Ecology and environment	t-pgrant
+Prashant Vaidyanathan	Medical, health and genomics, Programming languages and software engineering, Algorithms	t-prva
+Sara-Jane Dunn	Mathematics, Medical, health and genomics	sarajand
+Advait Sarkar	Human-computer interaction, Artificial intelligence, Programming languages and software engineering	advait
+Dany Fabian	Human-computer interaction, Artificial intelligence, Programming languages and software engineering	danfab
+Neil Toronto	Human-computer interaction, Artificial intelligence, Programming languages and software engineering	netoront
+David Sweeney	Graphics and multimedia, Hardware and devices, Human-computer interaction, Artificial intelligence, Audio and Acoustics	dasweene
+Denise Wilkins	Human-computer interaction, Artificial intelligence, Social sciences	t-dewilk
+Anton Schwaighofer	Medical, health and genomics, Search and information retrieval, Artificial intelligence, Computer vision	antonsc
+David Carter	Medical, health and genomics, Artificial intelligence, Ecology and environment	dacart
+Isabel Chien	Medical, health and genomics, Artificial intelligence	ischien
+Jan Stuehmer	Artificial intelligence, Computer vision	t-jastuh
+Jay Nanavati	Artificial intelligence, Computer vision	jananava
+Cheng Zhang	Artificial intelligence, Algorithms, Computer vision	chezha
+Miltos Allamanis	Artificial intelligence, Programming languages and software engineering, Algorithms	miallama
+Sebastian Tschiatschek	Artificial intelligence, Algorithms	setschia
+Yingzhen Li	Artificial intelligence, Algorithms, Computer vision	yingzli
+Camilla Longden	Artificial intelligence	calongde
+Tom Ellis	Mathematics, Artificial intelligence, Programming languages and software engineering, Algorithms	toelli
+Alan Lawrence	Systems and networking, Programming languages and software engineering, Algorithms, Data platforms and analytics	allawr
+Alberto Magni		almagni
+John Guiver	Artificial intelligence, Algorithms	joguiver
+Pavel Myshkov	Artificial intelligence, Algorithms	pmyshkov
+Antoine Delignat-Lavaud	Artificial intelligence, Security, privacy, and cryptography, Programming languages and software engineering	antdl
+Santiago Zanella-Beguelin	Artificial intelligence, Security, privacy, and cryptography, Programming languages and software engineering	santiago
+Alex Shamis	Systems and networking, Artificial intelligence, Security, privacy, and cryptography	alexsha
+Amaury Chamayou	Security, privacy, and cryptography	amchamay
+Christoph M. Wintersteiger	Medical, health and genomics, Artificial intelligence, Security, privacy, and cryptography, Programming languages and software engineering	cwinter
+Julien Maffre	Security, privacy, and cryptography	jumaffre
+Sam Webster	Artificial intelligence, Programming languages and software engineering	sweb
+Adrian O&#039;Grady	Artificial intelligence	adriano
+Kamil Ciosek	Artificial intelligence	kaciosek
+Sam Devlin	Artificial intelligence	sadevlin
+Dave Bignell	Artificial intelligence	dabignel
+Jaroslaw Rzepecki	Artificial intelligence, Programming languages and software engineering	jarzepec
+Raluca Georgescu	Artificial intelligence, Programming languages and software engineering	rageorg
+Gavin Smyth	Human-computer interaction, Artificial intelligence	gavinsmy
+Martin Grayson	Graphics and multimedia, Hardware and devices, Human-computer interaction, Artificial intelligence, Programming languages and software engineering, Computer vision	mgrayson
+Tim Regan	Hardware and devices, Human-computer interaction, Artificial intelligence	timregan
+Andy Slowey	Systems and networking	aslowey
+Douglas Kelly	Hardware and devices	t-dokell
+Mengyang Yang	Systems and networking, Hardware and devices	t-meya
+Christos Gkantsidis	Systems and networking, Programming languages and software engineering, Algorithms	chrisgk
+Fotini Karinou	Systems and networking	fokarino
+Francesca Parmigiani	Systems and networking	frparmig
+Paolo Costa	Systems and networking	pcosta
+Thomas Karagiannis	Systems and networking, Algorithms	thomkar
+Kai Shi	Systems and networking	t-kashi
+Sophie Lange	Systems and networking, Hardware and devices	t-solang
+Daniel Cletheroe	Systems and networking, Hardware and devices, Human-computer interaction, Artificial intelligence, Programming languages and software engineering	daclethe
+Istvan Haller	Systems and networking, Security, privacy, and cryptography	ihaller
+Krzysztof Jozwik	Systems and networking, Hardware and devices	krjozwik
+Andrey Rybalchenko	Systems and networking, Programming languages and software engineering	rybal
+Aleksandar Dragojevic	Systems and networking, Data platforms and analytics	alekd
+Dushyanth Narayanan	Systems and networking, Programming languages and software engineering	dnarayan
+Shane Fleming	Systems and networking, Hardware and devices, Data platforms and analytics	t-shflem
+Andromachi Chatzieleftheriou	Systems and networking	anchatzi
+Austin Donnelly	Systems and networking	austind
+Greg O'Shea	Systems and networking, Programming languages and software engineering	gregos
+Ioan Stefanovici	Systems and networking	iostefan
+Sergey Legtchenko	Systems and networking	serleg
+Tim Deegan	Systems and networking	tideegan
+David Lara	Systems and networking	dalara
+Hugh Williams	Systems and networking	hughwi
+Ariel Gomez Diaz	Systems and networking, Hardware and devices	argome
+James Clegg	Systems and networking, Human-computer interaction	jaclegg
+Rokas Drevinskas	Systems and networking	rodrevin
+Youssef Assaf	Systems and networking	t-yoassa
