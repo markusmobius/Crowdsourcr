@@ -34,7 +34,7 @@ class XMLTask(object) :
             encounteredVarNames=set()                  
             for question in module.find('questions').iter('question'):
                 if question.find('varname').text in encounteredVarNames:
-                    raise Exception("Variable "+question.find('varname').text+"in module "+module.find('name').text+" is defined more than once.")
+                    raise Exception("Variable "+question.find('varname').text+" in module "+module.find('name').text+" is defined more than once.")
                 encounteredVarNames.add(question.find('varname').text)
                 lexedCondition=None
                 if question.find('condition') != None:
