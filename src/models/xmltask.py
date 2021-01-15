@@ -22,7 +22,7 @@ class XMLTask(object) :
         def get_help_text(ent) :
             ment = ent.find('helptext')
             return ment.text if ment != None else None
-        encounteredModuleNames={}        
+        encounteredModuleNames=set()    
         for module in self.modules.iter('module'):
             if module.find('name').text in encounteredModuleNames:
                 raise Exception("Module "+module.find('name').text+" is defined more than once.")
@@ -31,7 +31,7 @@ class XMLTask(object) :
                           'name' : module.find('name').text,
                           'contentUpdate' : module.find('contentUpdate').text if module.find('contentUpdate') != None else None,
                           'questions' : []}
-            encounteredVarNames={}                    
+            encounteredVarNames=set()                  
             for question in module.find('questions').iter('question'):
                 if question.find('varname').text in encounteredVarNames:
                     raise Exception("Variable "+question.find('varname').text+"in module "+module.find('name').text+" is defined more than once.")
