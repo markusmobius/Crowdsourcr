@@ -113,6 +113,23 @@ var check_condition_single = function (condition, vals, status) {
         status.error = true;
         return true;
     }
+    if (condition.op=="EXISTS"){
+        console.log(condition);
+        console.log(vals);
+        if (condition.variables[0].slice(-1)==="*"){
+            var prefix=condition.variables[0].substring(0,condition.variables[0].length-1);
+            for(var v in vals){
+                if (v.startsWith(prefix) && vals[v]!=""){
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (vals[condition.variables[0]]!==undefined){
+            return true;
+        }
+        return false;
+    }
     condition.variables.forEach(function (v) {
         if (!(v in vals)) {
             status.error = true;
@@ -161,6 +178,9 @@ var check_condition_single = function (condition, vals, status) {
                 return LHS_sum <= condition.values_integers[0];
             }
             break;
+        case ("EXISTS"):
+
+            break;
     }
     return true;
 }
@@ -183,7 +203,7 @@ var checkLexer = function (lex, vals, status) {
             });
             return sum;
         case "OR":
-            sum = true;
+            sum = false;
             condition_values.forEach(function (p) {
                 sum = sum | p;
             });
@@ -280,17 +300,20 @@ var Question = Model.extend({
 	      var new_question = undefined;
 	      switch (question.valuetype) {
 	      case 'numeric':
-            new_question = new NumericQuestion(el, question);
+              new_question = new NumericQuestion(el, question);
 	          break;
 	      case 'categorical':
-	    	    new_question = new CategoricalQuestion(el, question);
+	    	  new_question = new CategoricalQuestion(el, question);
 	          break;
 	      case 'text':
 	          new_question = new TextQuestion(el, question);
 	          break;
+          case 'autocomplete':
+              new_question = new AutoCompleteQuestion(el, question);
+              break;
           case 'approximatetext':
-                new_question = new ApproximateTextQuestion(el, question);
-                break;
+              new_question = new ApproximateTextQuestion(el, question);
+              break;
           case 'url':
 	          new_question = new URLQuestion(el, question);
 	          break;
@@ -367,6 +390,32 @@ var TextQuestion = Question.extend({
     },
     response : function() {
 	      return this.el.find('textarea:first').val();
+    }
+});
+
+var AutoCompleteQuestion = Question.extend({
+    constructor : function(el, question) {
+        this.el = $(el);
+	      this.display_template = $('#autocompletequestion-display-template').html();
+    },
+    renderDisplay : function() {
+        this.el.empty();
+        var q = this.el.html(_.template(this.display_template, this.serializeForDisplay()));
+	      this.renderHelpText();
+    },
+    validate : function () {
+        return this.response() != "";
+    },
+    response : function() {
+        var radioValue=this.el.find('input:not([value=""]):checked').val();
+        if (radioValue=="unsureLabel"){
+            return "unsure";
+        }
+        var specificInput=this.el.find('input[type=text]').val()
+        if (radioValue=="sureLabel" & specificInput!=""){
+            return "sure:"+specificInput;
+        }
+        return "";
     }
 });
 

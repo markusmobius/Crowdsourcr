@@ -167,6 +167,9 @@ var Question = Model.extend({
 	case 'text':
 	    self = new TextQuestion();
 	    break;
+	case 'autocomplete':
+		self = new AutoCompleteQuestion();
+		break;
 	default:
 	    throw "Error: question given of odd type: " + question_type;
 	}
@@ -534,3 +537,4 @@ var TextQuestion = Question.extend({
 	throw "DIDNT DO TEXT YET!!!";
     }
 });
+

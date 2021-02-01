@@ -9,7 +9,7 @@
     <script src="/static/js/bootstrap3.min.js"></script>
     <script src="/static/js/autoexpand.js"></script>
     <script src="/static/js/mixins.js"></script>
-    <script src="/static/js/simplemodels.js?version=2020_04_01"></script>
+    <script src="/static/js/simplemodels.js?version=2021_01_30V3"></script>
     <script src="/static/js/hit.js?version=2020_04_01"></script>
     <style>
       .help {
@@ -296,6 +296,17 @@
 	      <textarea class="form-control" name="<%= varname %>"></textarea>
       </div>
     </script>
+
+    <script type="text/template" id="autocompletequestion-display-template">
+      <div class="form-group">
+        <label> <%= questiontext %> </label>
+        <% if (helptext) { %><div class="help">?</div><% } %>
+
+        <div class="radio"><label><input type="radio" name="<%= varname %>" value="sureLabel" onchange="document.getElementById('<%= varname %>:details').style.display='block'" /><%= options.sureLabel %></label> <input type="text" class="form-control" style="display:none" id="<%= varname %>:details" name="<%= varname %>:details" placeholder="Type here"> </div>
+        <div class="radio"><label><input type="radio" name="<%= varname %>" value="unsureLabel" onchange="document.getElementById('<%= varname %>:details').style.display='none'"/><%= options.unsureLabel %></label></div>
+
+      </div>
+   </script>
 
     <script type="text/template" id="imageuploadquestion-display-template">
       <div class="form-group">

@@ -75,6 +75,16 @@ class SingleCondition:
                 status.error=f"{condition_string} is not a valid inset condition"
                 return
             return
+        if 'exists{' in condition_string:
+            if condition_string.startswith("exists{") and condition_string[-1]=="}":
+                self.op = "EXISTS"
+                field=condition_string[len("exists{"):-1]
+                self.variables.append(field);
+                return
+            else:
+                status.error=f"{condition_string} is not a valid exists condition"
+                return
+            return
         status.error = f"{condition_string} is an invalid condition"
 
     def condition_fragments(self, frags, condition_string, status):
@@ -128,17 +138,21 @@ class SingleCondition:
         elif self.op == "LESSEQUAL":
             sb += "<="
         elif self.op == "NOTINSET":
-            sb += "notinset("
+            sb += "notinset{"
             sb +=self.variables[0]
             sb +=","
             sb +=self.variables[1]
-            sb +=")"
+            sb +="}"
         elif self.op == "INSET":
-            sb += "inset("
+            sb += "inset{"
             sb +=self.variables[0]
             sb +=","
             sb +=self.variables[1]
-            sb +=")"
+            sb +="}"
+        elif self.op == "EXISTS":
+            sb += "exists{"
+            sb +=self.variables[0]
+            sb +="}"
         if len(self.values_integers) > 0:
             sb += str(self.values_integers[0])
         elif len(self.values_string)>0:
@@ -155,6 +169,8 @@ class SingleCondition:
             return self.check_notinset_cond(all_variables,all_sets,status)
         if self.op == "INSET":
             return self.check_inset_cond(all_variables,all_sets,status)
+        if self.op == "EXISTS":
+            return self.check_exists_cond(all_variables,status)
         status.error = None
         LHS_sum=0
         LHS=""
@@ -220,6 +236,16 @@ class SingleCondition:
             return False
         LHS=str(all_variables[self.variables[0]])
         return all_sets[self.variables[1]].hasMember(LHS);
+
+    def check_exists_cond(self, all_variables, status):
+        ''' Inputs: all_variables, type {str: str}
+                    status, type Status instance
+            Output: bool '''
+        if self.variables[0].endswith("*"):
+            prefix=self.variables[0][0:-1]
+            return (prefix in all_variables)
+        else:
+            return (self.variables[0] in all_variables)
 
 class Lexer:
     def __init__(self):

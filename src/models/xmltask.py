@@ -6,6 +6,7 @@ except ImportError:
 from .question import Question
 from helpers import CustomEncoder, Lexer, Status
 import jsonpickle
+from itertools import product
 
 class XMLTask(object) :
     def __init__(self, xml_path=None) :
@@ -33,25 +34,67 @@ class XMLTask(object) :
                           'questions' : []}
             encounteredVarNames=set()                  
             for question in module.find('questions').iter('question'):
-                if question.find('varname').text in encounteredVarNames:
-                    raise Exception("Variable "+question.find('varname').text+" in module "+module.find('name').text+" is defined more than once.")
-                encounteredVarNames.add(question.find('varname').text)
-                lexedCondition=None
-                if question.find('condition') != None:
-                    conditionStr=question.find('condition').text
-                    lex = Lexer()
-                    status = Status()
-                    if not lex.can_import(conditionStr, status):
-                        raise Exception(status.error)
-                    lexedCondition=jsonpickle.encode(lex)
-                module_out['questions'].append({'varname' : question.find('varname').text,
+                #check if there is an iterator
+                dimensions=[[{}]]
+                iterator=question.find('iterator')
+                if iterator !=None:
+                    dimensions=[]
+                    for dimension in iterator.find('dimensions').iter('dimension'):
+                        singleDimension=[]
+                        dimName=dimension.find('name').text
+                        for instance in dimension.find('instances').iter('instance'):
+                            singleInstance={}
+                            for kvpair in instance.find('kvpairs').iter('kvpair'):
+                                key=kvpair.find('key').text
+                                value=kvpair.find('value').text
+                                singleInstance["{"+dimName+":"+key+"}"]=value
+                            singleDimension.append(singleInstance)
+                        dimensions.append(singleDimension)                            
+                #now iterate over the product of all dimensions
+                for D in product(*dimensions):
+                    varname=question.find('varname').text
+                    for instance in D:
+                        for key in instance:
+                            varname=varname.replace(key,instance[key])
+                    #now do the question
+                    if varname in encounteredVarNames:
+                        raise Exception("Variable "+varname+" in module "+module.find('name').text+" is defined more than once.")
+                    encounteredVarNames.add(varname)
+                    lexedCondition=None                        
+                    if question.find('condition') != None:
+                        conditionStr=question.find('condition').text
+                        for instance in D:
+                            for key in instance:
+                                conditionStr=conditionStr.replace(key,instance[key])
+                        lex = Lexer()
+                        status = Status()
+                        if not lex.can_import(conditionStr, status):
+                            raise Exception(status.error)
+                        lexedCondition=jsonpickle.encode(lex)
+                    questionText=question.find('questiontext').text
+                    for instance in D:
+                        for key in instance:
+                            questionText=questionText.replace(key,instance[key])
+                    helpText=get_help_text(question)
+                    if helpText!=None:
+                        for instance in D:
+                            for key in instance:
+                                helpText=helpText.replace(key,instance[key])
+                    options=self.get_options(question)
+                    if options!=None:
+                        for i in options:
+                            for instance in D:
+                                for key in instance:
+                                    if type(options[i]) is not list:
+                                        options[i]=options[i].replace(key,instance[key])
+                    module_out['questions'].append({'varname' : varname,
                                                 'condition' : lexedCondition,
-                                                'questiontext' : question.find('questiontext').text,
-                                                'helptext' : get_help_text(question),
+                                                'questiontext' : questionText,
+                                                'helptext' : helpText,
                                                 'bonus' : question.find('bonus').text if question.find('bonus') != None else None,
                                                 'bonuspoints' : float(question.find('bonuspoints').text) if question.find('bonuspoints') != None else 1.0,
                                                 'valuetype' : question.find('valuetype').text,
-                                                'options' : self.get_options(question),
+                                                'options' : options,
                                                 'content' : Question.parse_content_from_xml(question.find('valuetype').text,
                                                                                             question.find('content'))})
             yield module_out

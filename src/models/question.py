@@ -54,6 +54,8 @@ class Question(object) :
            return NumericQuestion.deserialize(d)
         if d['valuetype']=="text":
            return TextQuestion.deserialize(d)
+        if d['valuetype']=="autocomplete":
+           return AutoCompleteQuestion.deserialize(d)
         if d['valuetype']=="approximatetext":
            return ApproximateTextQuestion.deserialize(d)
         if d['valuetype']=="url":
@@ -189,6 +191,15 @@ class TextQuestion(AbstractQuestion) :
         return response
     def valid_response(self, response) :
         return response.get('response', False)
+
+class AutoCompleteQuestion(AbstractQuestion) :
+    typeName = 'autocomplete'
+    @staticmethod
+    def parse_content_from_xml(question_content=None):
+        return {'surelabel' : question_content.find('surelabel').text, 'unsurelabel' : question_content.find('unsurelabel').text}
+    def valid_response(self, response) :
+        return response.get('response', False)
+
 
 class ApproximateTextQuestion(AbstractQuestion) :
     typeName = 'approximatetext'
